@@ -1,0 +1,31 @@
+li{
+    display: flex;
+    align-items: center;
+    color: white;
+    height: 40px;
+    cursor: pointer;
+    margin-top: 20px;
+    padding-left: 10px;
+}
+
+li:hover{
+    color: wheat;
+    font-size: xx-large;
+}
+ 
+.active-menu{
+    background: rgb(244, 245, 247);
+    color: steelblue;
+}
+.active-menu:hover{
+    color: steelblue;
+}
+ 
+li p{
+     
+     font-size: 1rem;
+     font-weight: 450;
+     padding-top: 15px;
+     text-align: center;
+     padding-left: 10px;;
+ }

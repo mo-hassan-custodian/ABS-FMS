@@ -1,0 +1,176 @@
+.mat-expansion-panel-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0 17px;
+    border-radius: inherit;
+    transition: height 225ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#app-container{
+    display: flex;
+}
+
+#menu-sidebar{
+    width: 180px;
+    /* background-color: #225076; */
+    background-color: #900000;
+    height: 100vh;
+}
+
+#menu-list{
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#menu-list li:first-child{    
+    margin-bottom: 20px;
+}
+#menu-list li{
+    /* display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    height: 40px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    flex-direction: column;
+    padding-top: 20px; */
+    display: flex;
+    /* justify-content: center; */
+    align-items: center;
+    color: white;
+    height: 40px;
+    cursor: pointer;
+    /* margin-bottom: 10px; */
+    /* flex-direction: column; */
+    margin-top: 20px;
+    padding-left: 10px;
+}
+
+#menu-list li:hover{
+   color: wheat;
+   font-size: large;
+}
+
+#menu-list li:hover{
+    font-size: xx-large;
+}
+
+#menu-list li p{
+    /* font-size: 1rem;font-weight: 500;padding-top: 5px;text-align: center */
+    font-size: 1rem;
+    font-weight: 450;
+    padding-top: 15px;
+    text-align: center;
+    padding-left: 10px;;
+}
+
+/* #menu-subitems{
+    position: absolute;
+    top: 0px;
+    left: 150px;
+    background-color: rgb(244, 245, 247);
+    padding: 20px;
+    height: calc(100vh - 40px);
+    width: fit-content;
+    min-width: 200px;
+    overflow: auto;
+    width: 200px;
+} */
+
+#menu-subitems{
+    background-color: rgb(244, 245, 247);
+    padding: 20px;
+    height: calc(100vh - 40px);
+    width: -moz-fit-content;
+    width: 250px;
+    overflow: auto;
+}
+
+#menu-subitems li{
+    margin-bottom: 10px;
+    cursor: pointer;
+    display: flex;
+    padding: 3px 0px 0px 0px;
+}
+
+
+#menu-subitems li:hover
+{
+    background: steelblue;
+    color: whitesmoke;
+    padding: .2rem;
+    border-radius: 5px;
+    font-weight: 500;
+}
+#menu-subitems ul{
+    padding: 0;
+    list-style: none;
+}
+
+#menu-subitems .menu-name {
+    padding: 3px 0 0px 5px;
+}
+
+/* #menu-subitems .menu-name:hover {
+    padding: 3px 0 0px 10px;
+    font-weight: 500;
+} */
+
+
+#menu-subitems mat-expansion-panel{
+    margin-bottom: 10px;
+}
+
+#main-body{
+/* width: calc(100% - 50px); */
+width: 100%;
+}
+#app-header{
+    height: 40px;
+    background-color: rgba(70, 131, 180, 0.692);
+}
+
+.example-sidenav-content  #headerinfo{
+    padding: 5px;
+                display: flex;
+                justify-content: space-between;
+                /* background:  #666161; */
+                background-color: #900000;
+                margin: 0;
+                color: white;
+}
+
+#app-body{
+    /* margin-left: 240px; */
+    /* background-color: red; */
+    padding: 10px;
+}
+
+#appview-container{
+    
+    height: 100vh;
+    /* background: antiquewhite; */
+    width: 100%;
+
+}
+
+
+
+
+#profileInfo-card
+{
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+
+#profileInfo-card > #logout{
+    margin-top: 1rem;
+}
+
+.sidebar-brand-text{
+    color: white;
+    font-weight: 600;
+}

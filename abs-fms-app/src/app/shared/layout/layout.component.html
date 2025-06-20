@@ -1,0 +1,62 @@
+
+<div id="app-container">
+    <div id="menu-sidebar">
+        <div style="width: inherit;">
+            <h3 class="sidebar-brand-text mx-2" style="padding-left: 10px; padding-top:10px;">ABS FMS</h3>
+            <ul id="menu-list">
+                <li routerLink="/" (click)="drawer.close(); this._menuservice.setCurrentActiveSubMenu(-1);"><mat-icon>home</mat-icon><p> Home</p></li>  
+                <app-menu-icon *ngFor="let menuitem of menuitems; let itemIndex = index"  [menuicon]="menuitem"  (click)="this._menuservice.setCurrentActiveSubMenu(itemIndex);drawer.open()"></app-menu-icon>
+                <!-- <li (click)="logout()"><mat-icon>power_settings_new</mat-icon><p> Log Out</p></li> -->
+            </ul>
+            <!-- <footer class="sidebar-brand-text mx-2" style="padding-left:10px;margin-top:100px;">Version: 0.0.0.0</footer>  -->
+        </div>    
+        
+    </div>
+    <div id="main-body">
+        <mat-drawer-container class="" id="appview-container"  autosize>
+            <mat-drawer #drawer class="example-sidenav" mode="side">
+                <div id="menu-subitems">
+                    <!-- <mat-card id="profileInfo-card">
+                         <mat-card-title>{{userProfile?.firstName}} {{userProfile?.lastName}}</mat-card-title>
+                         <mat-card-subtitle id="logout"  >Sign Out</mat-card-subtitle>                
+                    </mat-card> -->
+                     <p *ngIf="!this._menuservice.activeSubmenu">Loading Menu...</p>
+                     <div *ngIf="this._menuservice.activeSubmenu">
+                         <mat-accordion>
+                         <mat-expansion-panel *ngFor="let activesubmenu of this._menuservice.activeSubmenu.submenuclass">
+                             <mat-expansion-panel-header>
+                                <mat-panel-title style="font-weight: 500;">
+                                {{activesubmenu.name}}
+                                </mat-panel-title>                  
+                             </mat-expansion-panel-header> 
+                             <ul class="test-test">
+                                 <li [routerLink]="activesubmenuItem.route" (click)="drawer.toggle()"  [queryParams]="activesubmenuItem.routeParameters"  *ngFor="let activesubmenuItem of activesubmenu.submenu"> 
+                                     <!-- <mat-icon>{{activesubmenuItem.icon}}</mat-icon>  [queryParams]="{{activesubmenuItem.routeParameters}}" -->
+                                     <span class="menu-name">{{activesubmenuItem.name}}</span>  
+                                 </li>                        
+                             </ul>              
+                          </mat-expansion-panel>
+                         </mat-accordion>
+                     </div>
+                 </div>
+            </mat-drawer>
+          
+            <div class="example-sidenav-content">
+                <div id="headerinfo">
+                    <mat-icon style="font-weight: 500;
+                    color: whitesmoke;
+                    cursor: pointer;" (click)="drawer.toggle()">menu</mat-icon>
+                    <span style="padding-right: 2rem;"> {{userProfile?.email}} </span>
+                    <h3 class="sidebar-brand-text mx-2" style="float:right;padding-right:10px; color:whitesmoke">{{this.greet}}, MOHAMMED</h3> 
+                </div> 
+
+                <div id="app-body">
+                    <router-outlet></router-outlet>
+                </div>
+            </div>      
+        </mat-drawer-container>
+    </div>
+    
+</div>
+
+
