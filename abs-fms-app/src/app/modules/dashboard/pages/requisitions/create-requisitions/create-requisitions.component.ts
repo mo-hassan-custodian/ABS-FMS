@@ -7,7 +7,9 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ToastrService } from 'ngx-toastr';
 import { RequisitionService } from '../../../../../services/requisition.service';
+import { PayeeService } from '../../../../../services/payee.service';
 import { Requisition, RequisitionCreateRequest } from '../../../../../models/requisition.model';
+import { PayeeCreateRequest } from '../../../../../models/payee.model';
 
 @Component({
   selector: 'app-create-requisitions',
@@ -118,6 +120,14 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
       { name: 'Regulatory Body', value: 'REGULATORY_BODY' }
   ];
 
+  createdFromOptions = [
+    { name: 'Manual Entry', value: 'MANUAL' },
+    { name: 'System Import', value: 'IMPORT' },
+    { name: 'System Generated', value: 'SYSTEM' },
+    { name: 'External API', value: 'API' },
+    { name: 'Bulk Upload', value: 'BULK' }
+  ];
+
   paymentOptions = [
     // { id: 1, name: 'Cheque' },
     // { id: 2, name: 'Bank Transfer' },
@@ -140,6 +150,7 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
   constructor(
     private formBuilder: FormBuilder,
     private requisitionService: RequisitionService,
+    private payeeService: PayeeService,
     private toastr: ToastrService
   ) {}
 
@@ -354,13 +365,15 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
 
     // Initialize payee form
     this.payeeForm = this.formBuilder.group({
-      payeeName: ['', Validators.required],
-      payeeCode: ['', Validators.required],
+      name: ['', Validators.required],
+      createdFrom: ['', Validators.required],
+      shortDescription: [''],
+      pinNo: ['', Validators.required],
       bankName: ['', Validators.required],
       bankBranch: ['', Validators.required],
       accountNumber: ['', Validators.required],
-      contactInfo: [''],
-      payeeType: ['', Validators.required]
+      physicalAddress: ['', Validators.required],
+      postalAddress: ['', Validators.required]
     });
   }
 
@@ -452,21 +465,40 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
 
   savePayee(): void {
     if (this.payeeForm.valid) {
-      const payeeData = this.payeeForm.value;
-      console.log('Saving payee:', payeeData);
+      const payeeData: PayeeCreateRequest = this.payeeForm.value;
 
-      // TODO: Implement actual save logic here
-      // Example: this.payeeService.createPayee(payeeData)
+      // Auto-fill short description if not provided
+      if (!payeeData.shortDescription || payeeData.shortDescription.trim() === '') {
+        payeeData.shortDescription = payeeData.name;
+      }
 
-      // Close modal after successful save
-      this.closeCreatePayeeModal();
-
-      // Show success message
-      this.toastr.success('Payee created successfully!', 'Success');
+      this.payeeService.createPayee(payeeData)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (newPayee) => {
+            console.log('Payee created successfully:', newPayee);
+            this.closeCreatePayeeModal();
+            this.toastr.success('Payee created successfully!', 'Success');
+          },
+          error: (error) => {
+            console.error('Error creating payee:', error);
+            this.toastr.error('Error creating payee. Please try again.', 'Error');
+          }
+        });
     } else {
       // Mark all fields as touched to show validation errors
       this.markFormGroupTouched(this.payeeForm);
       this.toastr.warning('Please fill in all required fields.', 'Validation Error');
+    }
+  }
+
+  // Auto-fill short description when name changes
+  onPayeeNameChange(): void {
+    const nameValue = this.payeeForm.get('name')?.value;
+    const shortDescControl = this.payeeForm.get('shortDescription');
+
+    if (nameValue && (!shortDescControl?.value || shortDescControl?.value.trim() === '')) {
+      shortDescControl?.setValue(nameValue);
     }
   }
 
@@ -535,8 +567,8 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
     return displayNames[fieldName] || fieldName;
   }
 
-  // Utility method to generate auto code based on payee name
-  onPayeeNameChange(): void {
+  // Utility method to generate auto code based on payee name (for requisition form)
+  onRequisitionPayeeNameChange(): void {
     const payeeName = this.requisitionForm.get('payee')?.value;
     const codeControl = this.requisitionForm.get('code');
 

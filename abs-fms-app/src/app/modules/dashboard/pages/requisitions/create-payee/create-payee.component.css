@@ -1,24 +1,18 @@
-td.mat-cell:last-child,
-th.mat-header-cell:last-child {
-  width: 280px; /* or 250px */
-  max-width: 280px;
-  white-space: nowrap;
+/* Container */
+.container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
-/* Create Requisitions Component Styles */
-.create-requisitions-container {
-  padding: 20px;
-  background-color: #f5f5f5;
-  min-height: 100vh;
-}
-
+/* Header Section */
 .header-section {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 30px;
-  background: white;
   padding: 20px;
+  background: white;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
@@ -36,7 +30,7 @@ th.mat-header-cell:last-child {
   font-size: 16px;
 }
 
-
+/* Action Buttons */
 .action-buttons {
   display: flex;
   gap: 15px;
@@ -63,6 +57,7 @@ th.mat-header-cell:last-child {
   height: 20px;
 }
 
+/* Content Section */
 .content-section {
   background: white;
   padding: 24px;
@@ -90,40 +85,27 @@ th.mat-header-cell:last-child {
   overflow-x: auto;
 }
 
-.requisitions-table {
+.payees-table {
   width: 100%;
   background: white;
 }
 
-.requisitions-table .mat-mdc-header-cell {
+.payees-table .mat-mdc-header-cell {
   font-weight: 600;
   color: #333;
   background-color: #f8f9fa;
 }
 
-.requisitions-table .mat-mdc-cell {
+.payees-table .mat-mdc-cell {
   padding: 12px 8px;
   border-bottom: 1px solid #e0e0e0;
 }
 
-.requisitions-table .mat-mdc-row:hover {
+.payees-table .mat-mdc-row:hover {
   background-color: #f5f5f5;
 }
 
-/* Table Cell Styles */
-.amount-cell {
-  font-weight: 600;
-  color: #2e7d32;
-}
-
-.narrative-cell {
-  max-width: 200px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  cursor: help;
-}
-
+/* Status Badges */
 .status-badge {
   padding: 4px 12px;
   border-radius: 16px;
@@ -133,35 +115,25 @@ th.mat-header-cell:last-child {
   letter-spacing: 0.5px;
 }
 
-.status-draft {
-  background-color: #e3f2fd;
-  color: #1976d2;
-}
-
-.status-pending {
-  background-color: #fff3e0;
-  color: #f57c00;
-}
-
-.status-approved {
+.status-active {
   background-color: #e8f5e8;
   color: #2e7d32;
 }
 
-.status-rejected {
-  background-color: #ffebee;
-  color: #d32f2f;
+.status-inactive {
+  background-color: #fff3e0;
+  color: #f57c00;
 }
 
-.status-paid {
-  background-color: #e1f5fe;
-  color: #0277bd;
+.status-suspended {
+  background-color: #ffebee;
+  color: #d32f2f;
 }
 
 /* Table Action Buttons */
 .action-buttons {
   display: flex;
-  gap: 8px;
+  gap: 4px;
   align-items: center;
   justify-content: flex-start;
   flex-wrap: nowrap;
@@ -169,9 +141,9 @@ th.mat-header-cell:last-child {
 }
 
 .action-buttons .action-btn {
-  width: 30px;
+  width: 36px;
   height: 28px;
-  min-width: 30px;
+  min-width: 36px;
   border-radius: 4px;
   display: flex;
   align-items: center;
@@ -250,6 +222,77 @@ th.mat-header-cell:last-child {
   color: #999;
 }
 
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  max-width: 600px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.modal-body {
+  padding: 24px;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 24px;
+  border-top: 1px solid #e0e0e0;
+  background-color: #f8f9fa;
+}
+
+/* Form Styles */
+.form-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.form-row:last-child {
+  margin-bottom: 0;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.half-width {
+  width: calc(50% - 8px);
+}
+
 /* View Details Modal */
 .view-details-modal {
   max-width: 700px;
@@ -290,11 +333,11 @@ th.mat-header-cell:last-child {
   border-left: 3px solid #e0e0e0;
 }
 
-.amount-highlight {
-  background-color: #e8f5e8;
-  border-left-color: #4caf50;
+.account-highlight {
+  background-color: #e3f2fd;
+  border-left-color: #2196f3;
   font-weight: 600;
-  color: #2e7d32;
+  color: #1976d2;
 }
 
 /* Edit Form Styles */
@@ -338,207 +381,57 @@ th.mat-header-cell:last-child {
   height: 18px;
 }
 
-/* Responsive adjustments for view details */
-@media (max-width: 768px) {
-  .search-field {
-    width: 100%;
-    min-width: unset;
-  }
-
-  .details-grid {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-
-  .view-details-modal {
-    width: 98%;
-    margin: 10px;
-  }
-
-  .edit-form .form-row {
-    flex-direction: column;
-  }
-
-  .edit-form .half-width {
-    width: 100%;
-  }
-
-  .modal-footer {
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .modal-footer button {
-    margin-left: 0;
-    width: 100%;
-  }
-}
-
-/* Modal Styles */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  max-width: 600px;
-  width: 90%;
-  max-height: 90vh;
-  overflow-y: auto;
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 24px;
-  border-bottom: 1px solid #e0e0e0;
-}
-
-.modal-header h3 {
-  margin: 0;
-  color: #333;
-  font-weight: 500;
-}
-
-.modal-body {
-  padding: 24px;
-}
-
-.modal-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  padding: 16px 24px;
-  border-top: 1px solid #e0e0e0;
-  background-color: #fafafa;
-}
-
-/* Form Styles */
-.form-row {
-  display: flex;
-  gap: 16px;
-  margin-bottom: 16px;
-}
-
-.form-row:last-child {
-  margin-bottom: 0;
-}
-
-.full-width {
-  width: 100%;
-}
-
-.half-width {
-  width: calc(50% - 8px);
-}
-
-/* Material Form Field Customization */
-.mat-mdc-form-field {
-  width: 100%;
-}
-
-.mat-mdc-form-field + .mat-mdc-form-field {
-  margin-left: 0;
-}
-
 /* Responsive Design */
 @media (max-width: 768px) {
   .header-section {
     flex-direction: column;
-    gap: 20px;
+    gap: 16px;
     text-align: center;
   }
 
   .action-buttons {
-    flex-direction: column;
     width: 100%;
+    justify-content: center;
   }
 
-  .action-buttons button {
+  .search-field {
     width: 100%;
+    min-width: unset;
   }
-
-  .modal-content {
-    width: 95%;
+  
+  .details-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .view-details-modal {
+    width: 98%;
     margin: 10px;
   }
-
+  
+  .edit-form .form-row {
+    flex-direction: column;
+  }
+  
+  .edit-form .half-width {
+    width: 100%;
+  }
+  
+  .modal-footer {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .modal-footer button {
+    margin-left: 0;
+    width: 100%;
+  }
+  
   .form-row {
     flex-direction: column;
   }
-
+  
   .half-width {
     width: 100%;
-  }
-}
-
-@media (max-width: 480px) {
-  .create-requisitions-container {
-    padding: 10px;
-  }
-
-  .header-section {
-    padding: 15px;
-  }
-
-  .modal-body {
-    padding: 16px;
-  }
-
-  .modal-header {
-    padding: 16px;
-  }
-
-  .modal-footer {
-    padding: 12px 16px;
-  }
-}
-
-/* Button Hover Effects */
-.action-buttons button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  transition: all 0.2s ease;
-}
-
-/* Form Validation Styles */
-.mat-mdc-form-field.mat-form-field-invalid .mat-mdc-text-field-wrapper {
-  border-color: #f44336;
-}
-
-/* Modal Animation */
-.modal-overlay {
-  animation: fadeIn 0.3s ease;
-}
-
-.modal-content {
-  animation: slideIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-50px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
   }
 }

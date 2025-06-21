@@ -2,7 +2,10 @@
 <div class="create-requisitions-container">
   <!-- Header with Action Buttons -->
   <div class="header-section">
-    <h2>Create Requisitions</h2>
+    <div class="title-section">
+        <h2>Create Requisitions</h2>
+        <p>Create requisitions</p>
+    </div>
     <div class="action-buttons">
       <button mat-raised-button color="primary" (click)="openSearchModal()">
         <mat-icon>search</mat-icon>
@@ -164,7 +167,7 @@
         <mat-form-field appearance="outline" class="full-width">
             <mat-label>Payee</mat-label>
             <input matInput formControlName="payee" placeholder="Enter payee name"
-                   (blur)="onPayeeChange(); onPayeeNameChange()">
+                   (blur)="onPayeeChange(); onRequisitionPayeeNameChange()">
             <mat-error *ngIf="hasError('payee')">
               {{ getErrorMessage('payee') }}
             </mat-error>
@@ -346,13 +349,40 @@
     <form class="modal-body" [formGroup]="payeeForm">
       <div class="form-row">
         <mat-form-field appearance="outline" class="half-width">
-          <mat-label>Payee Name</mat-label>
-          <input matInput formControlName="payeeName" placeholder="Enter payee name">
+          <mat-label>Name</mat-label>
+          <input matInput formControlName="name" placeholder="Enter payee name" (input)="onPayeeNameChange()">
+          <mat-error *ngIf="payeeForm.get('name')?.invalid && payeeForm.get('name')?.touched">
+            Name is required
+          </mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="half-width">
-          <mat-label>Payee Code</mat-label>
-          <input matInput formControlName="payeeCode" placeholder="Enter payee code">
+          <mat-label>Created From</mat-label>
+          <mat-select formControlName="createdFrom">
+            <mat-option value="">-- Select Source --</mat-option>
+            <mat-option *ngFor="let option of createdFromOptions" [value]="option.value">
+              {{option.name}}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="payeeForm.get('createdFrom')?.invalid && payeeForm.get('createdFrom')?.touched">
+            Please select how this payee was created
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Short Description</mat-label>
+          <input matInput formControlName="shortDescription" placeholder="Defaults to name if not provided">
+          <mat-hint>Will default to name if left empty</mat-hint>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>PIN No.</mat-label>
+          <input matInput formControlName="pinNo" placeholder="Enter PIN number">
+          <mat-error *ngIf="payeeForm.get('pinNo')?.invalid && payeeForm.get('pinNo')?.touched">
+            PIN number is required
+          </mat-error>
         </mat-form-field>
       </div>
 
@@ -360,45 +390,54 @@
         <mat-form-field appearance="outline" class="half-width">
           <mat-label>Bank Name</mat-label>
           <input matInput formControlName="bankName" placeholder="Enter bank name">
+          <mat-error *ngIf="payeeForm.get('bankName')?.invalid && payeeForm.get('bankName')?.touched">
+            Bank name is required
+          </mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="half-width">
-          <mat-label>Payee Bank Branch</mat-label>
+          <mat-label>Bank Branch</mat-label>
           <mat-select formControlName="bankBranch">
-            <mat-option *ngFor="let branch of bankBranches; trackBy: trackByValue" [value]="branch.value" >
+            <mat-option value="">-- Select Bank Branch --</mat-option>
+            <mat-option *ngFor="let branch of bankBranches; trackBy: trackByValue" [value]="branch.value">
               {{branch.name}}
             </mat-option>
           </mat-select>
+          <mat-error *ngIf="payeeForm.get('bankBranch')?.invalid && payeeForm.get('bankBranch')?.touched">
+            Bank branch is required
+          </mat-error>
         </mat-form-field>
-
-      </div>
-
-      <div class="form-row">
-        <mat-form-field appearance="outline" class="half-width">
-          <mat-label>Account Number</mat-label>
-          <input matInput formControlName="accountNumber" placeholder="Enter account number">
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="half-width">
-            <mat-label>Type *</mat-label>
-            <mat-select formControlName="payeeType">
-              <mat-option value="">-- Select Payee Type --</mat-option>
-              <mat-option *ngFor="let type of payeeTypes" [value]="type.value">
-                {{ type.name }}
-              </mat-option>
-            </mat-select>
-            <mat-hint>Select the category of payee</mat-hint>
-            <mat-error *ngIf="hasError('type')">
-              {{ getErrorMessage('type') }}
-            </mat-error>
-          </mat-form-field>
-
       </div>
 
       <div class="form-row">
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Contact Information</mat-label>
-          <textarea matInput formControlName="contactInfo" rows="2" placeholder="Enter contact details"></textarea>
+          <mat-label>Account Number</mat-label>
+          <input matInput formControlName="accountNumber" placeholder="Enter account number">
+          <mat-error *ngIf="payeeForm.get('accountNumber')?.invalid && payeeForm.get('accountNumber')?.touched">
+            Account number is required
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Physical Address</mat-label>
+          <textarea matInput formControlName="physicalAddress" rows="2" placeholder="Enter physical address">
+          </textarea>
+          <mat-error *ngIf="payeeForm.get('physicalAddress')?.invalid && payeeForm.get('physicalAddress')?.touched">
+            Physical address is required
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Postal Address</mat-label>
+          <textarea matInput formControlName="postalAddress" rows="2" placeholder="Enter postal address">
+          </textarea>
+          <mat-error *ngIf="payeeForm.get('postalAddress')?.invalid && payeeForm.get('postalAddress')?.touched">
+            Postal address is required
+          </mat-error>
         </mat-form-field>
       </div>
     </form>
