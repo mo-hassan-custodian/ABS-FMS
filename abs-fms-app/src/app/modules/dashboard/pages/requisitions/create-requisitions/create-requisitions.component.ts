@@ -1,46 +1,38 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { RequisitionService } from '../../../../../services/requisition.service';
+import { Requisition, RequisitionCreateRequest } from '../../../../../models/requisition.model';
 
 @Component({
   selector: 'app-create-requisitions',
   templateUrl: './create-requisitions.component.html',
   styleUrl: './create-requisitions.component.css'
 })
-export class CreateRequisitionsComponent implements OnInit {
+export class CreateRequisitionsComponent implements OnInit, OnDestroy {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-   isProposal: boolean = false;
+  private destroy$ = new Subject<void>();
+
+  isProposal: boolean = false;
   searchResults: any[] = [];
-  displayedColumns: string[] = ['code', 'payeeName', 'amount','invoiceNumber','narrations','bankAcoount', 'payeeBank', "status", "actions",];
-  
-  dataSource = new MatTableDataSource([
-    { code: 'REQ-001', payeeName: 'Zahra Musa', amount: 50000, 'payeeBank': "GTB", "status": "Pending", "invoiceNumber": "002"},
-    { code: 'REQ-002', payeeName: 'Tari Obi', amount: 65000, 'payeeBank': "UBA", "status": "Pending",  "invoiceNumber": "002"},
-    { code: 'REQ-003', payeeName: 'Kunle Adebayo', amount: 30000, 'payeeBank': "Access Bank","status": "Pending",  "invoiceNumber": "002"},
-    { code: 'REQ-003', payeeName: 'Kunle Adebayo', amount: 30000, 'payeeBank': "Access Bank", "status": "Pending",  "invoiceNumber": "002"},
-    { code: 'REQ-001', payeeName: 'Zahra Musa', amount: 50000, 'payeeBank': "GTB", "status": "Pending", "invoiceNumber": "002"},
-    { code: 'REQ-002', payeeName: 'Tari Obi', amount: 65000, 'payeeBank': "UBA", "status": "Pending",  "invoiceNumber": "002"},
-    { code: 'REQ-003', payeeName: 'Kunle Adebayo', amount: 30000, 'payeeBank': "Access Bank","status": "Pending",  "invoiceNumber": "002"},
-    { code: 'REQ-003', payeeName: 'Kunle Adebayo', amount: 30000, 'payeeBank': "Access Bank", "status": "Pending",  "invoiceNumber": "002"},
-    { code: 'REQ-001', payeeName: 'Zahra Musa', amount: 50000, 'payeeBank': "GTB", "status": "Pending", "invoiceNumber": "002"},
-    { code: 'REQ-002', payeeName: 'Tari Obi', amount: 65000, 'payeeBank': "UBA", "status": "Pending",  "invoiceNumber": "002"},
-    { code: 'REQ-003', payeeName: 'Kunle Adebayo', amount: 30000, 'payeeBank': "Access Bank","status": "Pending",  "invoiceNumber": "002"},
-    { code: 'REQ-003', payeeName: 'Kunle Adebayo', amount: 30000, 'payeeBank': "Access Bank", "status": "Pending",  "invoiceNumber": "002"},
-    { code: 'REQ-001', payeeName: 'Zahra Musa', amount: 50000, 'payeeBank': "GTB", "status": "Pending", "invoiceNumber": "002"},
-    { code: 'REQ-002', payeeName: 'Tari Obi', amount: 65000, 'payeeBank': "UBA", "status": "Pending",  "invoiceNumber": "002"},
-    { code: 'REQ-003', payeeName: 'Kunle Adebayo', amount: 30000, 'payeeBank': "Access Bank","status": "Pending",  "invoiceNumber": "002"},
-    { code: 'REQ-003', payeeName: 'Kunle Adebayo', amount: 30000, 'payeeBank': "Access Bank", "status": "Pending",  "invoiceNumber": "002"},
-  ]);
+  displayedColumns: string[] = ['code', 'payee', 'amount', 'invoiceNo', 'narrative', 'bankAccount', 'status', 'actions'];
+
+  dataSource = new MatTableDataSource<Requisition>([]);
+  requisitions: Requisition[] = [];
 
 
 
   // Modal visibility flags
   showCreateRequisitionModal = false;
   showCreatePayeeModal = false;
+  showViewDetailsModal = false;
+  selectedRequisition: Requisition | null = null;
 
   // Form groups
   requisitionForm!: FormGroup;
@@ -142,10 +134,33 @@ export class CreateRequisitionsComponent implements OnInit {
       { name: 'Wire Transfer', value: 'WIRE_TRANSFER' }
   ];
 
-  constructor(private formBuilder: FormBuilder) {}
+  constructor(
+    private formBuilder: FormBuilder,
+    private requisitionService: RequisitionService
+  ) {}
 
   ngOnInit(): void {
     this.initializeForms();
+    this.loadRequisitions();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  loadRequisitions(): void {
+    this.requisitionService.getAllRequisitions()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (requisitions) => {
+          this.requisitions = requisitions;
+          this.dataSource.data = requisitions;
+        },
+        error: (error) => {
+          console.error('Error loading requisitions:', error);
+        }
+      });
   }
 
   ngAfterViewInit(): void {
@@ -153,25 +168,77 @@ export class CreateRequisitionsComponent implements OnInit {
     this.dataSource.sort = this.sort;
   }
 
-  authorize(element: any) {
-
-  // this.dialog.open(CreateBeneficiaryComponent,{
-  //         width:'70%',
-  //         height:'70%',
-  //         data:element   
-  //       });
-      }
-  
-
-  reject(element: any){
-
+  authorize(element: Requisition): void {
+    this.requisitionService.updateRequisitionStatus(element.id, 'Approved')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (success) => {
+          if (success) {
+            alert('Requisition approved successfully!');
+            this.loadRequisitions();
+          }
+        },
+        error: (error) => {
+          console.error('Error approving requisition:', error);
+          alert('Error approving requisition.');
+        }
+      });
   }
 
-  viewDetails(item: any) {
-    // this.router.navigate(['/App/requisition-details'], {
-    //   queryParams: { id: item.id },
-    // });
-    // this.modalService.dismissAll();
+  reject(element: Requisition): void {
+    this.requisitionService.updateRequisitionStatus(element.id, 'Rejected')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (success) => {
+          if (success) {
+            alert('Requisition rejected successfully!');
+            this.loadRequisitions();
+          }
+        },
+        error: (error) => {
+          console.error('Error rejecting requisition:', error);
+          alert('Error rejecting requisition.');
+        }
+      });
+  }
+
+  viewDetails(item: Requisition): void {
+    this.selectedRequisition = item;
+    this.showViewDetailsModal = true;
+  }
+
+  closeViewDetailsModal(): void {
+    this.showViewDetailsModal = false;
+    this.selectedRequisition = null;
+  }
+
+  deleteRequisition(element: Requisition): void {
+    if (confirm('Are you sure you want to delete this requisition?')) {
+      this.requisitionService.deleteRequisition(element.id)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (success) => {
+            if (success) {
+              alert('Requisition deleted successfully!');
+              this.loadRequisitions();
+            }
+          },
+          error: (error) => {
+            console.error('Error deleting requisition:', error);
+            alert('Error deleting requisition.');
+          }
+        });
+    }
+  }
+
+  // Search functionality
+  applyFilter(event: Event): void {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
   }
 
   initializeForms(): void {
@@ -240,18 +307,49 @@ export class CreateRequisitionsComponent implements OnInit {
   // Save methods
   saveRequisition(): void {
     if (this.requisitionForm.valid) {
-      const requisitionData = this.requisitionForm.value;
-      console.log('Saving requisition:', requisitionData);
+      const formData = this.requisitionForm.value;
 
-      // TODO: Implement actual save logic here
-      // Example: this.requisitionService.createRequisition(requisitionData)
+      // Create the requisition request object
+      const requisitionRequest: RequisitionCreateRequest = {
+        code: formData.code,
+        payee: formData.payee,
+        chequePayee: formData.chequePayee,
+        payeeBankBranch: formData.payeeBankBranch,
+        payeeAccountNo: formData.payeeAccountNo,
+        narrative: formData.narrative,
+        invoiceNo: formData.invoiceNo,
+        invoiceDate: formData.invoiceDate,
+        amount: formData.amount,
+        currency: formData.currency,
+        bankAccount: formData.bankAccount,
+        type: formData.type,
+        paymentOption: formData.paymentOption
+      };
 
-      // Close modal after successful save
-      this.closeCreateRequisitionModal();
-      // this.toastr.success('Requisition created successfully!');
+      console.log('Saving requisition:', requisitionRequest);
 
-      // Show success message
-      alert('Requisition created successfully!');
+      // Save using the service
+      this.requisitionService.createRequisition(requisitionRequest)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (newRequisition) => {
+            console.log('Requisition created successfully:', newRequisition);
+
+            // Close modal after successful save
+            this.closeCreateRequisitionModal();
+
+            // Show success message
+            alert('Requisition created successfully!');
+
+            // Refresh the table data (this will happen automatically due to the observable)
+            // but we can also manually trigger it if needed
+            this.loadRequisitions();
+          },
+          error: (error) => {
+            console.error('Error creating requisition:', error);
+            alert('Error creating requisition. Please try again.');
+          }
+        });
     } else {
       // Mark all fields as touched to show validation errors
       this.markFormGroupTouched(this.requisitionForm);

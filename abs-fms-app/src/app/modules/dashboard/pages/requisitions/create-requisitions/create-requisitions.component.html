@@ -20,57 +20,132 @@
   </div>
 
   <!-- Main Content Area -->
-  <!-- <div class="content-section"> -->
-  <div class="content-sectio">
-    <!-- <p>Select an action from the buttons above to get started.</p> -->
-    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort>
+  <div class="content-section">
+    <!-- Search Bar -->
+    <div class="search-section">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Search Requisitions</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="Search by code, payee, narrative, or invoice number">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+    </div>
 
-  <ng-container *ngFor="let column of displayedColumns" [matColumnDef]="column">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header>
-      {{ column }}
-    </th>
+    <!-- Requisitions Table -->
+    <div class="table-container">
+      <mat-table [dataSource]="dataSource" matSort class="requisitions-table mat-elevation-z8">
 
-    <td mat-cell *matCellDef="let element">
+        <!-- Code Column -->
+        <ng-container matColumnDef="code">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Code</mat-header-cell>
+          <mat-cell *matCellDef="let element">{{element.code}}</mat-cell>
+        </ng-container>
 
-      <!-- Default cell content -->
-      <ng-template #normalCell>
-        {{ element[column] }}
-      </ng-template>
+        <!-- Payee Column -->
+        <ng-container matColumnDef="payee">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Payee</mat-header-cell>
+          <mat-cell *matCellDef="let element">{{element.payee}}</mat-cell>
+        </ng-container>
 
-      <ng-container *ngIf="column === 'actions'; else normalCell">
-        <button mat-button color="primary" (click)="authorize(element)">Authorize </button>
+        <!-- Amount Column -->
+        <ng-container matColumnDef="amount">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Amount</mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            <span class="amount-cell">{{formatCurrency(element.amount, element.currency)}}</span>
+          </mat-cell>
+        </ng-container>
 
-        <button mat-button color="warn" (click)="reject(element)">Reject </button>
+        <!-- Invoice Number Column -->
+        <ng-container matColumnDef="invoiceNo">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Invoice No</mat-header-cell>
+          <mat-cell *matCellDef="let element">{{element.invoiceNo}}</mat-cell>
+        </ng-container>
 
-        <!-- 3-dot menu -->
-        <button mat-icon-button [matMenuTriggerFor]="actionMenu" aria-label="Actions"><mat-icon>more_horiz</mat-icon></button>
+        <!-- Narrative Column -->
+        <ng-container matColumnDef="narrative">
+          <mat-header-cell *matHeaderCellDef>Narrative</mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            <span class="narrative-cell" [title]="element.narrative">
+              {{element.narrative.length > 50 ? (element.narrative | slice:0:50) + '...' : element.narrative}}
+            </span>
+          </mat-cell>
+        </ng-container>
 
-          
-        <!-- Dropdown for edit/view/delete -->
-        <mat-menu #actionMenu="matMenu">
-          <button mat-menu-item (click)="viewDetails(element)">
-            <mat-icon>visibility</mat-icon>
-            <span>View details</span>
-          </button>
-          <button mat-menu-item>
-            <mat-icon>edit</mat-icon>
-            <span>Edit</span>
-          </button>
-          <button mat-menu-item>
-            <mat-icon>delete</mat-icon>
-            <span>Delete</span>
-          </button>
-        </mat-menu>
-      </ng-container>
-    </td>
-  </ng-container>
+        <!-- Bank Account Column -->
+        <ng-container matColumnDef="bankAccount">
+          <mat-header-cell *matHeaderCellDef>Bank Account</mat-header-cell>
+          <mat-cell *matCellDef="let element">{{element.bankAccount}}</mat-cell>
+        </ng-container>
 
-  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        <!-- Status Column -->
+        <ng-container matColumnDef="status">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Status</mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            <span class="status-badge" [ngClass]="'status-' + element.status.toLowerCase()">
+              {{element.status}}
+            </span>
+          </mat-cell>
+        </ng-container>
 
-</table>
-<mat-paginator [pageSize]="8" [pageSizeOptions]="[10, 25, 50, 100]"></mat-paginator>
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            <div class="action-buttons">
+              <button mat-raised-button color="primary"
+                      (click)="viewDetails(element)"
+                      matTooltip="View Details"
+                      class="action-btn">
+                <mat-icon>visibility</mat-icon>
+              </button>
 
+              <button mat-raised-button color="accent"
+                      (click)="authorize(element)"
+                      *ngIf="element.status === 'Draft' || element.status === 'Pending'"
+                      matTooltip="Approve"
+                      class="action-btn">
+                <mat-icon>check_circle</mat-icon>
+              </button>
+
+              <button mat-raised-button color="warn"
+                      (click)="reject(element)"
+                      *ngIf="element.status === 'Draft' || element.status === 'Pending'"
+                      matTooltip="Reject"
+                      class="action-btn">
+                <mat-icon>cancel</mat-icon>
+              </button>
+
+              <button mat-raised-button color="warn"
+                      (click)="deleteRequisition(element)"
+                      *ngIf="element.status === 'Draft'"
+                      matTooltip="Delete"
+                      class="action-btn">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+
+        <!-- No Data Row -->
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+            <div class="no-data-message">
+              <mat-icon>inbox</mat-icon>
+              <p>No requisitions found</p>
+              <p class="no-data-subtitle">Create your first requisition using the button above</p>
+            </div>
+          </td>
+        </tr>
+      </mat-table>
+
+      <!-- Paginator -->
+      <mat-paginator [pageSizeOptions]="[5, 10, 20, 50]"
+                     [pageSize]="10"
+                     showFirstLastButtons>
+      </mat-paginator>
+    </div>
   </div>
 </div>
 
@@ -331,6 +406,113 @@
     <div class="modal-footer">
       <button mat-button (click)="closeCreatePayeeModal()">Cancel</button>
       <button mat-raised-button color="primary" (click)="savePayee()">Save Payee</button>
+    </div>
+  </div>
+</div>
+
+<!-- View Details Modal -->
+<div class="modal-overlay" *ngIf="showViewDetailsModal" (click)="closeViewDetailsModal()">
+  <div class="modal-content view-details-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Requisition Details</h3>
+      <button mat-icon-button (click)="closeViewDetailsModal()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <div class="modal-body" *ngIf="selectedRequisition">
+      <div class="details-grid">
+        <div class="detail-item">
+          <label>Code:</label>
+          <span class="detail-value">{{selectedRequisition.code}}</span>
+        </div>
+
+        <div class="detail-item">
+          <label>Status:</label>
+          <span class="status-badge" [ngClass]="'status-' + selectedRequisition.status.toLowerCase()">
+            {{selectedRequisition.status}}
+          </span>
+        </div>
+
+        <div class="detail-item">
+          <label>Payee:</label>
+          <span class="detail-value">{{selectedRequisition.payee}}</span>
+        </div>
+
+        <div class="detail-item">
+          <label>Cheque Payee:</label>
+          <span class="detail-value">{{selectedRequisition.chequePayee}}</span>
+        </div>
+
+        <div class="detail-item">
+          <label>Bank Branch:</label>
+          <span class="detail-value">{{selectedRequisition.payeeBankBranch}}</span>
+        </div>
+
+        <div class="detail-item">
+          <label>Account Number:</label>
+          <span class="detail-value">{{selectedRequisition.payeeAccountNo}}</span>
+        </div>
+
+        <div class="detail-item">
+          <label>Amount:</label>
+          <span class="detail-value amount-highlight">{{formatCurrency(selectedRequisition.amount, selectedRequisition.currency)}}</span>
+        </div>
+
+        <div class="detail-item">
+          <label>Currency:</label>
+          <span class="detail-value">{{selectedRequisition.currency}}</span>
+        </div>
+
+        <div class="detail-item">
+          <label>Invoice Number:</label>
+          <span class="detail-value">{{selectedRequisition.invoiceNo}}</span>
+        </div>
+
+        <div class="detail-item">
+          <label>Invoice Date:</label>
+          <span class="detail-value">{{selectedRequisition.invoiceDate | date:'mediumDate'}}</span>
+        </div>
+
+        <div class="detail-item">
+          <label>Bank Account:</label>
+          <span class="detail-value">{{selectedRequisition.bankAccount}}</span>
+        </div>
+
+        <div class="detail-item">
+          <label>Payment Option:</label>
+          <span class="detail-value">{{selectedRequisition.paymentOption}}</span>
+        </div>
+
+        <div class="detail-item full-width">
+          <label>Narrative:</label>
+          <span class="detail-value">{{selectedRequisition.narrative}}</span>
+        </div>
+
+        <div class="detail-item">
+          <label>Created Date:</label>
+          <span class="detail-value">{{selectedRequisition.createdDate | date:'medium'}}</span>
+        </div>
+
+        <div class="detail-item">
+          <label>Created By:</label>
+          <span class="detail-value">{{selectedRequisition.createdBy}}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button mat-button (click)="closeViewDetailsModal()">Close</button>
+      <button mat-raised-button color="primary"
+              *ngIf="selectedRequisition?.status === 'Draft' || selectedRequisition?.status === 'Pending'"
+              (click)="authorize(selectedRequisition!); closeViewDetailsModal()">
+        Approve
+      </button>
+      <button mat-raised-button color="warn"
+              *ngIf="selectedRequisition?.status === 'Draft' || selectedRequisition?.status === 'Pending'"
+              (click)="reject(selectedRequisition!); closeViewDetailsModal()">
+        Reject
+      </button>
     </div>
   </div>
 </div>
