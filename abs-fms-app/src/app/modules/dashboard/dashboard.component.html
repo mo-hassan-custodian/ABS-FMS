@@ -1,14 +1,139 @@
-<!-- Dashboard Content - Now displayed within Layout Component -->
-<div style="padding: 20px; background-color: #f5f5f5; min-height: 100%;">
-    <!-- Header -->
-    <div style="background: white; padding: 15px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-      <h1 style="margin: 0; color: #333;">Welcome to ABS-FMS Dashboard</h1>
-      <p style="margin: 5px 0 0 0; color: #666;">Financial Management System</p>
+<!-- Enhanced Insurance Dashboard -->
+<div class="dashboard-container">
+  <!-- Welcome Header -->
+  <div class="welcome-header">
+    <div class="welcome-content">
+      <h1>Welcome to ABS Financial Management System</h1>
+      <p>Your comprehensive insurance and financial management platform</p>
+      <div class="quick-stats">
+        <div class="stat-item">
+          <mat-icon>today</mat-icon>
+          <span>{{ getCurrentDate() }}</span>
+        </div>
+        <div class="stat-item">
+          <mat-icon>access_time</mat-icon>
+          <span>Last Login: {{ getLastLoginTime() }}</span>
+        </div>
+      </div>
     </div>
+    <div class="welcome-actions">
+      <button mat-raised-button color="primary" class="action-btn">
+        <mat-icon>add</mat-icon>
+        Quick Entry
+      </button>
+      <button mat-raised-button color="accent" class="action-btn">
+        <mat-icon>assessment</mat-icon>
+        Reports
+      </button>
+    </div>
+  </div>
 
-    <!-- Dashboard Content -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
-      <mat-card style="padding: 20px;">
+  <!-- Key Performance Indicators -->
+  <div class="kpi-section">
+    <h2 class="section-title">
+      <mat-icon>dashboard</mat-icon>
+      Key Performance Indicators
+    </h2>
+    <div class="kpi-grid">
+      <mat-card class="kpi-card revenue">
+        <mat-card-content>
+          <div class="kpi-header">
+            <mat-icon>attach_money</mat-icon>
+            <span class="kpi-trend up">+12.5%</span>
+          </div>
+          <h3>Total Revenue</h3>
+          <p class="kpi-value">₦2,450,000</p>
+          <p class="kpi-subtitle">This Month</p>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="kpi-card policies">
+        <mat-card-content>
+          <div class="kpi-header">
+            <mat-icon>description</mat-icon>
+            <span class="kpi-trend up">+8.3%</span>
+          </div>
+          <h3>Active Policies</h3>
+          <p class="kpi-value">1,247</p>
+          <p class="kpi-subtitle">Currently Active</p>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="kpi-card claims">
+        <mat-card-content>
+          <div class="kpi-header">
+            <mat-icon>report_problem</mat-icon>
+            <span class="kpi-trend down">-5.2%</span>
+          </div>
+          <h3>Pending Claims</h3>
+          <p class="kpi-value">23</p>
+          <p class="kpi-subtitle">Awaiting Review</p>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="kpi-card customers">
+        <mat-card-content>
+          <div class="kpi-header">
+            <mat-icon>people</mat-icon>
+            <span class="kpi-trend up">+15.7%</span>
+          </div>
+          <h3>Total Customers</h3>
+          <p class="kpi-value">892</p>
+          <p class="kpi-subtitle">Registered Clients</p>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="quick-actions-section">
+    <h2 class="section-title">
+      <mat-icon>flash_on</mat-icon>
+      Quick Actions
+    </h2>
+    <div class="quick-actions-grid">
+      <mat-card class="quick-action-card" (click)="navigateToModule('new-policy')">
+        <mat-card-content>
+          <mat-icon color="primary">add_circle</mat-icon>
+          <h3>New Policy</h3>
+          <p>Create a new insurance policy</p>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="quick-action-card" (click)="navigateToModule('process-claim')">
+        <mat-card-content>
+          <mat-icon color="warn">assignment</mat-icon>
+          <h3>Process Claim</h3>
+          <p>Handle insurance claims</p>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="quick-action-card" (click)="navigateToModule('customer-search')">
+        <mat-card-content>
+          <mat-icon color="accent">search</mat-icon>
+          <h3>Customer Lookup</h3>
+          <p>Search customer records</p>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="quick-action-card" (click)="navigateToModule('payment-entry')">
+        <mat-card-content>
+          <mat-icon color="primary">payment</mat-icon>
+          <h3>Payment Entry</h3>
+          <p>Record premium payments</p>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+  <!-- Financial Management Modules -->
+  <div class="modules-section">
+    <h2 class="section-title">
+      <mat-icon>account_balance</mat-icon>
+      Financial Management Modules
+    </h2>
+    <div class="modules-grid">
+      <mat-card class="module-card primary">
         <mat-card-header>
           <mat-card-title>
             <mat-icon color="primary">account_balance</mat-icon>
@@ -17,11 +142,21 @@
         </mat-card-header>
         <mat-card-content>
           <p>Manage chart of accounts, journal entries, and financial statements</p>
-          <button mat-raised-button color="primary">Access Module</button>
+          <div class="module-stats">
+            <div class="stat">
+              <span class="stat-label">Accounts:</span>
+              <span class="stat-value">156</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Entries:</span>
+              <span class="stat-value">2,341</span>
+            </div>
+          </div>
+          <button mat-raised-button color="primary" class="module-btn">Access Module</button>
         </mat-card-content>
       </mat-card>
 
-      <mat-card style="padding: 20px;">
+      <mat-card class="module-card accent">
         <mat-card-header>
           <mat-card-title>
             <mat-icon color="accent">money</mat-icon>
@@ -30,50 +165,44 @@
         </mat-card-header>
         <mat-card-content>
           <p>Handle payments, receipts, reconciliations, and cash management</p>
-          <button mat-raised-button color="accent">Access Module</button>
+          <div class="module-stats">
+            <div class="stat">
+              <span class="stat-label">Payments:</span>
+              <span class="stat-value">89</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Receipts:</span>
+              <span class="stat-value">156</span>
+            </div>
+          </div>
+          <button mat-raised-button color="accent" class="module-btn">Access Module</button>
         </mat-card-content>
       </mat-card>
 
-      <mat-card style="padding: 20px;">
+      <mat-card class="module-card success">
         <mat-card-header>
           <mat-card-title>
-            <mat-icon color="primary">trending_up</mat-icon>
+            <mat-icon style="color: #4caf50;">trending_up</mat-icon>
             Debtors
           </mat-card-title>
         </mat-card-header>
         <mat-card-content>
           <p>Manage customer accounts, invoicing, and collections</p>
-          <button mat-raised-button color="primary">Access Module</button>
+          <div class="module-stats">
+            <div class="stat">
+              <span class="stat-label">Outstanding:</span>
+              <span class="stat-value">₦1.2M</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Overdue:</span>
+              <span class="stat-value">₦245K</span>
+            </div>
+          </div>
+          <button mat-raised-button style="background-color: #4caf50; color: white;" class="module-btn">Access Module</button>
         </mat-card-content>
       </mat-card>
 
-      <mat-card style="padding: 20px;">
-        <mat-card-header>
-          <mat-card-title>
-            <mat-icon color="primary">trending_up</mat-icon>
-            Debtors
-          </mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <p>Manage customer accounts, invoicing, and collections</p>
-          <button mat-raised-button color="primary">Access Module</button>
-        </mat-card-content>
-      </mat-card>
-
-      <mat-card style="padding: 20px;">
-        <mat-card-header>
-          <mat-card-title>
-            <mat-icon color="primary">trending_up</mat-icon>
-            Debtors
-          </mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <p>Manage customer accounts, invoicing, and collections</p>
-          <button mat-raised-button color="primary">Access Module</button>
-        </mat-card-content>
-      </mat-card>
-
-      <mat-card style="padding: 20px;">
+      <!-- <mat-card class="module-card warn">
         <mat-card-header>
           <mat-card-title>
             <mat-icon color="warn">trending_down</mat-icon>
@@ -82,8 +211,85 @@
         </mat-card-header>
         <mat-card-content>
           <p>Handle supplier accounts, purchase orders, and payments</p>
-          <button mat-raised-button color="warn">Access Module</button>
+          <div class="module-stats">
+            <div class="stat">
+              <span class="stat-label">Payables:</span>
+              <span class="stat-value">₦890K</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Orders:</span>
+              <span class="stat-value">34</span>
+            </div>
+          </div>
+          <button mat-raised-button color="warn" class="module-btn">Access Module</button>
+        </mat-card-content>
+      </mat-card> -->
+    </div>
+  </div>
+
+  <!-- Recent Activities -->
+  <div class="activities-section">
+    <h2 class="section-title">
+      <mat-icon>history</mat-icon>
+      Recent Activities
+    </h2>
+    <mat-card class="activities-card">
+      <mat-card-content>
+        <div class="activity-list">
+          <div class="activity-item" *ngFor="let activity of recentActivities">
+            <div class="activity-icon">
+              <mat-icon [style.color]="activity.color">{{ activity.icon }}</mat-icon>
+            </div>
+            <div class="activity-content">
+              <h4>{{ activity.title }}</h4>
+              <p>{{ activity.description }}</p>
+              <span class="activity-time">{{ activity.time }}</span>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- System Status -->
+  <div class="status-section">
+    <h2 class="section-title">
+      <mat-icon>settings</mat-icon>
+      System Status
+    </h2>
+    <div class="status-grid">
+      <mat-card class="status-card">
+        <mat-card-content>
+          <div class="status-header">
+            <mat-icon style="color: #4caf50;">check_circle</mat-icon>
+            <h3>System Health</h3>
+          </div>
+          <p class="status-value">All Systems Operational</p>
+          <div class="status-indicator green"></div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="status-card">
+        <mat-card-content>
+          <div class="status-header">
+            <mat-icon style="color: #2196f3;">backup</mat-icon>
+            <h3>Last Backup</h3>
+          </div>
+          <p class="status-value">{{ getLastBackupTime() }}</p>
+          <div class="status-indicator blue"></div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="status-card">
+        <mat-card-content>
+          <div class="status-header">
+            <mat-icon style="color: #ff9800;">security</mat-icon>
+            <h3>Security Status</h3>
+          </div>
+          <p class="status-value">Secure & Protected</p>
+          <div class="status-indicator orange"></div>
         </mat-card-content>
       </mat-card>
     </div>
+  </div>
 </div>
