@@ -21,18 +21,29 @@ th.mat-header-cell:last-child {
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
-.header-section h2 {
-  margin: 0;
+.title-section h2 {
+  margin: 0 0 8px 0;
   color: #333;
-  font-weight: 500;
+  font-size: 28px;
+  font-weight: 600;
 }
+
+.title-section p {
+  margin: 0;
+  color: #666;
+  font-size: 16px;
+}
+
 
 .action-buttons {
   display: flex;
   gap: 15px;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .action-buttons button {
@@ -71,8 +82,9 @@ th.mat-header-cell:last-child {
 }
 
 .search-field {
-  width: 400px;
-  max-width: 100%;
+  width: 33.333%;
+  max-width: 400px;
+  min-width: 250px;
 }
 
 /* Table Container */
@@ -150,15 +162,16 @@ th.mat-header-cell:last-child {
 }
 
 /* Table Action Buttons */
-.action-buttons {
+.table-action-buttons {
   display: flex;
-  gap: 8px;
+  gap: 4px;
   align-items: center;
   justify-content: flex-start;
   flex-wrap: nowrap;
-  min-width: 180px;
+  min-width: 150px;
 }
 
+.table-action-buttons .action-btn,
 .action-buttons .action-btn {
   width: 30px;
   height: 28px;
@@ -174,11 +187,13 @@ th.mat-header-cell:last-child {
   flex-shrink: 0;
 }
 
+.table-action-buttons .action-btn:hover,
 .action-buttons .action-btn:hover {
   transform: translateY(-1px);
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
 }
 
+.table-action-buttons .action-btn mat-icon,
 .action-buttons .action-btn mat-icon {
   font-size: 16px;
   width: 16px;
@@ -187,32 +202,38 @@ th.mat-header-cell:last-child {
 }
 
 /* Specific button colors for table actions */
+.table-action-buttons .action-btn[color="primary"],
 .action-buttons .action-btn[color="primary"] {
   background-color: #1976d2;
   color: white;
   border: none;
 }
 
+.table-action-buttons .action-btn[color="primary"]:hover,
 .action-buttons .action-btn[color="primary"]:hover {
   background-color: #1565c0;
 }
 
+.table-action-buttons .action-btn[color="accent"],
 .action-buttons .action-btn[color="accent"] {
   background-color: #388e3c;
   color: white;
   border: none;
 }
 
+.table-action-buttons .action-btn[color="accent"]:hover,
 .action-buttons .action-btn[color="accent"]:hover {
   background-color: #2e7d32;
 }
 
+.table-action-buttons .action-btn[color="warn"],
 .action-buttons .action-btn[color="warn"] {
   background-color: #d32f2f;
   color: white;
   border: none;
 }
 
+.table-action-buttons .action-btn[color="warn"]:hover,
 .action-buttons .action-btn[color="warn"]:hover {
   background-color: #c62828;
 }
@@ -288,8 +309,54 @@ th.mat-header-cell:last-child {
   color: #2e7d32;
 }
 
+/* Edit Form Styles */
+.edit-form {
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: 16px 24px;
+}
+
+.edit-form .form-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.edit-form .form-row:last-child {
+  margin-bottom: 0;
+}
+
+.edit-form .full-width {
+  width: 100%;
+}
+
+.edit-form .half-width {
+  width: calc(50% - 8px);
+}
+
+/* Modal Footer Button Styling */
+.modal-footer button {
+  margin-left: 8px;
+}
+
+.modal-footer button:first-child {
+  margin-left: 0;
+}
+
+.modal-footer button mat-icon {
+  margin-right: 8px;
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
 /* Responsive adjustments for view details */
 @media (max-width: 768px) {
+  .search-field {
+    width: 100%;
+    min-width: unset;
+  }
+
   .details-grid {
     grid-template-columns: 1fr;
     gap: 16px;
@@ -298,6 +365,24 @@ th.mat-header-cell:last-child {
   .view-details-modal {
     width: 98%;
     margin: 10px;
+  }
+
+  .edit-form .form-row {
+    flex-direction: column;
+  }
+
+  .edit-form .half-width {
+    width: 100%;
+  }
+
+  .modal-footer {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .modal-footer button {
+    margin-left: 0;
+    width: 100%;
   }
 }
 
@@ -380,57 +465,346 @@ th.mat-header-cell:last-child {
   margin-left: 0;
 }
 
-/* Responsive Design */
+/* Enhanced Mobile Responsive Design */
 @media (max-width: 768px) {
+  .create-requisitions-container {
+    padding: 12px;
+  }
+
   .header-section {
     flex-direction: column;
     gap: 20px;
     text-align: center;
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+
+  .title-section h2 {
+    font-size: 24px;
+  }
+
+  .title-section p {
+    font-size: 14px;
   }
 
   .action-buttons {
-    flex-direction: column;
+    flex-direction: row;
+    justify-content: center;
     width: 100%;
+    gap: 10px;
   }
 
   .action-buttons button {
-    width: 100%;
+    min-width: 140px;
+    height: 40px;
+    font-size: 13px;
+  }
+
+  .content-section {
+    padding: 16px;
+  }
+
+  .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .requisitions-table {
+    min-width: 800px;
+  }
+
+  .table-action-buttons {
+    min-width: 120px;
+    gap: 2px;
+  }
+
+  .table-action-buttons .action-btn {
+    width: 28px;
+    height: 26px;
+    min-width: 28px;
+  }
+
+  .table-action-buttons .action-btn mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
   }
 
   .modal-content {
     width: 95%;
     margin: 10px;
-  }
-
-  .form-row {
-    flex-direction: column;
-  }
-
-  .half-width {
-    width: 100%;
-  }
-}
-
-@media (max-width: 480px) {
-  .create-requisitions-container {
-    padding: 10px;
-  }
-
-  .header-section {
-    padding: 15px;
-  }
-
-  .modal-body {
-    padding: 16px;
+    max-height: 95vh;
   }
 
   .modal-header {
     padding: 16px;
   }
 
+  .modal-body {
+    padding: 16px;
+  }
+
   .modal-footer {
     padding: 12px 16px;
+    flex-direction: column;
+    gap: 8px;
   }
+
+  .modal-footer button {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .half-width {
+    width: 100%;
+  }
+
+  /* Table cell adjustments for mobile */
+  .requisitions-table .mat-mdc-cell,
+  .requisitions-table .mat-mdc-header-cell {
+    padding: 8px 4px;
+    font-size: 0.9rem;
+  }
+
+  .narrative-cell {
+    max-width: 150px;
+  }
+
+  .status-badge {
+    font-size: 0.7rem;
+    padding: 2px 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .create-requisitions-container {
+    padding: 8px;
+  }
+
+  .header-section {
+    padding: 12px;
+    margin-bottom: 16px;
+  }
+
+  .title-section h2 {
+    font-size: 20px;
+  }
+
+  .title-section p {
+    font-size: 13px;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .action-buttons button {
+    width: 100%;
+    min-width: unset;
+    height: 36px;
+    font-size: 12px;
+  }
+
+  .content-section {
+    padding: 12px;
+  }
+
+  .search-field {
+    width: 100%;
+  }
+
+  .modal-content {
+    width: 98%;
+    margin: 5px;
+  }
+
+  .modal-header {
+    padding: 12px;
+  }
+
+  .modal-header h3 {
+    font-size: 18px;
+  }
+
+  .modal-body {
+    padding: 12px;
+  }
+
+  .modal-footer {
+    padding: 10px 12px;
+  }
+
+  .table-action-buttons .action-btn {
+    width: 26px;
+    height: 24px;
+    min-width: 26px;
+  }
+
+  .table-action-buttons .action-btn mat-icon {
+    font-size: 12px;
+    width: 12px;
+    height: 12px;
+  }
+
+  /* Stack table columns on very small screens */
+  .requisitions-table {
+    min-width: 600px;
+  }
+
+  .requisitions-table .mat-mdc-cell,
+  .requisitions-table .mat-mdc-header-cell {
+    padding: 6px 2px;
+    font-size: 0.8rem;
+  }
+}
+
+/* Payee Autocomplete Styles */
+.payee-option {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 0;
+}
+
+.payee-name {
+  font-weight: 500;
+  color: #333;
+  font-size: 14px;
+}
+
+.payee-details {
+  font-size: 12px;
+  color: #666;
+  margin-top: 2px;
+}
+
+.create-payee-option {
+  border-top: 1px solid #e0e0e0;
+  background-color: #f8f9fa;
+}
+
+.create-payee-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #1976d2;
+  font-weight: 500;
+  padding: 4px 0;
+}
+
+.create-payee-button mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.create-payee-option:hover {
+  background-color: #e3f2fd;
+}
+
+/* Autocomplete panel styling */
+.mat-mdc-autocomplete-panel {
+  max-height: 300px;
+}
+
+.mat-mdc-option {
+  line-height: normal;
+  height: auto;
+  min-height: 48px;
+  padding: 8px 16px;
+}
+
+.mat-mdc-option:hover {
+  background-color: #f5f5f5;
+}
+
+/* Auto-populated field styles */
+.auto-populated {
+  position: relative;
+}
+
+.auto-populated .mat-mdc-form-field-flex {
+  background-color: #f8f9fa;
+  border-left: 3px solid #4caf50;
+}
+
+.auto-populated .mat-mdc-form-field-outline-start,
+.auto-populated .mat-mdc-form-field-outline-end {
+  border-color: #4caf50 !important;
+}
+
+.auto-populated .mat-mdc-form-field-outline-thick .mat-mdc-form-field-outline-start,
+.auto-populated .mat-mdc-form-field-outline-thick .mat-mdc-form-field-outline-end {
+  border-color: #4caf50 !important;
+  border-width: 2px !important;
+}
+
+.auto-populated input,
+.auto-populated .mat-mdc-select {
+  color: #2e7d32;
+  font-weight: 500;
+}
+
+.auto-populated .mat-mdc-form-field-label {
+  color: #4caf50 !important;
+}
+
+.auto-populated-hint {
+  color: #4caf50 !important;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.auto-populated-hint mat-icon {
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
+}
+
+/* Disabled field styling for auto-populated fields */
+.auto-populated input:disabled,
+.auto-populated .mat-mdc-select-disabled {
+  color: #2e7d32 !important;
+  -webkit-text-fill-color: #2e7d32 !important;
+  background-color: transparent;
+}
+
+.auto-populated .mat-mdc-select-arrow {
+  color: #4caf50;
+}
+
+/* Clear button for payee field */
+.payee-clear-button {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.payee-clear-button:hover {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.payee-clear-button mat-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
 }
 
 /* Button Hover Effects */

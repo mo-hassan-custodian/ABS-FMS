@@ -3,10 +3,13 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Subject, Observable } from 'rxjs';
+import { takeUntil, startWith, map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { ToastrService } from 'ngx-toastr';
 import { RequisitionService } from '../../../../../services/requisition.service';
+import { PayeeService } from '../../../../../services/payee.service';
 import { Requisition, RequisitionCreateRequest } from '../../../../../models/requisition.model';
+import { Payee, PayeeCreateRequest } from '../../../../../models/payee.model';
 
 @Component({
   selector: 'app-create-requisitions',
@@ -33,6 +36,13 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
   showCreatePayeeModal = false;
   showViewDetailsModal = false;
   selectedRequisition: Requisition | null = null;
+  isEditMode = false;
+  editForm!: FormGroup;
+
+  // Payee autocomplete
+  payees: Payee[] = [];
+  filteredPayees: Observable<Payee[]> = new Observable();
+  selectedPayee: Payee | null = null;
 
   // Form groups
   requisitionForm!: FormGroup;
@@ -115,6 +125,14 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
       { name: 'Regulatory Body', value: 'REGULATORY_BODY' }
   ];
 
+  createdFromOptions = [
+    { name: 'Manual Entry', value: 'MANUAL' },
+    { name: 'System Import', value: 'IMPORT' },
+    { name: 'System Generated', value: 'SYSTEM' },
+    { name: 'External API', value: 'API' },
+    { name: 'Bulk Upload', value: 'BULK' }
+  ];
+
   paymentOptions = [
     // { id: 1, name: 'Cheque' },
     // { id: 2, name: 'Bank Transfer' },
@@ -136,12 +154,17 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
 
   constructor(
     private formBuilder: FormBuilder,
-    private requisitionService: RequisitionService
+    private requisitionService: RequisitionService,
+    private payeeService: PayeeService,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit(): void {
     this.initializeForms();
     this.loadRequisitions();
+    this.loadPayees();
+    this.setupPayeeAutocomplete();
+    this.subscribeToPayeeCreation();
   }
 
   ngOnDestroy(): void {
@@ -168,19 +191,73 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
     this.dataSource.sort = this.sort;
   }
 
+  loadPayees(): void {
+    // Subscribe to the payees observable for real-time updates
+    this.payeeService.payees$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (payees) => {
+          this.payees = payees;
+        },
+        error: (error) => {
+          console.error('Error loading payees:', error);
+        }
+      });
+  }
+
+  setupPayeeAutocomplete(): void {
+    this.filteredPayees = this.requisitionForm.get('payee')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      distinctUntilChanged(),
+      map(value => {
+        const filterValue = typeof value === 'string' ? value : value?.name || '';
+
+        // If user is typing manually (string input), clear auto-populated information
+        if (typeof value === 'string' && this.selectedPayee && value !== this.selectedPayee.name) {
+          this.clearPayeeInformation();
+        }
+
+        return this._filterPayees(filterValue);
+      })
+    );
+  }
+
+  private _filterPayees(value: string): Payee[] {
+    const filterValue = value.toLowerCase();
+    return this.payees.filter(payee =>
+      payee.name.toLowerCase().includes(filterValue) ||
+      payee.pinNo.toLowerCase().includes(filterValue) ||
+      payee.bankName.toLowerCase().includes(filterValue)
+    );
+  }
+
+  subscribeToPayeeCreation(): void {
+    this.payeeService.payeeCreated$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (newPayee) => {
+          // The payees array is automatically updated through the service observable
+          // Just select and auto-populate the newly created payee
+          this.selectedPayee = newPayee;
+          this.populatePayeeInformation(newPayee);
+        }
+      });
+  }
+
   authorize(element: Requisition): void {
     this.requisitionService.updateRequisitionStatus(element.id, 'Approved')
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (success) => {
           if (success) {
-            alert('Requisition approved successfully!');
+            this.toastr.success('Requisition approved successfully!', 'Success');
             this.loadRequisitions();
           }
         },
         error: (error) => {
           console.error('Error approving requisition:', error);
-          alert('Error approving requisition.');
+          this.toastr.error('Error approving requisition.', 'Error');
         }
       });
   }
@@ -191,25 +268,96 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (success) => {
           if (success) {
-            alert('Requisition rejected successfully!');
+            this.toastr.warning('Requisition rejected successfully!', 'Rejected');
             this.loadRequisitions();
           }
         },
         error: (error) => {
           console.error('Error rejecting requisition:', error);
-          alert('Error rejecting requisition.');
+          this.toastr.error('Error rejecting requisition.', 'Error');
         }
       });
   }
 
   viewDetails(item: Requisition): void {
     this.selectedRequisition = item;
+    this.isEditMode = false;
     this.showViewDetailsModal = true;
   }
 
   closeViewDetailsModal(): void {
     this.showViewDetailsModal = false;
     this.selectedRequisition = null;
+    this.isEditMode = false;
+    this.editForm.reset();
+  }
+
+  enableEditMode(): void {
+    if (this.selectedRequisition) {
+      this.isEditMode = true;
+      // Populate edit form with current requisition data
+      this.editForm.patchValue({
+        payee: this.selectedRequisition.payee,
+        code: this.selectedRequisition.code,
+        chequePayee: this.selectedRequisition.chequePayee,
+        payeeBankBranch: this.selectedRequisition.payeeBankBranch,
+        payeeAccountNo: this.selectedRequisition.payeeAccountNo,
+        narrative: this.selectedRequisition.narrative,
+        invoiceNo: this.selectedRequisition.invoiceNo,
+        invoiceDate: this.selectedRequisition.invoiceDate,
+        amount: this.selectedRequisition.amount,
+        currency: this.selectedRequisition.currency,
+        bankAccount: this.selectedRequisition.bankAccount,
+        type: this.selectedRequisition.type,
+        paymentOption: this.selectedRequisition.paymentOption
+      });
+    }
+  }
+
+  cancelEdit(): void {
+    this.isEditMode = false;
+    this.editForm.reset();
+  }
+
+  updateRequisition(): void {
+    if (this.editForm.valid && this.selectedRequisition) {
+      const formData = this.editForm.value;
+
+      const updates: Partial<Requisition> = {
+        payee: formData.payee,
+        code: formData.code,
+        chequePayee: formData.chequePayee,
+        payeeBankBranch: formData.payeeBankBranch,
+        payeeAccountNo: formData.payeeAccountNo,
+        narrative: formData.narrative,
+        invoiceNo: formData.invoiceNo,
+        invoiceDate: formData.invoiceDate,
+        amount: formData.amount,
+        currency: formData.currency,
+        bankAccount: formData.bankAccount,
+        type: formData.type,
+        paymentOption: formData.paymentOption
+      };
+
+      this.requisitionService.updateRequisition(this.selectedRequisition.id, updates)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (updatedRequisition) => {
+            if (updatedRequisition) {
+              this.toastr.success('Requisition updated successfully!', 'Updated');
+              this.closeViewDetailsModal();
+              this.loadRequisitions(); // Refresh the table
+            }
+          },
+          error: (error) => {
+            console.error('Error updating requisition:', error);
+            this.toastr.error('Error updating requisition. Please try again.', 'Error');
+          }
+        });
+    } else {
+      this.markFormGroupTouched(this.editForm);
+      this.toastr.warning('Please fill in all required fields.', 'Validation Error');
+    }
   }
 
   deleteRequisition(element: Requisition): void {
@@ -219,13 +367,13 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
         .subscribe({
           next: (success) => {
             if (success) {
-              alert('Requisition deleted successfully!');
+              this.toastr.success('Requisition deleted successfully!', 'Deleted');
               this.loadRequisitions();
             }
           },
           error: (error) => {
             console.error('Error deleting requisition:', error);
-            alert('Error deleting requisition.');
+            this.toastr.error('Error deleting requisition.', 'Error');
           }
         });
     }
@@ -259,22 +407,40 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
       paymentOption: ['', Validators.required]
     });
 
+    // Initialize edit form (same structure as requisition form)
+    this.editForm = this.formBuilder.group({
+      payee: ['', Validators.required],
+      code: ['', [Validators.required, Validators.minLength(3)]],
+      chequePayee: ['', Validators.required],
+      payeeBankBranch: ['', Validators.required],
+      payeeAccountNo: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
+      narrative: ['', [Validators.required, Validators.maxLength(500)]],
+      invoiceNo: ['', Validators.required],
+      invoiceDate: [null, Validators.required],
+      amount: ['', [Validators.required, Validators.min(0.01)]],
+      currency: ['NGN', Validators.required],
+      bankAccount: ['', Validators.required],
+      type: ['', Validators.required],
+      paymentOption: ['', Validators.required]
+    });
+
     // Initialize payee form
     this.payeeForm = this.formBuilder.group({
-      payeeName: ['', Validators.required],
-      payeeCode: ['', Validators.required],
+      name: ['', Validators.required],
+      createdFrom: ['', Validators.required],
+      shortDescription: [''],
+      pinNo: ['', Validators.required],
       bankName: ['', Validators.required],
       bankBranch: ['', Validators.required],
       accountNumber: ['', Validators.required],
-      contactInfo: [''],
-      payeeType: ['', Validators.required]
+      physicalAddress: ['', Validators.required],
+      postalAddress: ['', Validators.required]
     });
   }
 
   // Modal control methods
   openSearchModal(): void {
     // TODO: Implement search functionality
-    console.log('Search modal opened');
   }
 
   // TrackBy function for better performance in ngFor
@@ -306,8 +472,10 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
 
   // Save methods
   saveRequisition(): void {
-    if (this.requisitionForm.valid) {
-      const formData = this.requisitionForm.value;
+    // Get form data including disabled fields
+    const formData = this.getFormDataIncludingDisabled();
+
+    if (this.isFormValidIncludingDisabled()) {
 
       // Create the requisition request object
       const requisitionRequest: RequisitionCreateRequest = {
@@ -326,20 +494,18 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
         paymentOption: formData.paymentOption
       };
 
-      console.log('Saving requisition:', requisitionRequest);
 
       // Save using the service
       this.requisitionService.createRequisition(requisitionRequest)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: (newRequisition) => {
-            console.log('Requisition created successfully:', newRequisition);
 
             // Close modal after successful save
             this.closeCreateRequisitionModal();
 
             // Show success message
-            alert('Requisition created successfully!');
+            this.toastr.success('Requisition created successfully!', 'Success');
 
             // Refresh the table data (this will happen automatically due to the observable)
             // but we can also manually trigger it if needed
@@ -347,33 +513,161 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
           },
           error: (error) => {
             console.error('Error creating requisition:', error);
-            alert('Error creating requisition. Please try again.');
+            this.toastr.error('Error creating requisition. Please try again.', 'Error');
           }
         });
     } else {
       // Mark all fields as touched to show validation errors
       this.markFormGroupTouched(this.requisitionForm);
-      alert('Please fill in all required fields.');
+      this.toastr.warning('Please fill in all required fields.', 'Validation Error');
     }
   }
 
   savePayee(): void {
     if (this.payeeForm.valid) {
-      const payeeData = this.payeeForm.value;
-      console.log('Saving payee:', payeeData);
+      const payeeData: PayeeCreateRequest = this.payeeForm.value;
 
-      // TODO: Implement actual save logic here
-      // Example: this.payeeService.createPayee(payeeData)
+      // Auto-fill short description if not provided
+      if (!payeeData.shortDescription || payeeData.shortDescription.trim() === '') {
+        payeeData.shortDescription = payeeData.name;
+      }
 
-      // Close modal after successful save
-      this.closeCreatePayeeModal();
-
-      // Show success message
-      alert('Payee created successfully!');
+      this.payeeService.createPayee(payeeData)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (newPayee) => {
+            this.closeCreatePayeeModal();
+            this.toastr.success('Payee created and selected successfully!', 'Success');
+          },
+          error: (error) => {
+            console.error('Error creating payee:', error);
+            this.toastr.error('Error creating payee. Please try again.', 'Error');
+          }
+        });
     } else {
       // Mark all fields as touched to show validation errors
       this.markFormGroupTouched(this.payeeForm);
-      alert('Please fill in all required fields.');
+      this.toastr.warning('Please fill in all required fields.', 'Validation Error');
+    }
+  }
+
+  onPayeeSelected(payee: Payee | string): void {
+    if (payee === 'CREATE_NEW') {
+      this.openCreatePayeeFromRequisition();
+      return;
+    }
+
+    const selectedPayee = payee as Payee;
+    this.selectedPayee = selectedPayee;
+
+    // Auto-populate payee information
+    this.populatePayeeInformation(selectedPayee);
+  }
+
+  populatePayeeInformation(payee: Payee): void {
+    // Auto-populate form fields with payee information
+    this.requisitionForm.patchValue({
+      payee: payee.name,
+      chequePayee: payee.name, // Default to payee name
+      payeeBankBranch: payee.bankBranch || '',
+      payeeAccountNo: payee.accountNumber || ''
+    });
+
+    // Find and set the bank name if it exists in our bank list
+    const bankName = payee.bankName;
+    if (bankName) {
+      this.requisitionForm.patchValue({
+      });
+    }
+
+    // Disable fields that have been auto-populated (unless they're empty)
+    this.updateFieldDisabledState(payee);
+  }
+
+  updateFieldDisabledState(payee: Payee): void {
+    const chequePayeeControl = this.requisitionForm.get('chequePayee');
+    const bankBranchControl = this.requisitionForm.get('payeeBankBranch');
+    const accountNoControl = this.requisitionForm.get('payeeAccountNo');
+
+    // Disable cheque payee field if payee name is available
+    if (payee.name && chequePayeeControl) {
+      chequePayeeControl.disable();
+    }
+
+    // Disable bank branch field if bank branch is available
+    if (payee.bankBranch && bankBranchControl) {
+      bankBranchControl.disable();
+    }
+
+    // Disable account number field if account number is available
+    if (payee.accountNumber && accountNoControl) {
+      accountNoControl.disable();
+    }
+  }
+
+  clearPayeeInformation(): void {
+    // Re-enable all payee-related fields
+    const chequePayeeControl = this.requisitionForm.get('chequePayee');
+    const bankBranchControl = this.requisitionForm.get('payeeBankBranch');
+    const accountNoControl = this.requisitionForm.get('payeeAccountNo');
+
+    if (chequePayeeControl) chequePayeeControl.enable();
+    if (bankBranchControl) bankBranchControl.enable();
+    if (accountNoControl) accountNoControl.enable();
+
+    // Clear the fields
+    this.requisitionForm.patchValue({
+      chequePayee: '',
+      payeeBankBranch: '',
+      payeeAccountNo: ''
+    });
+
+    this.selectedPayee = null;
+  }
+
+  displayPayeeName(payee: Payee | string): string {
+    if (typeof payee === 'string') {
+      return payee === 'CREATE_NEW' ? '' : payee;
+    }
+    return payee ? payee.name : '';
+  }
+
+  openCreatePayeeFromRequisition(): void {
+    this.showCreatePayeeModal = true;
+    this.payeeForm.reset();
+    // Clear the payee field to avoid showing "CREATE_NEW"
+    this.requisitionForm.patchValue({
+      payee: ''
+    });
+  }
+
+  getFormDataIncludingDisabled(): any {
+    // Get raw value includes disabled fields
+    return this.requisitionForm.getRawValue();
+  }
+
+  isFormValidIncludingDisabled(): boolean {
+    // Check if required fields have values (including disabled ones)
+    const formData = this.getFormDataIncludingDisabled();
+
+    // Check required fields
+    const requiredFields = ['payee', 'code', 'chequePayee', 'payeeBankBranch',
+                           'payeeAccountNo', 'narrative', 'invoiceNo', 'invoiceDate',
+                           'amount', 'currency', 'bankAccount', 'type', 'paymentOption'];
+
+    return requiredFields.every(field => {
+      const value = formData[field];
+      return value !== null && value !== undefined && value !== '';
+    });
+  }
+
+  // Auto-fill short description when name changes
+  onPayeeNameChange(): void {
+    const nameValue = this.payeeForm.get('name')?.value;
+    const shortDescControl = this.payeeForm.get('shortDescription');
+
+    if (nameValue && (!shortDescControl?.value || shortDescControl?.value.trim() === '')) {
+      shortDescControl?.setValue(nameValue);
     }
   }
 
@@ -442,8 +736,8 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
     return displayNames[fieldName] || fieldName;
   }
 
-  // Utility method to generate auto code based on payee name
-  onPayeeNameChange(): void {
+  // Utility method to generate auto code based on payee name (for requisition form)
+  onRequisitionPayeeNameChange(): void {
     const payeeName = this.requisitionForm.get('payee')?.value;
     const codeControl = this.requisitionForm.get('code');
 
@@ -454,9 +748,6 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
                      Math.floor(Math.random() * 1000).toString().padStart(3, '0');
         codeControl?.setValue(code);
       }
-
-      console.log('Payee name changed:', payeeName);
-      console.log('Generated code:', codeControl?.value);
     }
   }
 
@@ -470,9 +761,6 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
       if (!chequePayeeControl?.value) {
         chequePayeeControl?.setValue(payeeName);
       }
-
-      console.log('Payee changed:', payeeName);
-      console.log('Cheque payee set to:', chequePayeeControl?.value);
     }
   }
 

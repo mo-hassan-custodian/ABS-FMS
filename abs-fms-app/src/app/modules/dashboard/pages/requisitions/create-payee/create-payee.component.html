@@ -1,0 +1,431 @@
+<div class="container">
+  <!-- Header Section -->
+  <div class="header-section">
+    <div class="title-section">
+      <h2>Payee Management</h2>
+      <p>Create and manage payees for requisitions</p>
+    </div>
+    
+    <div class="action-buttons">
+      <button mat-raised-button color="primary" (click)="openCreatePayeeModal()">
+        <mat-icon>add</mat-icon>
+        Create Payee
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Content Area -->
+  <div class="content-section">
+    <!-- Search Bar -->
+    <div class="search-section">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Search Payees</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="Search by name, PIN, bank, or account number">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+    </div>
+
+    <!-- Payees Table -->
+    <div class="table-container">
+      <mat-table [dataSource]="dataSource" matSort class="payees-table mat-elevation-z8">
+        
+        <!-- Name Column -->
+        <ng-container matColumnDef="name">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Name</mat-header-cell>
+          <mat-cell *matCellDef="let element">{{element.name}}</mat-cell>
+        </ng-container>
+
+        <!-- PIN Number Column -->
+        <ng-container matColumnDef="pinNo">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>PIN No.</mat-header-cell>
+          <mat-cell *matCellDef="let element">{{element.pinNo}}</mat-cell>
+        </ng-container>
+
+        <!-- Bank Name Column -->
+        <ng-container matColumnDef="bankName">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Bank Name</mat-header-cell>
+          <mat-cell *matCellDef="let element">{{element.bankName}}</mat-cell>
+        </ng-container>
+
+        <!-- Bank Branch Column -->
+        <ng-container matColumnDef="bankBranch">
+          <mat-header-cell *matHeaderCellDef>Bank Branch</mat-header-cell>
+          <mat-cell *matCellDef="let element">{{element.bankBranch}}</mat-cell>
+        </ng-container>
+
+        <!-- Account Number Column -->
+        <ng-container matColumnDef="accountNumber">
+          <mat-header-cell *matHeaderCellDef>Account Number</mat-header-cell>
+          <mat-cell *matCellDef="let element">{{element.accountNumber}}</mat-cell>
+        </ng-container>
+
+        <!-- Status Column -->
+        <ng-container matColumnDef="status">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Status</mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            <span class="status-badge" [ngClass]="'status-' + element.status.toLowerCase()">
+              {{element.status}}
+            </span>
+          </mat-cell>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            <div class="action-buttons">
+              <button mat-raised-button color="primary" 
+                      (click)="viewDetails(element)" 
+                      matTooltip="View Details"
+                      class="action-btn">
+                <mat-icon>visibility</mat-icon>
+              </button>
+              
+              <button mat-raised-button color="accent" 
+                      (click)="activatePayee(element)" 
+                      *ngIf="element.status !== 'Active'"
+                      matTooltip="Activate"
+                      class="action-btn">
+                <mat-icon>check_circle</mat-icon>
+              </button>
+              
+              <button mat-raised-button color="warn" 
+                      (click)="suspendPayee(element)" 
+                      *ngIf="element.status === 'Active'"
+                      matTooltip="Suspend"
+                      class="action-btn">
+                <mat-icon>pause_circle</mat-icon>
+              </button>
+              
+              <button mat-raised-button color="warn" 
+                      (click)="deletePayee(element)" 
+                      *ngIf="element.status !== 'Active'"
+                      matTooltip="Delete"
+                      class="action-btn">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+        
+        <!-- No Data Row -->
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+            <div class="no-data-message">
+              <mat-icon>person_add</mat-icon>
+              <p>No payees found</p>
+              <p class="no-data-subtitle">Create your first payee using the button above</p>
+            </div>
+          </td>
+        </tr>
+      </mat-table>
+
+      <!-- Paginator -->
+      <mat-paginator [pageSizeOptions]="[5, 10, 20, 50]" 
+                     [pageSize]="10"
+                     showFirstLastButtons>
+      </mat-paginator>
+    </div>
+  </div>
+</div>
+
+<!-- Create Payee Modal -->
+<div class="modal-overlay" *ngIf="showCreatePayeeModal" (click)="closeCreatePayeeModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Create New Payee</h3>
+      <button mat-icon-button (click)="closeCreatePayeeModal()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <form class="modal-body" [formGroup]="payeeForm">
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Name</mat-label>
+          <input matInput formControlName="name" placeholder="Enter payee name" (input)="onPayeeNameChange()">
+          <mat-error *ngIf="payeeForm.get('name')?.invalid && payeeForm.get('name')?.touched">
+            Name is required
+          </mat-error>
+        </mat-form-field>
+        
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Created From</mat-label>
+          <mat-select formControlName="createdFrom">
+            <mat-option value="">-- Select Source --</mat-option>
+            <mat-option *ngFor="let option of createdFromOptions" [value]="option.value">
+              {{option.name}}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="payeeForm.get('createdFrom')?.invalid && payeeForm.get('createdFrom')?.touched">
+            Please select how this payee was created
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Short Description</mat-label>
+          <input matInput formControlName="shortDescription" placeholder="Defaults to name if not provided">
+          <mat-hint>Will default to name if left empty</mat-hint>
+        </mat-form-field>
+        
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>PIN No.</mat-label>
+          <input matInput formControlName="pinNo" placeholder="Enter PIN number">
+          <mat-error *ngIf="payeeForm.get('pinNo')?.invalid && payeeForm.get('pinNo')?.touched">
+            PIN number is required
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Bank Name</mat-label>
+          <input matInput formControlName="bankName" placeholder="Enter bank name">
+          <mat-error *ngIf="payeeForm.get('bankName')?.invalid && payeeForm.get('bankName')?.touched">
+            Bank name is required
+          </mat-error>
+        </mat-form-field>
+        
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Bank Branch</mat-label>
+          <mat-select formControlName="bankBranch">
+            <mat-option value="">-- Select Bank Branch --</mat-option>
+            <mat-option *ngFor="let branch of bankBranches; trackBy: trackByValue" [value]="branch.value">
+              {{branch.name}}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="payeeForm.get('bankBranch')?.invalid && payeeForm.get('bankBranch')?.touched">
+            Bank branch is required
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Account Number</mat-label>
+          <input matInput formControlName="accountNumber" placeholder="Enter account number">
+          <mat-error *ngIf="payeeForm.get('accountNumber')?.invalid && payeeForm.get('accountNumber')?.touched">
+            Account number is required
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Physical Address</mat-label>
+          <textarea matInput formControlName="physicalAddress" rows="2" placeholder="Enter physical address">
+          </textarea>
+          <mat-error *ngIf="payeeForm.get('physicalAddress')?.invalid && payeeForm.get('physicalAddress')?.touched">
+            Physical address is required
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Postal Address</mat-label>
+          <textarea matInput formControlName="postalAddress" rows="2" placeholder="Enter postal address">
+          </textarea>
+          <mat-error *ngIf="payeeForm.get('postalAddress')?.invalid && payeeForm.get('postalAddress')?.touched">
+            Postal address is required
+          </mat-error>
+        </mat-form-field>
+      </div>
+    </form>
+
+    <div class="modal-footer">
+      <button mat-button (click)="closeCreatePayeeModal()">Cancel</button>
+      <button mat-raised-button color="primary" (click)="savePayee()">Save Payee</button>
+    </div>
+  </div>
+</div>
+
+<!-- View Details Modal -->
+<div class="modal-overlay" *ngIf="showViewDetailsModal" (click)="closeViewDetailsModal()">
+  <div class="modal-content view-details-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>{{isEditMode ? 'Edit Payee' : 'Payee Details'}}</h3>
+      <button mat-icon-button (click)="closeViewDetailsModal()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <!-- View Mode -->
+    <div class="modal-body" *ngIf="selectedPayee && !isEditMode">
+      <div class="details-grid">
+        <div class="detail-item">
+          <label>Name:</label>
+          <span class="detail-value">{{selectedPayee.name}}</span>
+        </div>
+
+        <div class="detail-item">
+          <label>Status:</label>
+          <span class="status-badge" [ngClass]="'status-' + selectedPayee.status.toLowerCase()">
+            {{selectedPayee.status}}
+          </span>
+        </div>
+
+        <div class="detail-item">
+          <label>Created From:</label>
+          <span class="detail-value">{{selectedPayee.createdFrom}}</span>
+        </div>
+
+        <div class="detail-item">
+          <label>PIN No.:</label>
+          <span class="detail-value">{{selectedPayee.pinNo}}</span>
+        </div>
+
+        <div class="detail-item full-width">
+          <label>Short Description:</label>
+          <span class="detail-value">{{selectedPayee.shortDescription}}</span>
+        </div>
+
+        <div class="detail-item">
+          <label>Bank Name:</label>
+          <span class="detail-value">{{selectedPayee.bankName}}</span>
+        </div>
+
+        <div class="detail-item">
+          <label>Bank Branch:</label>
+          <span class="detail-value">{{selectedPayee.bankBranch}}</span>
+        </div>
+
+        <div class="detail-item">
+          <label>Account Number:</label>
+          <span class="detail-value account-highlight">{{selectedPayee.accountNumber}}</span>
+        </div>
+
+        <div class="detail-item full-width">
+          <label>Physical Address:</label>
+          <span class="detail-value">{{selectedPayee.physicalAddress}}</span>
+        </div>
+
+        <div class="detail-item full-width">
+          <label>Postal Address:</label>
+          <span class="detail-value">{{selectedPayee.postalAddress}}</span>
+        </div>
+
+        <div class="detail-item">
+          <label>Created Date:</label>
+          <span class="detail-value">{{selectedPayee.createdDate | date:'medium'}}</span>
+        </div>
+
+        <div class="detail-item">
+          <label>Created By:</label>
+          <span class="detail-value">{{selectedPayee.createdBy}}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Mode -->
+    <form class="modal-body edit-form" *ngIf="isEditMode" [formGroup]="editForm">
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Name</mat-label>
+          <input matInput formControlName="name" placeholder="Enter payee name" (input)="onEditPayeeNameChange()">
+          <mat-error *ngIf="editForm.get('name')?.invalid && editForm.get('name')?.touched">
+            Name is required
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Created From</mat-label>
+          <mat-select formControlName="createdFrom">
+            <mat-option value="">-- Select Source --</mat-option>
+            <mat-option *ngFor="let option of createdFromOptions" [value]="option.value">
+              {{option.name}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Short Description</mat-label>
+          <input matInput formControlName="shortDescription" placeholder="Defaults to name if not provided">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>PIN No.</mat-label>
+          <input matInput formControlName="pinNo" placeholder="Enter PIN number">
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Bank Name</mat-label>
+          <input matInput formControlName="bankName" placeholder="Enter bank name">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Bank Branch</mat-label>
+          <mat-select formControlName="bankBranch">
+            <mat-option value="">-- Select Bank Branch --</mat-option>
+            <mat-option *ngFor="let branch of bankBranches" [value]="branch.value">
+              {{branch.name}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Account Number</mat-label>
+          <input matInput formControlName="accountNumber" placeholder="Enter account number">
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Physical Address</mat-label>
+          <textarea matInput formControlName="physicalAddress" rows="2" placeholder="Enter physical address"></textarea>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Postal Address</mat-label>
+          <textarea matInput formControlName="postalAddress" rows="2" placeholder="Enter postal address"></textarea>
+        </mat-form-field>
+      </div>
+    </form>
+
+    <!-- Modal Footer -->
+    <div class="modal-footer">
+      <!-- View Mode Buttons -->
+      <ng-container *ngIf="!isEditMode">
+        <button mat-button (click)="closeViewDetailsModal()">Close</button>
+        <button mat-raised-button color="primary"
+                *ngIf="selectedPayee?.status === 'Active' || selectedPayee?.status === 'Inactive'"
+                (click)="enableEditMode()">
+          <mat-icon>edit</mat-icon>
+          Edit
+        </button>
+        <button mat-raised-button color="accent"
+                *ngIf="selectedPayee?.status !== 'Active'"
+                (click)="activatePayee(selectedPayee!); closeViewDetailsModal()">
+          Activate
+        </button>
+        <button mat-raised-button color="warn"
+                *ngIf="selectedPayee?.status === 'Active'"
+                (click)="suspendPayee(selectedPayee!); closeViewDetailsModal()">
+          Suspend
+        </button>
+      </ng-container>
+
+      <!-- Edit Mode Buttons -->
+      <ng-container *ngIf="isEditMode">
+        <button mat-button (click)="cancelEdit()">Cancel</button>
+        <button mat-raised-button color="primary" (click)="updatePayee()">
+          <mat-icon>save</mat-icon>
+          Update
+        </button>
+      </ng-container>
+    </div>
+  </div>
+</div>

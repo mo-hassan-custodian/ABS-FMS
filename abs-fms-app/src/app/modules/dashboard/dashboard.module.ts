@@ -6,11 +6,13 @@ import { DashboardRoutingModule } from './dashboard-routing.module';
 import { DashboardComponent } from './dashboard.component';
 import { MaterialModule } from '../../shared/material/material.module';
 import { CreateRequisitionsComponent } from './pages/requisitions/create-requisitions/create-requisitions.component';
+import { CreatePayeeComponent } from './pages/requisitions/create-payee/create-payee.component';
 
 @NgModule({
   declarations: [
     DashboardComponent,
-    CreateRequisitionsComponent
+    CreateRequisitionsComponent,
+    CreatePayeeComponent
   ],
   imports: [
     CommonModule,
