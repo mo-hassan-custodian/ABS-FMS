@@ -288,6 +288,47 @@ th.mat-header-cell:last-child {
   color: #2e7d32;
 }
 
+/* Edit Form Styles */
+.edit-form {
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: 16px 24px;
+}
+
+.edit-form .form-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.edit-form .form-row:last-child {
+  margin-bottom: 0;
+}
+
+.edit-form .full-width {
+  width: 100%;
+}
+
+.edit-form .half-width {
+  width: calc(50% - 8px);
+}
+
+/* Modal Footer Button Styling */
+.modal-footer button {
+  margin-left: 8px;
+}
+
+.modal-footer button:first-child {
+  margin-left: 0;
+}
+
+.modal-footer button mat-icon {
+  margin-right: 8px;
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
 /* Responsive adjustments for view details */
 @media (max-width: 768px) {
   .details-grid {
@@ -298,6 +339,24 @@ th.mat-header-cell:last-child {
   .view-details-modal {
     width: 98%;
     margin: 10px;
+  }
+
+  .edit-form .form-row {
+    flex-direction: column;
+  }
+
+  .edit-form .half-width {
+    width: 100%;
+  }
+
+  .modal-footer {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .modal-footer button {
+    margin-left: 0;
+    width: 100%;
   }
 }
 

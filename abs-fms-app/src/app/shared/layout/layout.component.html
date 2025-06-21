@@ -6,7 +6,6 @@
             <ul id="menu-list">
                 <li routerLink="/" (click)="drawer.close(); this._menuservice.setCurrentActiveSubMenu(-1);"><mat-icon>home</mat-icon><p> Home</p></li>  
                 <app-menu-icon *ngFor="let menuitem of menuitems; let itemIndex = index"  [menuicon]="menuitem"  (click)="this._menuservice.setCurrentActiveSubMenu(itemIndex);drawer.open()"></app-menu-icon>
-                <!-- <li (click)="logout()"><mat-icon>power_settings_new</mat-icon><p> Log Out</p></li> -->
             </ul>
             <!-- <footer class="sidebar-brand-text mx-2" style="padding-left:10px;margin-top:100px;">Version: 0.0.0.0</footer>  -->
         </div>    
@@ -45,9 +44,9 @@
                 <div id="headerinfo">
                     <mat-icon style="font-weight: 500;
                     color: whitesmoke;
-                    cursor: pointer;" (click)="drawer.toggle()">menu</mat-icon>
+                    cursor: pointer; margin-top: 5px; margin-bottom: 5px;" (click)="drawer.toggle()">menu</mat-icon>
                     <span style="padding-right: 2rem;"> {{userProfile?.email}} </span>
-                    <h3 class="sidebar-brand-text mx-2" style="float:right;padding-right:10px; color:whitesmoke">{{this.greet}}, MOHAMMED</h3> 
+                    <h3 class="sidebar-brand-text mx-2" style="margin-top: 5px; margin-bottom: 5px; float:right;padding-right:10px; color:whitesmoke">{{this.greet}}, MOHAMMED</h3> 
                 </div> 
 
                 <div id="app-body">

@@ -5,6 +5,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { ToastrService } from 'ngx-toastr';
 import { RequisitionService } from '../../../../../services/requisition.service';
 import { Requisition, RequisitionCreateRequest } from '../../../../../models/requisition.model';
 
@@ -33,6 +34,8 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
   showCreatePayeeModal = false;
   showViewDetailsModal = false;
   selectedRequisition: Requisition | null = null;
+  isEditMode = false;
+  editForm!: FormGroup;
 
   // Form groups
   requisitionForm!: FormGroup;
@@ -136,7 +139,8 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
 
   constructor(
     private formBuilder: FormBuilder,
-    private requisitionService: RequisitionService
+    private requisitionService: RequisitionService,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit(): void {
@@ -174,13 +178,13 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (success) => {
           if (success) {
-            alert('Requisition approved successfully!');
+            this.toastr.success('Requisition approved successfully!', 'Success');
             this.loadRequisitions();
           }
         },
         error: (error) => {
           console.error('Error approving requisition:', error);
-          alert('Error approving requisition.');
+          this.toastr.error('Error approving requisition.', 'Error');
         }
       });
   }
@@ -191,25 +195,97 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (success) => {
           if (success) {
-            alert('Requisition rejected successfully!');
+            this.toastr.warning('Requisition rejected successfully!', 'Rejected');
             this.loadRequisitions();
           }
         },
         error: (error) => {
           console.error('Error rejecting requisition:', error);
-          alert('Error rejecting requisition.');
+          this.toastr.error('Error rejecting requisition.', 'Error');
         }
       });
   }
 
   viewDetails(item: Requisition): void {
     this.selectedRequisition = item;
+    this.isEditMode = false;
     this.showViewDetailsModal = true;
   }
 
   closeViewDetailsModal(): void {
     this.showViewDetailsModal = false;
     this.selectedRequisition = null;
+    this.isEditMode = false;
+    this.editForm.reset();
+  }
+
+  enableEditMode(): void {
+    if (this.selectedRequisition) {
+      this.isEditMode = true;
+      // Populate edit form with current requisition data
+      this.editForm.patchValue({
+        payee: this.selectedRequisition.payee,
+        code: this.selectedRequisition.code,
+        chequePayee: this.selectedRequisition.chequePayee,
+        payeeBankBranch: this.selectedRequisition.payeeBankBranch,
+        payeeAccountNo: this.selectedRequisition.payeeAccountNo,
+        narrative: this.selectedRequisition.narrative,
+        invoiceNo: this.selectedRequisition.invoiceNo,
+        invoiceDate: this.selectedRequisition.invoiceDate,
+        amount: this.selectedRequisition.amount,
+        currency: this.selectedRequisition.currency,
+        bankAccount: this.selectedRequisition.bankAccount,
+        type: this.selectedRequisition.type,
+        paymentOption: this.selectedRequisition.paymentOption
+      });
+    }
+  }
+
+  cancelEdit(): void {
+    this.isEditMode = false;
+    this.editForm.reset();
+  }
+
+  updateRequisition(): void {
+    if (this.editForm.valid && this.selectedRequisition) {
+      const formData = this.editForm.value;
+
+      const updates: Partial<Requisition> = {
+        payee: formData.payee,
+        code: formData.code,
+        chequePayee: formData.chequePayee,
+        payeeBankBranch: formData.payeeBankBranch,
+        payeeAccountNo: formData.payeeAccountNo,
+        narrative: formData.narrative,
+        invoiceNo: formData.invoiceNo,
+        invoiceDate: formData.invoiceDate,
+        amount: formData.amount,
+        currency: formData.currency,
+        bankAccount: formData.bankAccount,
+        type: formData.type,
+        paymentOption: formData.paymentOption
+      };
+
+      this.requisitionService.updateRequisition(this.selectedRequisition.id, updates)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (updatedRequisition) => {
+            if (updatedRequisition) {
+              console.log('Requisition updated successfully:', updatedRequisition);
+              this.toastr.success('Requisition updated successfully!', 'Updated');
+              this.closeViewDetailsModal();
+              this.loadRequisitions(); // Refresh the table
+            }
+          },
+          error: (error) => {
+            console.error('Error updating requisition:', error);
+            this.toastr.error('Error updating requisition. Please try again.', 'Error');
+          }
+        });
+    } else {
+      this.markFormGroupTouched(this.editForm);
+      this.toastr.warning('Please fill in all required fields.', 'Validation Error');
+    }
   }
 
   deleteRequisition(element: Requisition): void {
@@ -219,13 +295,13 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
         .subscribe({
           next: (success) => {
             if (success) {
-              alert('Requisition deleted successfully!');
+              this.toastr.success('Requisition deleted successfully!', 'Deleted');
               this.loadRequisitions();
             }
           },
           error: (error) => {
             console.error('Error deleting requisition:', error);
-            alert('Error deleting requisition.');
+            this.toastr.error('Error deleting requisition.', 'Error');
           }
         });
     }
@@ -252,6 +328,23 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
       narrative: ['', [Validators.required, Validators.maxLength(500)]],
       invoiceNo: ['', Validators.required],
       invoiceDate: [null, Validators.required], // Changed to null for proper date picker handling
+      amount: ['', [Validators.required, Validators.min(0.01)]],
+      currency: ['NGN', Validators.required],
+      bankAccount: ['', Validators.required],
+      type: ['', Validators.required],
+      paymentOption: ['', Validators.required]
+    });
+
+    // Initialize edit form (same structure as requisition form)
+    this.editForm = this.formBuilder.group({
+      payee: ['', Validators.required],
+      code: ['', [Validators.required, Validators.minLength(3)]],
+      chequePayee: ['', Validators.required],
+      payeeBankBranch: ['', Validators.required],
+      payeeAccountNo: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
+      narrative: ['', [Validators.required, Validators.maxLength(500)]],
+      invoiceNo: ['', Validators.required],
+      invoiceDate: [null, Validators.required],
       amount: ['', [Validators.required, Validators.min(0.01)]],
       currency: ['NGN', Validators.required],
       bankAccount: ['', Validators.required],
@@ -339,7 +432,7 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
             this.closeCreateRequisitionModal();
 
             // Show success message
-            alert('Requisition created successfully!');
+            this.toastr.success('Requisition created successfully!', 'Success');
 
             // Refresh the table data (this will happen automatically due to the observable)
             // but we can also manually trigger it if needed
@@ -347,13 +440,13 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
           },
           error: (error) => {
             console.error('Error creating requisition:', error);
-            alert('Error creating requisition. Please try again.');
+            this.toastr.error('Error creating requisition. Please try again.', 'Error');
           }
         });
     } else {
       // Mark all fields as touched to show validation errors
       this.markFormGroupTouched(this.requisitionForm);
-      alert('Please fill in all required fields.');
+      this.toastr.warning('Please fill in all required fields.', 'Validation Error');
     }
   }
 
@@ -369,11 +462,11 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
       this.closeCreatePayeeModal();
 
       // Show success message
-      alert('Payee created successfully!');
+      this.toastr.success('Payee created successfully!', 'Success');
     } else {
       // Mark all fields as touched to show validation errors
       this.markFormGroupTouched(this.payeeForm);
-      alert('Please fill in all required fields.');
+      this.toastr.warning('Please fill in all required fields.', 'Validation Error');
     }
   }
 

@@ -414,13 +414,14 @@
 <div class="modal-overlay" *ngIf="showViewDetailsModal" (click)="closeViewDetailsModal()">
   <div class="modal-content view-details-modal" (click)="$event.stopPropagation()">
     <div class="modal-header">
-      <h3>Requisition Details</h3>
+      <h3>{{isEditMode ? 'Edit Requisition' : 'Requisition Details'}}</h3>
       <button mat-icon-button (click)="closeViewDetailsModal()">
         <mat-icon>close</mat-icon>
       </button>
     </div>
 
-    <div class="modal-body" *ngIf="selectedRequisition">
+    <!-- View Mode -->
+    <div class="modal-body" *ngIf="selectedRequisition && !isEditMode">
       <div class="details-grid">
         <div class="detail-item">
           <label>Code:</label>
@@ -501,18 +502,154 @@
       </div>
     </div>
 
+    <!-- Edit Mode -->
+    <form class="modal-body edit-form" *ngIf="isEditMode" [formGroup]="editForm">
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Payee</mat-label>
+          <input matInput formControlName="payee" placeholder="Enter payee name">
+          <mat-error *ngIf="editForm.get('payee')?.invalid && editForm.get('payee')?.touched">
+            Payee is required
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Code</mat-label>
+          <input matInput formControlName="code" placeholder="Enter requisition code">
+          <mat-error *ngIf="editForm.get('code')?.invalid && editForm.get('code')?.touched">
+            Code is required
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Cheque Payee</mat-label>
+          <input matInput formControlName="chequePayee" placeholder="Enter cheque payee">
+          <mat-error *ngIf="editForm.get('chequePayee')?.invalid && editForm.get('chequePayee')?.touched">
+            Cheque payee is required
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Payee Bank Branch</mat-label>
+          <mat-select formControlName="payeeBankBranch">
+            <mat-option value="">-- Select Bank Branch --</mat-option>
+            <mat-option *ngFor="let branch of bankBranches" [value]="branch.value">
+              {{branch.name}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Account Number</mat-label>
+          <input matInput formControlName="payeeAccountNo" placeholder="Enter account number">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Amount</mat-label>
+          <input matInput type="number" formControlName="amount" placeholder="0.00" min="0" step="0.01">
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Currency</mat-label>
+          <mat-select formControlName="currency">
+            <mat-option *ngFor="let currency of currencies" [value]="currency.value">
+              {{ currency.symbol }} - {{ currency.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Invoice Number</mat-label>
+          <input matInput formControlName="invoiceNo" placeholder="Enter invoice number">
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Invoice Date</mat-label>
+          <input matInput [matDatepicker]="editInvoicePicker" formControlName="invoiceDate" readonly>
+          <mat-datepicker-toggle matSuffix [for]="editInvoicePicker"></mat-datepicker-toggle>
+          <mat-datepicker #editInvoicePicker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Bank Account</mat-label>
+          <mat-select formControlName="bankAccount">
+            <mat-option value="">-- Select Bank Account --</mat-option>
+            <mat-option *ngFor="let account of bankAccounts" [value]="account.value">
+              {{ account.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Type</mat-label>
+          <mat-select formControlName="type">
+            <mat-option value="">-- Select Payee Type --</mat-option>
+            <mat-option *ngFor="let type of payeeTypes" [value]="type.value">
+              {{ type.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Payment Option</mat-label>
+          <mat-select formControlName="paymentOption">
+            <mat-option value="">-- Select Payment Method --</mat-option>
+            <mat-option *ngFor="let option of paymentOptions" [value]="option.value">
+              {{ option.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Narrative</mat-label>
+          <textarea matInput formControlName="narrative" rows="3" placeholder="Enter narrative"></textarea>
+        </mat-form-field>
+      </div>
+    </form>
+
+    <!-- Modal Footer -->
     <div class="modal-footer">
-      <button mat-button (click)="closeViewDetailsModal()">Close</button>
-      <button mat-raised-button color="primary"
-              *ngIf="selectedRequisition?.status === 'Draft' || selectedRequisition?.status === 'Pending'"
-              (click)="authorize(selectedRequisition!); closeViewDetailsModal()">
-        Approve
-      </button>
-      <button mat-raised-button color="warn"
-              *ngIf="selectedRequisition?.status === 'Draft' || selectedRequisition?.status === 'Pending'"
-              (click)="reject(selectedRequisition!); closeViewDetailsModal()">
-        Reject
-      </button>
+      <!-- View Mode Buttons -->
+      <ng-container *ngIf="!isEditMode">
+        <button mat-button (click)="closeViewDetailsModal()">Close</button>
+        <button mat-raised-button color="primary"
+                *ngIf="selectedRequisition?.status === 'Draft'"
+                (click)="enableEditMode()">
+          <mat-icon>edit</mat-icon>
+          Edit
+        </button>
+        <button mat-raised-button color="accent"
+                *ngIf="selectedRequisition?.status === 'Draft' || selectedRequisition?.status === 'Pending'"
+                (click)="authorize(selectedRequisition!); closeViewDetailsModal()">
+          Approve
+        </button>
+        <button mat-raised-button color="warn"
+                *ngIf="selectedRequisition?.status === 'Draft' || selectedRequisition?.status === 'Pending'"
+                (click)="reject(selectedRequisition!); closeViewDetailsModal()">
+          Reject
+        </button>
+      </ng-container>
+
+      <!-- Edit Mode Buttons -->
+      <ng-container *ngIf="isEditMode">
+        <button mat-button (click)="cancelEdit()">Cancel</button>
+        <button mat-raised-button color="primary" (click)="updateRequisition()">
+          <mat-icon>save</mat-icon>
+          Update
+        </button>
+      </ng-container>
     </div>
   </div>
 </div>
