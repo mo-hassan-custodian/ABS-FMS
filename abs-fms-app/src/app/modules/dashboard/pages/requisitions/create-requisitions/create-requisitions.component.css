@@ -32,24 +32,271 @@ th.mat-header-cell:last-child {
 .action-buttons {
   display: flex;
   gap: 15px;
+  align-items: center;
 }
 
 .action-buttons button {
-  min-width: 140px;
-  height: 40px;
+  min-width: 160px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;
+  font-size: 14px;
+  font-weight: 500;
+  text-transform: none;
+  border-radius: 6px;
 }
 
 .action-buttons button mat-icon {
   margin-right: 8px;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
 }
 
 .content-section {
   background: white;
-  padding: 40px;
+  padding: 24px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin-top: 20px;
+}
+
+/* Search Section */
+.search-section {
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.search-field {
+  width: 400px;
+  max-width: 100%;
+}
+
+/* Table Container */
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.requisitions-table {
+  width: 100%;
+  background: white;
+}
+
+.requisitions-table .mat-mdc-header-cell {
+  font-weight: 600;
+  color: #333;
+  background-color: #f8f9fa;
+}
+
+.requisitions-table .mat-mdc-cell {
+  padding: 12px 8px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.requisitions-table .mat-mdc-row:hover {
+  background-color: #f5f5f5;
+}
+
+/* Table Cell Styles */
+.amount-cell {
+  font-weight: 600;
+  color: #2e7d32;
+}
+
+.narrative-cell {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: help;
+}
+
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-draft {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.status-pending {
+  background-color: #fff3e0;
+  color: #f57c00;
+}
+
+.status-approved {
+  background-color: #e8f5e8;
+  color: #2e7d32;
+}
+
+.status-rejected {
+  background-color: #ffebee;
+  color: #d32f2f;
+}
+
+.status-paid {
+  background-color: #e1f5fe;
+  color: #0277bd;
+}
+
+/* Table Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+
+.action-buttons .action-btn {
+  width: 40px;
+  height: 32px;
+  min-width: 40px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  font-size: 12px;
+  padding: 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.action-buttons .action-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+}
+
+.action-buttons .action-btn mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+}
+
+/* Specific button colors for table actions */
+.action-buttons .action-btn[color="primary"] {
+  background-color: #1976d2;
+  color: white;
+  border: none;
+}
+
+.action-buttons .action-btn[color="primary"]:hover {
+  background-color: #1565c0;
+}
+
+.action-buttons .action-btn[color="accent"] {
+  background-color: #388e3c;
+  color: white;
+  border: none;
+}
+
+.action-buttons .action-btn[color="accent"]:hover {
+  background-color: #2e7d32;
+}
+
+.action-buttons .action-btn[color="warn"] {
+  background-color: #d32f2f;
+  color: white;
+  border: none;
+}
+
+.action-buttons .action-btn[color="warn"]:hover {
+  background-color: #c62828;
+}
+
+/* No Data Message */
+.no-data-message {
   text-align: center;
+  padding: 40px 20px;
   color: #666;
+}
+
+.no-data-message mat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  color: #ccc;
+  margin-bottom: 16px;
+}
+
+.no-data-message p {
+  margin: 8px 0;
+}
+
+.no-data-subtitle {
+  font-size: 0.9rem;
+  color: #999;
+}
+
+/* View Details Modal */
+.view-details-modal {
+  max-width: 700px;
+  width: 95%;
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  padding: 8px 0;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.detail-item.full-width {
+  grid-column: 1 / -1;
+}
+
+.detail-item label {
+  font-weight: 600;
+  color: #555;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.detail-value {
+  color: #333;
+  font-size: 1rem;
+  padding: 8px 12px;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  border-left: 3px solid #e0e0e0;
+}
+
+.amount-highlight {
+  background-color: #e8f5e8;
+  border-left-color: #4caf50;
+  font-weight: 600;
+  color: #2e7d32;
+}
+
+/* Responsive adjustments for view details */
+@media (max-width: 768px) {
+  .details-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .view-details-modal {
+    width: 98%;
+    margin: 10px;
+  }
 }
 
 /* Modal Styles */
