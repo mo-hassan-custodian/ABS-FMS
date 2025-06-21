@@ -50,11 +50,6 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
 
   // Dropdown data
   bankBranches = [
-    // { id: 1, name: 'Main Branch - Lagos' },
-    // { id: 2, name: 'Victoria Island Branch' },
-    // { id: 3, name: 'Ikeja Branch' },
-    // { id: 4, name: 'Abuja Branch' },
-    // { id: 5, name: 'Port Harcourt Branch' }
     { name: 'Head Office - Victoria Island', value: 'HO_VI', bankName: 'Custodian Bank' },
       { name: 'Lagos Branch - Ikeja', value: 'LAG_IKJ', bankName: 'Custodian Bank' },
       { name: 'Abuja Branch - Wuse II', value: 'ABJ_WUS', bankName: 'Custodian Bank' },
@@ -68,10 +63,6 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
   ];
 
   currencies = [
-    // { code: 'NGN', name: 'Nigerian Naira' },
-    // { code: 'USD', name: 'US Dollar' },
-    // { code: 'EUR', name: 'Euro' },
-    // { code: 'GBP', name: 'British Pound' }
     { name: 'Nigerian Naira', value: 'NGN', symbol: '₦' },
       { name: 'US Dollar', value: 'USD', symbol: '$' },
       { name: 'British Pound Sterling', value: 'GBP', symbol: '£' },
@@ -87,9 +78,6 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
   ];
 
   bankAccounts = [
-    // { id: 1, name: 'Operating Account', number: '1234567890' },
-    // { id: 2, name: 'Savings Account', number: '0987654321' },
-    // { id: 3, name: 'Current Account', number: '1122334455' }
   { name: 'Main Operating Account - 0123456789 (Current)', value: '0123456789' },
       { name: 'Petty Cash Account - 0987654321 (Savings)', value: '0987654321' },
       { name: 'Investment Account - 1122334455 (Investment)', value: '1122334455' },
@@ -103,11 +91,6 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
   ];
 
   payeeTypes = [
-    // { id: 1, name: 'Supplier' },
-    // { id: 2, name: 'Employee' },
-    // { id: 3, name: 'Contractor' },
-    // { id: 4, name: 'Government Agency' },
-    // { id: 5, name: 'Utility Company' }
     { name: 'Individual Client', value: 'INDIVIDUAL_CLIENT' },
       { name: 'Corporate Client', value: 'CORPORATE_CLIENT' },
       { name: 'Insurance Broker', value: 'INSURANCE_BROKER' },
@@ -134,10 +117,6 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
   ];
 
   paymentOptions = [
-    // { id: 1, name: 'Cheque' },
-    // { id: 2, name: 'Bank Transfer' },
-    // { id: 3, name: 'Electronic Transfer' },
-    // { id: 4, name: 'Cash' }
     { name: 'Electronic Fund Transfer (EFT)', value: 'EFT' },
       { name: 'Real Time Gross Settlement (RTGS)', value: 'RTGS' },
       { name: 'Automated Clearing House (ACH)', value: 'ACH' },
@@ -507,8 +486,6 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
             // Show success message
             this.toastr.success('Requisition created successfully!', 'Success');
 
-            // Refresh the table data (this will happen automatically due to the observable)
-            // but we can also manually trigger it if needed
             this.loadRequisitions();
           },
           error: (error) => {
