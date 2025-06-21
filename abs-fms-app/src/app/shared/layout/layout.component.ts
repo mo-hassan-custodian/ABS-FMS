@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, HostListener } from '@angular/core';
+import { MatDrawer } from '@angular/material/sidenav';
 import MenuIcon from '../../models/menu-icon';
 import { MenuService } from '../../services/dashboard-service/menu/menu.service';
 
@@ -8,6 +9,8 @@ import { MenuService } from '../../services/dashboard-service/menu/menu.service'
   styleUrls: ['./layout.component.css']
 })
 export class LayoutComponent implements OnInit {
+  @ViewChild('drawer') drawer!: MatDrawer;
+
   showProgressBar = false
   userProfile:any;
   myDate = new Date();
@@ -15,7 +18,7 @@ export class LayoutComponent implements OnInit {
   mins = this.myDate.getMinutes();
   greet:string = '';
   userId:String='';
-  
+
   public menuitems:MenuIcon[] = [];
   public activeSubMenu?:MenuIcon;
 
@@ -59,7 +62,42 @@ else {
 
 
   logout() {
-
     localStorage.clear();
+  }
+
+  onMenuClick(itemIndex: number): void {
+    this._menuservice.setCurrentActiveSubMenu(itemIndex);
+
+    // Check if we're on mobile
+    if (this.isMobile()) {
+      // On mobile, open the drawer in overlay mode
+      if (this.drawer.opened) {
+        this.drawer.close();
+      } else {
+        this.drawer.open();
+      }
+    } else {
+      // On desktop, just open the drawer
+      this.drawer.open();
+    }
+  }
+
+  isMobile(): boolean {
+    return window.innerWidth <= 768;
+  }
+
+  onSubmenuItemClick(): void {
+    // Close drawer when submenu item is clicked (especially useful on mobile)
+    if (this.drawer && this.drawer.opened) {
+      this.drawer.close();
+    }
+  }
+
+  @HostListener('window:resize')
+  onResize(): void {
+    // Close drawer on resize to desktop to avoid layout issues
+    if (!this.isMobile() && this.drawer && this.drawer.opened) {
+      this.drawer.close();
+    }
   }
 }

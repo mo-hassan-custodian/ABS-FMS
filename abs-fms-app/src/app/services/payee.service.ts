@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { map, delay } from 'rxjs/operators';
 import { Payee, PayeeCreateRequest, PayeeStats } from '../models/payee.model';
 
@@ -10,6 +10,10 @@ export class PayeeService {
   private readonly STORAGE_KEY = 'abs_fms_payees';
   private payeesSubject = new BehaviorSubject<Payee[]>([]);
   public payees$ = this.payeesSubject.asObservable();
+
+  // Event emitter for payee creation
+  private payeeCreatedSubject = new Subject<Payee>();
+  public payeeCreated$ = this.payeeCreatedSubject.asObservable();
 
   constructor() {
     this.loadPayeesFromStorage();
@@ -114,6 +118,9 @@ export class PayeeService {
     this.payeesSubject.next(updatedPayees);
     this.savePayeesToStorage(updatedPayees);
 
+    // Emit the created payee event
+    this.payeeCreatedSubject.next(newPayee);
+
     return of(newPayee).pipe(delay(500)); // Simulate API delay
   }
 
@@ -189,6 +196,6 @@ export class PayeeService {
   }
 
   private generateId(): string {
-    return 'payee_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    return 'payee_' + Date.now() + '_' + Math.random().toString(36).substring(2, 11);
   }
 }

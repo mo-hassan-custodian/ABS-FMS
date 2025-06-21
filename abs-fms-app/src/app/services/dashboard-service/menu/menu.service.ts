@@ -211,7 +211,7 @@ export class MenuService {
             },
             {
               "icon": "visibility",
-              "name": "Create Payee",
+              "name": "Payee List",
               "route": "/App/create-payee",
               "routeParameters": {}
             },

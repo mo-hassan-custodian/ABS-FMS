@@ -150,7 +150,6 @@ export class CreatePayeeComponent implements OnInit, OnDestroy {
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: (newPayee) => {
-            console.log('Payee created successfully:', newPayee);
             this.closeCreatePayeeModal();
             this.toastr.success('Payee created successfully!', 'Success');
             this.loadPayees(); // Refresh the table
@@ -223,7 +222,6 @@ export class CreatePayeeComponent implements OnInit, OnDestroy {
         .subscribe({
           next: (updatedPayee) => {
             if (updatedPayee) {
-              console.log('Payee updated successfully:', updatedPayee);
               this.toastr.success('Payee updated successfully!', 'Updated');
               this.closeViewDetailsModal();
               this.loadPayees();

@@ -7,10 +7,10 @@
         <p>Create requisitions</p>
     </div>
     <div class="action-buttons">
-      <button mat-raised-button color="primary" (click)="openSearchModal()">
+      <!-- <button mat-raised-button color="primary" (click)="openSearchModal()">
         <mat-icon>search</mat-icon>
         Search
-      </button>
+      </button> -->
       <button mat-raised-button color="accent" (click)="openCreateRequisitionModal()">
         <mat-icon>add</mat-icon>
         Create Requisition
@@ -93,7 +93,7 @@
         <ng-container matColumnDef="actions">
           <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
           <mat-cell *matCellDef="let element">
-            <div class="action-buttons">
+            <div class="table-action-buttons">
               <button mat-raised-button color="primary"
                       (click)="viewDetails(element)"
                       matTooltip="View Details"
@@ -164,10 +164,44 @@
 
     <form class="modal-body" [formGroup]="requisitionForm">
         <div class="form-row">
-        <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Payee</mat-label>
-            <input matInput formControlName="payee" placeholder="Enter payee name"
+        <mat-form-field appearance="outline" class="full-width"
+                        [class.auto-populated]="selectedPayee">
+            <mat-label>Payee *</mat-label>
+            <input matInput
+                   formControlName="payee"
+                   placeholder="Search or select payee"
+                   [matAutocomplete]="payeeAutocomplete"
                    (blur)="onPayeeChange(); onRequisitionPayeeNameChange()">
+            <button matSuffix
+                    mat-icon-button
+                    type="button"
+                    class="payee-clear-button"
+                    *ngIf="selectedPayee"
+                    (click)="clearPayeeInformation()"
+                    matTooltip="Clear selected payee">
+              <mat-icon>clear</mat-icon>
+            </button>
+            <mat-autocomplete #payeeAutocomplete="matAutocomplete"
+                              [displayWith]="displayPayeeName"
+                              (optionSelected)="onPayeeSelected($event.option.value)">
+              <mat-option *ngFor="let payee of filteredPayees | async" [value]="payee">
+                <div class="payee-option">
+                  <div class="payee-name">{{payee.name}}</div>
+                  <div class="payee-details">{{payee.pinNo}} | {{payee.bankName}}</div>
+                </div>
+              </mat-option>
+              <mat-option class="create-payee-option" value="CREATE_NEW" (onSelectionChange)="$event.isUserInput && openCreatePayeeFromRequisition()">
+                <div class="create-payee-button">
+                  <mat-icon>add</mat-icon>
+                  <span>Create New Payee</span>
+                </div>
+              </mat-option>
+            </mat-autocomplete>
+            <mat-hint *ngIf="!selectedPayee">Search by name, PIN, or bank name</mat-hint>
+            <mat-hint *ngIf="selectedPayee" class="auto-populated-hint">
+              <mat-icon>check_circle</mat-icon>
+              Payee selected - information auto-populated
+            </mat-hint>
             <mat-error *ngIf="hasError('payee')">
               {{ getErrorMessage('payee') }}
             </mat-error>
@@ -182,9 +216,14 @@
             </mat-error>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="half-width">
+        <mat-form-field appearance="outline" class="half-width"
+                        [class.auto-populated]="requisitionForm.get('chequePayee')?.disabled">
           <mat-label>Input Cheque Payee</mat-label>
           <input matInput formControlName="chequePayee" placeholder="Enter payee name">
+          <mat-hint *ngIf="requisitionForm.get('chequePayee')?.disabled" class="auto-populated-hint">
+            <mat-icon>info</mat-icon>
+            Auto-populated from selected payee
+          </mat-hint>
           <mat-error *ngIf="hasError('chequePayee')">
               {{ getErrorMessage('chequePayee') }}
             </mat-error>
@@ -192,7 +231,8 @@
       </div>
 
       <div class="form-row">
-        <mat-form-field appearance="outline" class="half-width">
+        <mat-form-field appearance="outline" class="half-width"
+                        [class.auto-populated]="requisitionForm.get('payeeBankBranch')?.disabled">
           <mat-label>Payee Bank Branch</mat-label>
           <mat-select formControlName="payeeBankBranch">
                           <mat-option value="">-- Select Bank Branch --</mat-option>
@@ -200,11 +240,22 @@
               {{branch.name}}
             </mat-option>
           </mat-select>
+          <mat-hint *ngIf="!requisitionForm.get('payeeBankBranch')?.disabled">Select the bank branch</mat-hint>
+          <mat-hint *ngIf="requisitionForm.get('payeeBankBranch')?.disabled" class="auto-populated-hint">
+            <mat-icon>info</mat-icon>
+            Auto-populated from selected payee
+          </mat-hint>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="half-width">
+        <mat-form-field appearance="outline" class="half-width"
+                        [class.auto-populated]="requisitionForm.get('payeeAccountNo')?.disabled">
           <mat-label>Payee Account No</mat-label>
           <input matInput formControlName="payeeAccountNo" placeholder="Enter account number">
+          <mat-hint *ngIf="!requisitionForm.get('payeeAccountNo')?.disabled">Enter the account number</mat-hint>
+          <mat-hint *ngIf="requisitionForm.get('payeeAccountNo')?.disabled" class="auto-populated-hint">
+            <mat-icon>info</mat-icon>
+            Auto-populated from selected payee
+          </mat-hint>
         </mat-form-field>
       </div>
 

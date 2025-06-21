@@ -2,3 +2,74 @@
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+/* Global Mobile Responsive Styles */
+* {
+  box-sizing: border-box;
+}
+
+/* Ensure tables are responsive */
+.mat-mdc-table {
+  width: 100%;
+  overflow-x: auto;
+}
+
+/* Mobile-friendly scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Touch-friendly button sizing */
+@media (max-width: 768px) {
+  .mat-mdc-button,
+  .mat-mdc-raised-button,
+  .mat-mdc-icon-button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .mat-mdc-form-field {
+    width: 100%;
+  }
+
+  /* Improve touch targets */
+  .mat-mdc-menu-item {
+    min-height: 48px;
+  }
+
+  /* Better spacing for mobile */
+  .mat-mdc-dialog-container {
+    padding: 8px;
+  }
+}
+
+/* Very small screens */
+@media (max-width: 480px) {
+  body {
+    font-size: 14px;
+  }
+
+  .mat-mdc-button,
+  .mat-mdc-raised-button {
+    font-size: 13px;
+  }
+
+  .mat-mdc-form-field {
+    margin-bottom: 12px;
+  }
+}

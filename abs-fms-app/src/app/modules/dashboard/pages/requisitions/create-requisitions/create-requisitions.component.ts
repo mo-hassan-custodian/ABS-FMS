@@ -3,13 +3,13 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Subject, Observable } from 'rxjs';
+import { takeUntil, startWith, map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { ToastrService } from 'ngx-toastr';
 import { RequisitionService } from '../../../../../services/requisition.service';
 import { PayeeService } from '../../../../../services/payee.service';
 import { Requisition, RequisitionCreateRequest } from '../../../../../models/requisition.model';
-import { PayeeCreateRequest } from '../../../../../models/payee.model';
+import { Payee, PayeeCreateRequest } from '../../../../../models/payee.model';
 
 @Component({
   selector: 'app-create-requisitions',
@@ -38,6 +38,11 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
   selectedRequisition: Requisition | null = null;
   isEditMode = false;
   editForm!: FormGroup;
+
+  // Payee autocomplete
+  payees: Payee[] = [];
+  filteredPayees: Observable<Payee[]> = new Observable();
+  selectedPayee: Payee | null = null;
 
   // Form groups
   requisitionForm!: FormGroup;
@@ -157,6 +162,9 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.initializeForms();
     this.loadRequisitions();
+    this.loadPayees();
+    this.setupPayeeAutocomplete();
+    this.subscribeToPayeeCreation();
   }
 
   ngOnDestroy(): void {
@@ -181,6 +189,60 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
   ngAfterViewInit(): void {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
+  }
+
+  loadPayees(): void {
+    // Subscribe to the payees observable for real-time updates
+    this.payeeService.payees$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (payees) => {
+          this.payees = payees;
+        },
+        error: (error) => {
+          console.error('Error loading payees:', error);
+        }
+      });
+  }
+
+  setupPayeeAutocomplete(): void {
+    this.filteredPayees = this.requisitionForm.get('payee')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      distinctUntilChanged(),
+      map(value => {
+        const filterValue = typeof value === 'string' ? value : value?.name || '';
+
+        // If user is typing manually (string input), clear auto-populated information
+        if (typeof value === 'string' && this.selectedPayee && value !== this.selectedPayee.name) {
+          this.clearPayeeInformation();
+        }
+
+        return this._filterPayees(filterValue);
+      })
+    );
+  }
+
+  private _filterPayees(value: string): Payee[] {
+    const filterValue = value.toLowerCase();
+    return this.payees.filter(payee =>
+      payee.name.toLowerCase().includes(filterValue) ||
+      payee.pinNo.toLowerCase().includes(filterValue) ||
+      payee.bankName.toLowerCase().includes(filterValue)
+    );
+  }
+
+  subscribeToPayeeCreation(): void {
+    this.payeeService.payeeCreated$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (newPayee) => {
+          // The payees array is automatically updated through the service observable
+          // Just select and auto-populate the newly created payee
+          this.selectedPayee = newPayee;
+          this.populatePayeeInformation(newPayee);
+        }
+      });
   }
 
   authorize(element: Requisition): void {
@@ -282,7 +344,6 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
         .subscribe({
           next: (updatedRequisition) => {
             if (updatedRequisition) {
-              console.log('Requisition updated successfully:', updatedRequisition);
               this.toastr.success('Requisition updated successfully!', 'Updated');
               this.closeViewDetailsModal();
               this.loadRequisitions(); // Refresh the table
@@ -380,7 +441,6 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
   // Modal control methods
   openSearchModal(): void {
     // TODO: Implement search functionality
-    console.log('Search modal opened');
   }
 
   // TrackBy function for better performance in ngFor
@@ -412,8 +472,10 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
 
   // Save methods
   saveRequisition(): void {
-    if (this.requisitionForm.valid) {
-      const formData = this.requisitionForm.value;
+    // Get form data including disabled fields
+    const formData = this.getFormDataIncludingDisabled();
+
+    if (this.isFormValidIncludingDisabled()) {
 
       // Create the requisition request object
       const requisitionRequest: RequisitionCreateRequest = {
@@ -432,14 +494,12 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
         paymentOption: formData.paymentOption
       };
 
-      console.log('Saving requisition:', requisitionRequest);
 
       // Save using the service
       this.requisitionService.createRequisition(requisitionRequest)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: (newRequisition) => {
-            console.log('Requisition created successfully:', newRequisition);
 
             // Close modal after successful save
             this.closeCreateRequisitionModal();
@@ -476,9 +536,8 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: (newPayee) => {
-            console.log('Payee created successfully:', newPayee);
             this.closeCreatePayeeModal();
-            this.toastr.success('Payee created successfully!', 'Success');
+            this.toastr.success('Payee created and selected successfully!', 'Success');
           },
           error: (error) => {
             console.error('Error creating payee:', error);
@@ -490,6 +549,116 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
       this.markFormGroupTouched(this.payeeForm);
       this.toastr.warning('Please fill in all required fields.', 'Validation Error');
     }
+  }
+
+  onPayeeSelected(payee: Payee | string): void {
+    if (payee === 'CREATE_NEW') {
+      this.openCreatePayeeFromRequisition();
+      return;
+    }
+
+    const selectedPayee = payee as Payee;
+    this.selectedPayee = selectedPayee;
+
+    // Auto-populate payee information
+    this.populatePayeeInformation(selectedPayee);
+  }
+
+  populatePayeeInformation(payee: Payee): void {
+    // Auto-populate form fields with payee information
+    this.requisitionForm.patchValue({
+      payee: payee.name,
+      chequePayee: payee.name, // Default to payee name
+      payeeBankBranch: payee.bankBranch || '',
+      payeeAccountNo: payee.accountNumber || ''
+    });
+
+    // Find and set the bank name if it exists in our bank list
+    const bankName = payee.bankName;
+    if (bankName) {
+      this.requisitionForm.patchValue({
+      });
+    }
+
+    // Disable fields that have been auto-populated (unless they're empty)
+    this.updateFieldDisabledState(payee);
+  }
+
+  updateFieldDisabledState(payee: Payee): void {
+    const chequePayeeControl = this.requisitionForm.get('chequePayee');
+    const bankBranchControl = this.requisitionForm.get('payeeBankBranch');
+    const accountNoControl = this.requisitionForm.get('payeeAccountNo');
+
+    // Disable cheque payee field if payee name is available
+    if (payee.name && chequePayeeControl) {
+      chequePayeeControl.disable();
+    }
+
+    // Disable bank branch field if bank branch is available
+    if (payee.bankBranch && bankBranchControl) {
+      bankBranchControl.disable();
+    }
+
+    // Disable account number field if account number is available
+    if (payee.accountNumber && accountNoControl) {
+      accountNoControl.disable();
+    }
+  }
+
+  clearPayeeInformation(): void {
+    // Re-enable all payee-related fields
+    const chequePayeeControl = this.requisitionForm.get('chequePayee');
+    const bankBranchControl = this.requisitionForm.get('payeeBankBranch');
+    const accountNoControl = this.requisitionForm.get('payeeAccountNo');
+
+    if (chequePayeeControl) chequePayeeControl.enable();
+    if (bankBranchControl) bankBranchControl.enable();
+    if (accountNoControl) accountNoControl.enable();
+
+    // Clear the fields
+    this.requisitionForm.patchValue({
+      chequePayee: '',
+      payeeBankBranch: '',
+      payeeAccountNo: ''
+    });
+
+    this.selectedPayee = null;
+  }
+
+  displayPayeeName(payee: Payee | string): string {
+    if (typeof payee === 'string') {
+      return payee === 'CREATE_NEW' ? '' : payee;
+    }
+    return payee ? payee.name : '';
+  }
+
+  openCreatePayeeFromRequisition(): void {
+    this.showCreatePayeeModal = true;
+    this.payeeForm.reset();
+    // Clear the payee field to avoid showing "CREATE_NEW"
+    this.requisitionForm.patchValue({
+      payee: ''
+    });
+  }
+
+  getFormDataIncludingDisabled(): any {
+    // Get raw value includes disabled fields
+    return this.requisitionForm.getRawValue();
+  }
+
+  isFormValidIncludingDisabled(): boolean {
+    // Check if required fields have values (including disabled ones)
+    const formData = this.getFormDataIncludingDisabled();
+
+    // Check required fields
+    const requiredFields = ['payee', 'code', 'chequePayee', 'payeeBankBranch',
+                           'payeeAccountNo', 'narrative', 'invoiceNo', 'invoiceDate',
+                           'amount', 'currency', 'bankAccount', 'type', 'paymentOption'];
+
+    return requiredFields.every(field => {
+      const value = formData[field];
+      return value !== null && value !== undefined && value !== '';
+    });
   }
 
   // Auto-fill short description when name changes
@@ -579,9 +748,6 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
                      Math.floor(Math.random() * 1000).toString().padStart(3, '0');
         codeControl?.setValue(code);
       }
-
-      console.log('Payee name changed:', payeeName);
-      console.log('Generated code:', codeControl?.value);
     }
   }
 
@@ -595,9 +761,6 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
       if (!chequePayeeControl?.value) {
         chequePayeeControl?.setValue(payeeName);
       }
-
-      console.log('Payee changed:', payeeName);
-      console.log('Cheque payee set to:', chequePayeeControl?.value);
     }
   }
 

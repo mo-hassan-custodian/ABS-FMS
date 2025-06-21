@@ -85,7 +85,6 @@ export class DashboardComponent implements OnInit {
 
   navigateToRoute(route: string) {
     if (route) {
-      console.log('Navigating to:', route);
       this.router.navigate([route]);
     }
   }
@@ -124,7 +123,6 @@ export class DashboardComponent implements OnInit {
   }
 
   navigateToModule(module: string): void {
-    console.log(`Navigating to module: ${module}`);
 
     // Map module names to actual routes
     const moduleRoutes: { [key: string]: string } = {
