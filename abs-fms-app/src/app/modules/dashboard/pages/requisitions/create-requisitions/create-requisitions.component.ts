@@ -1,5 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 
 @Component({
   selector: 'app-create-requisitions',
@@ -7,6 +10,34 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
   styleUrl: './create-requisitions.component.css'
 })
 export class CreateRequisitionsComponent implements OnInit {
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
+
+   isProposal: boolean = false;
+  searchResults: any[] = [];
+  displayedColumns: string[] = ['code', 'payeeName', 'amount','invoiceNumber','narrations','bankAcoount', 'payeeBank', "status", "actions",];
+  
+  dataSource = new MatTableDataSource([
+    { code: 'REQ-001', payeeName: 'Zahra Musa', amount: 50000, 'payeeBank': "GTB", "status": "Pending", "invoiceNumber": "002"},
+    { code: 'REQ-002', payeeName: 'Tari Obi', amount: 65000, 'payeeBank': "UBA", "status": "Pending",  "invoiceNumber": "002"},
+    { code: 'REQ-003', payeeName: 'Kunle Adebayo', amount: 30000, 'payeeBank': "Access Bank","status": "Pending",  "invoiceNumber": "002"},
+    { code: 'REQ-003', payeeName: 'Kunle Adebayo', amount: 30000, 'payeeBank': "Access Bank", "status": "Pending",  "invoiceNumber": "002"},
+    { code: 'REQ-001', payeeName: 'Zahra Musa', amount: 50000, 'payeeBank': "GTB", "status": "Pending", "invoiceNumber": "002"},
+    { code: 'REQ-002', payeeName: 'Tari Obi', amount: 65000, 'payeeBank': "UBA", "status": "Pending",  "invoiceNumber": "002"},
+    { code: 'REQ-003', payeeName: 'Kunle Adebayo', amount: 30000, 'payeeBank': "Access Bank","status": "Pending",  "invoiceNumber": "002"},
+    { code: 'REQ-003', payeeName: 'Kunle Adebayo', amount: 30000, 'payeeBank': "Access Bank", "status": "Pending",  "invoiceNumber": "002"},
+    { code: 'REQ-001', payeeName: 'Zahra Musa', amount: 50000, 'payeeBank': "GTB", "status": "Pending", "invoiceNumber": "002"},
+    { code: 'REQ-002', payeeName: 'Tari Obi', amount: 65000, 'payeeBank': "UBA", "status": "Pending",  "invoiceNumber": "002"},
+    { code: 'REQ-003', payeeName: 'Kunle Adebayo', amount: 30000, 'payeeBank': "Access Bank","status": "Pending",  "invoiceNumber": "002"},
+    { code: 'REQ-003', payeeName: 'Kunle Adebayo', amount: 30000, 'payeeBank': "Access Bank", "status": "Pending",  "invoiceNumber": "002"},
+    { code: 'REQ-001', payeeName: 'Zahra Musa', amount: 50000, 'payeeBank': "GTB", "status": "Pending", "invoiceNumber": "002"},
+    { code: 'REQ-002', payeeName: 'Tari Obi', amount: 65000, 'payeeBank': "UBA", "status": "Pending",  "invoiceNumber": "002"},
+    { code: 'REQ-003', payeeName: 'Kunle Adebayo', amount: 30000, 'payeeBank': "Access Bank","status": "Pending",  "invoiceNumber": "002"},
+    { code: 'REQ-003', payeeName: 'Kunle Adebayo', amount: 30000, 'payeeBank': "Access Bank", "status": "Pending",  "invoiceNumber": "002"},
+  ]);
+
+
+
   // Modal visibility flags
   showCreateRequisitionModal = false;
   showCreatePayeeModal = false;
@@ -115,6 +146,32 @@ export class CreateRequisitionsComponent implements OnInit {
 
   ngOnInit(): void {
     this.initializeForms();
+  }
+
+  ngAfterViewInit(): void {
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+  }
+
+  authorize(element: any) {
+
+  // this.dialog.open(CreateBeneficiaryComponent,{
+  //         width:'70%',
+  //         height:'70%',
+  //         data:element   
+  //       });
+      }
+  
+
+  reject(element: any){
+
+  }
+
+  viewDetails(item: any) {
+    // this.router.navigate(['/App/requisition-details'], {
+    //   queryParams: { id: item.id },
+    // });
+    // this.modalService.dismissAll();
   }
 
   initializeForms(): void {

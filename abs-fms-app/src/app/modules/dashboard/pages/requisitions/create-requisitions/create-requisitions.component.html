@@ -20,8 +20,57 @@
   </div>
 
   <!-- Main Content Area -->
-  <div class="content-section">
-    <p>Select an action from the buttons above to get started.</p>
+  <!-- <div class="content-section"> -->
+  <div class="content-sectio">
+    <!-- <p>Select an action from the buttons above to get started.</p> -->
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort>
+
+  <ng-container *ngFor="let column of displayedColumns" [matColumnDef]="column">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>
+      {{ column }}
+    </th>
+
+    <td mat-cell *matCellDef="let element">
+
+      <!-- Default cell content -->
+      <ng-template #normalCell>
+        {{ element[column] }}
+      </ng-template>
+
+      <ng-container *ngIf="column === 'actions'; else normalCell">
+        <button mat-button color="primary" (click)="authorize(element)">Authorize </button>
+
+        <button mat-button color="warn" (click)="reject(element)">Reject </button>
+
+        <!-- 3-dot menu -->
+        <button mat-icon-button [matMenuTriggerFor]="actionMenu" aria-label="Actions"><mat-icon>more_horiz</mat-icon></button>
+
+          
+        <!-- Dropdown for edit/view/delete -->
+        <mat-menu #actionMenu="matMenu">
+          <button mat-menu-item (click)="viewDetails(element)">
+            <mat-icon>visibility</mat-icon>
+            <span>View details</span>
+          </button>
+          <button mat-menu-item>
+            <mat-icon>edit</mat-icon>
+            <span>Edit</span>
+          </button>
+          <button mat-menu-item>
+            <mat-icon>delete</mat-icon>
+            <span>Delete</span>
+          </button>
+        </mat-menu>
+      </ng-container>
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+</table>
+<mat-paginator [pageSize]="8" [pageSizeOptions]="[10, 25, 50, 100]"></mat-paginator>
+
   </div>
 </div>
 

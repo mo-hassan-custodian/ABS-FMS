@@ -1,3 +1,10 @@
+td.mat-cell:last-child,
+th.mat-header-cell:last-child {
+  width: 280px; /* or 250px */
+  max-width: 280px;
+  white-space: nowrap;
+}
+
 .dashboard-container {
   padding: 20px;
   min-height: 100vh;
