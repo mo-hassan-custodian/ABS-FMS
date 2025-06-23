@@ -24,7 +24,7 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
 
   isProposal: boolean = false;
   searchResults: any[] = [];
-  displayedColumns: string[] = ['code', 'payee', 'amount', 'invoiceNo', 'narrative', 'bankAccount', 'status', 'actions'];
+  displayedColumns: string[] = ['code', 'payee', 'amount', 'invoiceNo', 'narrative', 'status', 'actions'];
 
   dataSource = new MatTableDataSource<Requisition>([]);
   requisitions: Requisition[] = [];
@@ -35,8 +35,9 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
   showCreateRequisitionModal = false;
   showCreatePayeeModal = false;
   showViewDetailsModal = false;
+  showEditModal = false;
   selectedRequisition: Requisition | null = null;
-  isEditMode = false;
+
   editForm!: FormGroup;
 
   // Payee autocomplete
@@ -260,41 +261,50 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
 
   viewDetails(item: Requisition): void {
     this.selectedRequisition = item;
-    this.isEditMode = false;
+     
     this.showViewDetailsModal = true;
   }
+
+editRequisition(element: Requisition): void {
+  this.selectedRequisition = element;
+  this.showEditModal = true; 
+    this.editForm.patchValue(element);
+}
 
   closeViewDetailsModal(): void {
     this.showViewDetailsModal = false;
     this.selectedRequisition = null;
-    this.isEditMode = false;
+     
+    this.editForm.reset();
+  }
+  closeEditModal(): void {
+    this.showEditModal = false;
     this.editForm.reset();
   }
 
-  enableEditMode(): void {
-    if (this.selectedRequisition) {
-      this.isEditMode = true;
-      // Populate edit form with current requisition data
-      this.editForm.patchValue({
-        payee: this.selectedRequisition.payee,
-        code: this.selectedRequisition.code,
-        chequePayee: this.selectedRequisition.chequePayee,
-        payeeBankBranch: this.selectedRequisition.payeeBankBranch,
-        payeeAccountNo: this.selectedRequisition.payeeAccountNo,
-        narrative: this.selectedRequisition.narrative,
-        invoiceNo: this.selectedRequisition.invoiceNo,
-        invoiceDate: this.selectedRequisition.invoiceDate,
-        amount: this.selectedRequisition.amount,
-        currency: this.selectedRequisition.currency,
-        bankAccount: this.selectedRequisition.bankAccount,
-        type: this.selectedRequisition.type,
-        paymentOption: this.selectedRequisition.paymentOption
-      });
-    }
-  }
+  // enableEditMode(): void {
+  //   if (this.selectedRequisition) {
+  //     // Populate edit form with current requisition data
+  //     this.editForm.patchValue({
+  //       payee: this.selectedRequisition.payee,
+  //       code: this.selectedRequisition.code,
+  //       chequePayee: this.selectedRequisition.chequePayee,
+  //       payeeBankBranch: this.selectedRequisition.payeeBankBranch,
+  //       payeeAccountNo: this.selectedRequisition.payeeAccountNo,
+  //       narrative: this.selectedRequisition.narrative,
+  //       invoiceNo: this.selectedRequisition.invoiceNo,
+  //       invoiceDate: this.selectedRequisition.invoiceDate,
+  //       amount: this.selectedRequisition.amount,
+  //       currency: this.selectedRequisition.currency,
+  //       bankAccount: this.selectedRequisition.bankAccount,
+  //       type: this.selectedRequisition.type,
+  //       paymentOption: this.selectedRequisition.paymentOption
+  //     });
+  //   }
+  // }
 
   cancelEdit(): void {
-    this.isEditMode = false;
+     
     this.editForm.reset();
   }
 
