@@ -335,7 +335,7 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
         });
     } else {
       this.markFormGroupTouched(this.editForm);
-      this.toastr.warning('Please fill in all required fields.', 'Validation Error');
+      this.toastr.warning('Please fill in all required fields', 'Validation Error');
     }
   }
 
@@ -352,7 +352,7 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
           },
           error: (error) => {
             console.error('Error deleting requisition:', error);
-            this.toastr.error('Error deleting requisition.', 'Error');
+            this.toastr.error('Error in deleting requisition.', 'Error');
           }
         });
     }
