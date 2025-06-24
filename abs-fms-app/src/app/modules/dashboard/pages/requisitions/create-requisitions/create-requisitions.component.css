@@ -17,7 +17,7 @@ th.mat-header-cell:last-child {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 30px;
-  background: white;
+  background: white; 
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -47,11 +47,13 @@ th.mat-header-cell:last-child {
 }
 
 .action-buttons button {
-  min-width: 160px;
-  height: 44px;
+  min-width: 180px;
+  height: 47px;
+  color: white;
+  background-color: #900000;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   padding: 0 16px;
   font-size: 14px;
   font-weight: 500;
@@ -66,6 +68,14 @@ th.mat-header-cell:last-child {
   height: 20px;
 }
 
+.subheader{
+  display: flex;
+  justify-content: space-between;
+  align-items:flex-start;
+  padding: 16px;
+  background-color: #fff;
+  border-bottom: 1px solid #e0e0e0;
+}
 .content-section {
   background: white;
   padding: 24px;
@@ -82,7 +92,7 @@ th.mat-header-cell:last-child {
 }
 
 .search-field {
-  width: 33.333%;
+  width: 300px;
   max-width: 400px;
   min-width: 250px;
 }
@@ -156,10 +166,7 @@ th.mat-header-cell:last-child {
   color: #d32f2f;
 }
 
-.status-paid {
-  background-color: #e1f5fe;
-  color: #0277bd;
-}
+
 
 /* Table Action Buttons */
 .table-action-buttons {
@@ -170,6 +177,15 @@ th.mat-header-cell:last-child {
   flex-wrap: nowrap;
   min-width: 150px;
 }
+
+
+.btn {
+  color: #fff;
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
 
 .table-action-buttons .action-btn,
 .action-buttons .action-btn {
@@ -199,43 +215,6 @@ th.mat-header-cell:last-child {
   width: 16px;
   height: 16px;
   margin: 0;
-}
-
-/* Specific button colors for table actions */
-.table-action-buttons .action-btn[color="primary"],
-.action-buttons .action-btn[color="primary"] {
-  background-color: #1976d2;
-  color: white;
-  border: none;
-}
-
-.table-action-buttons .action-btn[color="primary"]:hover,
-.action-buttons .action-btn[color="primary"]:hover {
-  background-color: #1565c0;
-}
-
-.table-action-buttons .action-btn[color="accent"],
-.action-buttons .action-btn[color="accent"] {
-  background-color: #388e3c;
-  color: white;
-  border: none;
-}
-
-.table-action-buttons .action-btn[color="accent"]:hover,
-.action-buttons .action-btn[color="accent"]:hover {
-  background-color: #2e7d32;
-}
-
-.table-action-buttons .action-btn[color="warn"],
-.action-buttons .action-btn[color="warn"] {
-  background-color: #d32f2f;
-  color: white;
-  border: none;
-}
-
-.table-action-buttons .action-btn[color="warn"]:hover,
-.action-buttons .action-btn[color="warn"]:hover {
-  background-color: #c62828;
 }
 
 /* No Data Message */
@@ -337,6 +316,8 @@ th.mat-header-cell:last-child {
 /* Modal Footer Button Styling */
 .modal-footer button {
   margin-left: 8px;
+  background-color: #900000;
+  color: white;
 }
 
 .modal-footer button:first-child {
@@ -409,6 +390,8 @@ th.mat-header-cell:last-child {
   max-height: 90vh;
   overflow-y: auto;
 }
+
+
 
 .modal-header {
   display: flex;

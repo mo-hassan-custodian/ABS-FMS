@@ -1,14 +1,18 @@
-import { NgModule } from '@angular/core';
+import { NgModule, isDevMode } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
 import { ToastrModule } from 'ngx-toastr';
-
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { MaterialModule } from './shared/material/material.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { LayoutModule } from './shared/layout/layout.module';
+import { StoreModule } from '@ngrx/store';
+import { EffectsModule } from '@ngrx/effects';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { requisitionReducer } from './app-state/reducers/requisition.reducer';
 
 @NgModule({
   declarations: [
@@ -31,8 +35,14 @@ import { LayoutModule } from './shared/layout/layout.module';
     MaterialModule,
     DashboardModule,
     LayoutModule,
+    StoreModule.forRoot({requisitionState: requisitionReducer}, {}),
+    EffectsModule.forRoot([]),
+    StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: !isDevMode() }),
   ],
-  providers: [],
+ providers: [
+    { provide: MAT_DIALOG_DATA, useValue: {} },
+    { provide: MatDialogRef, useValue: {} } 
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
