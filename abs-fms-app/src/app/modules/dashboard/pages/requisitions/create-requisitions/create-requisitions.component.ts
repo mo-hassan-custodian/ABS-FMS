@@ -156,6 +156,7 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
   }
 
   loadRequisitions(): void {
+
     this.requisitionService.getAllRequisitions()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -262,23 +263,38 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
       });
   }
 
-  
 
   reject(element: Requisition): void {
-    this.requisitionService.updateRequisitionStatus(element.id, 'Rejected')
+    this._dialog.open(ConfirmationComponent, {
+      width: '400px',
+      data: {
+        title: 'Reject Requisition',
+        message: `Are you sure you want to reject the requisition with code ${element.code}?`,
+        confirmButtonText: 'Reject',
+        cancelButtonText: 'Cancel'
+      }
+    })
+      .afterClosed()
       .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (success) => {
-          if (success) {
-            this.toastr.warning('Requisition rejected successfully!', 'Rejected');
-            this.loadRequisitions();
-          }
-        },
-        error: (error) => {
-          console.error('Error rejecting requisition:', error);
-          this.toastr.error('Error rejecting requisition.', 'Error');
+      .subscribe(result => {
+        if (result) {
+          this.requisitionService.updateRequisitionStatus(element.id, 'Rejected')
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+              next: (success) => {
+                if (success) {
+                  this.toastr.warning('Requisition rejected successfully!', 'Rejected');
+                  this.loadRequisitions();
+                }
+              },
+              error: (error) => {
+                console.error('Error rejecting requisition:', error);
+                this.toastr.error('Error rejecting requisition.', 'Error');
+              }
+            });
         }
       });
+
   }
 
   viewDetails(item: Requisition): void {
@@ -372,22 +388,34 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
   }
 
   deleteRequisition(element: Requisition): void {
-    if (confirm('Are you sure you want to delete this requisition?')) {
-      this.requisitionService.deleteRequisition(element.id)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: (success) => {
-            if (success) {
-              this.toastr.success('Requisition deleted successfully!', 'Deleted');
-              this.loadRequisitions();
-            }
-          },
-          error: (error) => {
-            console.error('Error deleting requisition:', error);
-            this.toastr.error('Error deleting requisition.', 'Error');
-          }
-        });
-    }
+    this._dialog.open(ConfirmationComponent, {
+      width: '400px',
+      data: {
+        title: 'Delete Requisition',
+        message: `Are you sure you want to delete the requisition with code ${element.code}? This action cannot be undone.`,
+        confirmButtonText: 'Delete',
+        cancelButtonText: 'Cancel'
+      }
+    })
+      .afterClosed()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(result => {
+        if (result) {
+          this.requisitionService.deleteRequisition(element.id)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+              next: () => {
+                this.toastr.success('Requisition deleted successfully!', 'Deleted');
+                this.loadRequisitions(); // Refresh the table
+              },
+              error: (error) => {
+                console.error('Error deleting requisition:', error);
+                this.toastr.error('Error deleting requisition. Please try again.', 'Error');
+              }
+            });
+        }
+      }
+      );
   }
 
   // Search functionality
