@@ -383,7 +383,7 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
         });
     } else {
       this.markFormGroupTouched(this.editForm);
-      this.toastr.warning('Please fill in all required fields.', 'Validation Error');
+      this.toastr.warning('Please fill in all required fields', 'Validation Error');
     }
   }
 
@@ -416,7 +416,6 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
         }
       }
       );
-  }
 
   // Search functionality
   applyFilter(event: Event): void {
