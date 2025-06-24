@@ -7,21 +7,25 @@ import { DashboardComponent } from './dashboard.component';
 import { MaterialModule } from '../../shared/material/material.module';
 import { CreateRequisitionsComponent } from './pages/requisitions/create-requisitions/create-requisitions.component';
 import { CreatePayeeComponent } from './pages/requisitions/create-payee/create-payee.component';
+import { share } from 'rxjs';
+import { SharedModule } from '../../shared/modules/shared.module';
 
 @NgModule({
   declarations: [
     DashboardComponent,
     CreateRequisitionsComponent,
-    CreatePayeeComponent
+    CreatePayeeComponent,
   ],
   imports: [
     CommonModule,
     ReactiveFormsModule,
     DashboardRoutingModule,
-    MaterialModule
+    MaterialModule,
+    SharedModule  
   ],
   exports: [
-    DashboardComponent
+    DashboardComponent,
+  
   ]
 })
 export class DashboardModule { }

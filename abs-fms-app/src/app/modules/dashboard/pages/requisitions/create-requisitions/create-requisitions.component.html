@@ -11,7 +11,7 @@
   <div class="content-section">
     <!-- Header Section -->
     <div class="subheader">
-      <!-- Search Bar -->
+      <!-- Search Bar  -->
       <div class="search-section">
         <mat-form-field appearance="outline" class="search-field">
           <mat-label>Search Requisitions</mat-label>
@@ -106,7 +106,7 @@
                   <mat-icon>edit</mat-icon>
                   <span>Edit</span>
                 </button>
-                <button mat-menu-item>
+                <button mat-menu-item (click)="deleteRequisition(element)">
                   <mat-icon>delete</mat-icon>
                   <span>Delete</span>
                 </button>
@@ -138,8 +138,6 @@
     </div>
   </div>
 </div>
-
-
 
 <!-- Create Requisition Modal -->
 <div class="modal-overlay" *ngIf="showCreateRequisitionModal" (click)="closeCreateRequisitionModal()">
