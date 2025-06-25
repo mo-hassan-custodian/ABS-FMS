@@ -4,6 +4,8 @@ import { DashboardComponent } from './modules/dashboard/dashboard.component';
 import { LayoutComponent } from './shared/layout/layout.component';
 import { CreateRequisitionsComponent } from './modules/dashboard/pages/requisitions/create-requisitions/create-requisitions.component';
 import { CreatePayeeComponent } from './modules/dashboard/pages/requisitions/create-payee/create-payee.component';
+import { AuthorizedFileTransferComponent } from './modules/dashboard/pages/payments/authorized-file-transfer/authorized-file-transfer.component';
+import { AuthorizedFileTransferViewComponent } from './modules/dashboard/pages/payments/authorized-file-transfer-view/authorized-file-transfer-view.component';
 
 const routes: Routes = [
   {
@@ -42,7 +44,15 @@ const routes: Routes = [
       {
         path: 'create-payee',
         component: CreatePayeeComponent
-      }
+      },
+      {
+        path: 'authorized-file-transfer',
+        component: AuthorizedFileTransferComponent
+      },
+      {
+        path: 'authorized-file-transfer-view',
+        component: AuthorizedFileTransferViewComponent
+      },
     ]
   }
   // Add more routes here as needed

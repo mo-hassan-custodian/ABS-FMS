@@ -1,0 +1,184 @@
+<div class="container">
+  <!-- Header Section -->
+  <div class="header-section">
+    <div class="title-section">
+      <button mat-icon-button (click)="goBack()" class="back-button" matTooltip="Go Back">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div class="title-content">
+        <h2>Transfer Details</h2>
+        <p *ngIf="transfer">{{ transfer.voucherNoRef }} - {{ getTypeLabel(transfer.type) }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading transfer details...</p>
+  </div>
+
+  <!-- Action Buttons Section -->
+      <div class="action-buttons-section">
+        <div class="action-buttons-container">
+          <!-- Change Bank Account Button -->
+          <div class="bank-account-section">
+            <mat-form-field appearance="outline" class="bank-account-field">
+              <mat-label>Select Bank Account</mat-label>
+              <mat-select [(value)]="selectedBankAccount" (selectionChange)="onBankAccountChange($event)">
+                <mat-option *ngFor="let account of bankAccounts" [value]="account.value">
+                  {{ account.label }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <button mat-stroked-button color="primary" (click)="changeBankAccount()"
+                    [disabled]="!selectedBankAccount" class="change-account-btn">
+              <mat-icon>account_balance</mat-icon>
+              Change Bank Account
+            </button>
+          </div>
+
+          <!-- Authorize Button -->
+          <button mat-raised-button color="accent" (click)="authorizePayment()"
+                  [disabled]="!selectedBankAccount" class="authorize-btn">
+            <mat-icon>verified</mat-icon>
+            Authorize Payment
+          </button>
+
+          <!-- Go to Update EFTs Button -->
+          <button mat-raised-button color="warn" (click)="goToUpdateEFTs()" class="update-efts-btn">
+            <mat-icon>update</mat-icon>
+            Go to Update EFTs
+          </button>
+        </div>
+      </div>
+
+
+  <!-- Transfer Details -->
+  <div *ngIf="!isLoading && transfer" class="details-section">
+    <mat-card class="details-card">
+      <mat-card-header>
+        <mat-card-title>
+          <div class="card-title-content">
+            <span class="card-title-space">{{ transfer.voucherNoRef }}</span>
+            <div class="badges">
+              <span class="type-badge type-{{ transfer.type.toLowerCase() }}">
+                {{ getTypeLabel(transfer.type) }}
+              </span>
+            </div>
+          </div>
+        </mat-card-title>
+      </mat-card-header>
+
+      
+      <mat-card-content>
+        <div class="details-grid">
+          <!-- Basic Information -->
+          <div class="detail-section">
+            <h3 class="section-title">Basic Information</h3>
+            <div class="detail-row">
+              <label>Voucher No/Ref:</label>
+              <span>{{ transfer.voucherNoRef }}</span>
+            </div>
+            <div class="detail-row">
+              <label>Date:</label>
+              <span>{{ transfer.date | date:'dd/MM/yyyy' }}</span>
+            </div>
+            <div class="detail-row">
+              <label>Type:</label>
+              <span class="type-badge type-{{ transfer.type.toLowerCase() }}">
+                {{ getTypeLabel(transfer.type) }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Financial Information -->
+          <div class="detail-section">
+            <h3 class="section-title">Financial Information</h3>
+            <div class="detail-row">
+              <label>Amount Payee:</label>
+              <span class="amount-highlight">
+                {{ formatCurrency(transfer.amountPayee, transfer.currencyCode) }}
+              </span>
+            </div>
+            <div class="detail-row">
+              <label>Currency Code:</label>
+              <span>{{ transfer.currencyCode }}</span>
+            </div>
+            <div class="detail-row">
+              <label>Bank Account:</label>
+              <span>{{ transfer.bankAccount }}</span>
+            </div>
+          </div>
+
+          <!-- Authorization Information -->
+          <div class="detail-section">
+            <h3 class="section-title">Authorization Information</h3>
+            <div class="detail-row">
+              <label>Authorized By:</label>
+              <span>{{ transfer.authorisedBy }}</span>
+            </div>
+            <div class="detail-row">
+              <label>Authorization Date:</label>
+              <span>{{ transfer.authorizationDate | date:'dd/MM/yyyy' }}</span>
+            </div>
+            <div class="detail-row">
+              <label>Prepared By:</label>
+              <span>{{ transfer.preparedBy }}</span>
+            </div>
+            <div class="detail-row">
+              <label>Request Date:</label>
+              <span>{{ transfer.requestDate | date:'dd/MM/yyyy' }}</span>
+            </div>
+          </div>
+
+          <!-- Document Information -->
+          <div class="detail-section">
+            <h3 class="section-title">Document Information</h3>
+            <div class="detail-row">
+              <label>Document:</label>
+              <span class="document-link">{{ transfer.document }}</span>
+            </div>
+          </div>
+
+          <!-- Description Information -->
+          <div class="detail-section full-width">
+            <h3 class="section-title">Description</h3>
+            <div class="detail-row">
+              <label>Remarks:</label>
+              <span class="description-text">{{ transfer.remarks }}</span>
+            </div>
+            <div class="detail-row">
+              <label>Narrative:</label>
+              <span class="description-text">{{ transfer.narrative }}</span>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+
+      <mat-card-actions class="card-actions">
+        <button mat-raised-button (click)="goBack()">
+          <mat-icon>arrow_back</mat-icon>
+          Back to Search
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="!isLoading && !transfer" class="error-section">
+    <mat-card class="error-card">
+      <mat-card-content>
+        <div class="error-content">
+          <mat-icon class="error-icon">error_outline</mat-icon>
+          <h3>Transfer Not Found</h3>
+          <p>The requested transfer could not be found or may have been removed.</p>
+          <button mat-raised-button color="primary" (click)="goBack()">
+            <mat-icon>arrow_back</mat-icon>
+            Back to Search
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

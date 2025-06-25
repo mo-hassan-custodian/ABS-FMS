@@ -416,6 +416,7 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
         }
       }
       );
+    }
 
   // Search functionality
   applyFilter(event: Event): void {
