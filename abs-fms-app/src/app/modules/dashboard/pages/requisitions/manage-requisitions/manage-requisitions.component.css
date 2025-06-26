@@ -5,8 +5,8 @@ th.mat-header-cell:last-child {
   white-space: nowrap;
 }
 
-/* Create Requisitions Component Styles */
-.create-requisitions-container {
+/* Manage Requisitions Component Styles */
+.manage-requisitions-container {
   padding: 20px;
   background-color: #f5f5f5;
   min-height: 100vh;
@@ -36,6 +36,340 @@ th.mat-header-cell:last-child {
   margin: 0;
   color: #666;
   font-size: 16px;
+}
+
+/* Search and Filter Section */
+.search-filter-section {
+  background: white;
+  padding: 24px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin-bottom: 24px;
+}
+
+.search-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.search-input-container {
+  width: 100%;
+}
+
+.search-field {
+  width: 100%;
+  max-width: 600px;
+}
+
+.filter-controls {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.filter-field {
+  min-width: 150px;
+  flex: 1;
+  max-width: 200px;
+}
+
+.clear-button {
+  height: 56px;
+  min-width: 140px;
+}
+
+/* Autocomplete Styles */
+.autocomplete-option {
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+  line-height: 1.4;
+}
+
+.autocomplete-option:last-child {
+  border-bottom: none;
+}
+
+.autocomplete-option:hover {
+  background-color: #f8f9fa;
+}
+
+.option-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.code {
+  font-weight: 600;
+  color: #1976d2;
+  font-size: 14px;
+}
+
+.type-badge {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.type-supplier {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.type-medical_provider {
+  background-color: #f3e5f5;
+  color: #7b1fa2;
+}
+
+.type-contractor {
+  background-color: #fff3e0;
+  color: #f57c00;
+}
+
+.type-employee {
+  background-color: #e8f5e8;
+  color: #388e3c;
+}
+
+.option-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.payee {
+  font-size: 14px;
+  color: #333;
+  font-weight: 500;
+}
+
+.amount {
+  font-size: 14px;
+  color: #2e7d32;
+  font-weight: 600;
+}
+
+.option-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.invoice {
+  font-size: 12px;
+  color: #666;
+}
+
+.status {
+  padding: 2px 6px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.status-pending {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.status-approved {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status-rejected {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.option-narrative {
+  margin: 6px 0;
+}
+
+.narrative {
+  font-size: 12px;
+  color: #666;
+  font-style: italic;
+  line-height: 1.3;
+}
+
+.option-dates {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 6px;
+}
+
+.created-date,
+.created-by {
+  font-size: 11px;
+  color: #888;
+}
+
+.created-date {
+  font-weight: 500;
+}
+
+.created-by {
+  font-style: italic;
+}
+
+/* Search Instructions */
+.search-instructions {
+  margin-top: 24px;
+}
+
+.instructions-card {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border: 1px solid #dee2e6;
+}
+
+.instructions-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.instructions-icon {
+  color: #6c757d;
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+  margin-top: 4px;
+}
+
+.instructions-text h3 {
+  margin: 0 0 12px 0;
+  color: #495057;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.instructions-text p {
+  margin: 0 0 12px 0;
+  color: #6c757d;
+  line-height: 1.5;
+}
+
+.instructions-text ul {
+  margin: 0 0 12px 0;
+  padding-left: 20px;
+  color: #6c757d;
+}
+
+.instructions-text li {
+  margin-bottom: 4px;
+  line-height: 1.4;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .manage-requisitions-container {
+    padding: 16px;
+  }
+
+  .header-section {
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+
+  .title-section h2 {
+    font-size: 24px;
+  }
+
+  .search-filter-section {
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+
+  .filter-controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .filter-field {
+    max-width: none;
+    min-width: unset;
+  }
+
+  .clear-button {
+    width: 100%;
+    height: 48px;
+  }
+
+  .search-field {
+    max-width: none;
+  }
+
+  .instructions-content {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .instructions-icon {
+    align-self: flex-start;
+  }
+
+  .autocomplete-option {
+    padding: 8px 0;
+  }
+
+  .option-header,
+  .option-details,
+  .option-meta,
+  .option-dates {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .option-narrative {
+    margin: 4px 0;
+  }
+
+  .narrative {
+    font-size: 11px;
+  }
+
+  .created-date,
+  .created-by {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .manage-requisitions-container {
+    padding: 12px;
+  }
+
+  .header-section {
+    padding: 12px;
+  }
+
+  .title-section h2 {
+    font-size: 20px;
+  }
+
+  .search-filter-section {
+    padding: 12px;
+  }
+
+  .instructions-text h3 {
+    font-size: 16px;
+  }
+
+  .instructions-text p,
+  .instructions-text li {
+    font-size: 14px;
+  }
 }
 
 

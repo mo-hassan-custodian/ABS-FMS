@@ -7,7 +7,7 @@ import { RequisitionService } from '../../../../../services/requisition.service'
 import { PayeeService } from '../../../../../services/payee.service';
 import { RequisitionCreateRequest } from '../../../../../models/requisition.model';
 import { Payee, PayeeCreateRequest } from '../../../../../models/payee.model';
-import { Router } from '@angular/router';
+
 import { BANK_ACCOUNTS, BANK_BRANCHES, CREATED_FROM_OPTIONS, CURRENCIES, PAYEE_TYPES, PAYMENT_OPTIONS } from '../../../../../constants/requisition.constants';
 
 @Component({
@@ -38,8 +38,7 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
     private formBuilder: FormBuilder,
     private requisitionService: RequisitionService,
     private payeeService: PayeeService,
-    private toastr: ToastrService,
-    private router: Router,
+    private toastr: ToastrService
   ) { }
 
   ngOnInit(): void {
@@ -194,7 +193,7 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
         .subscribe({
           next: () => {
             this.toastr.success('Requisition created successfully!', 'Success');
-            this.router.navigate(['/App/manage-requisitions']);
+            this.resetForm();
           },
           error: () => this.toastr.error('Error creating requisition. Please try again.', 'Error')
         });
@@ -305,5 +304,32 @@ export class CreateRequisitionsComponent implements OnInit, OnDestroy {
   formatCurrency(amount: number, currencyCode: string): string {
     const currency = this.currencies.find(c => c.value === currencyCode);
     return currency ? `${currency.symbol}${amount.toLocaleString()}` : amount.toString();
+  }
+
+  resetForm(): void {
+    this.requisitionForm.reset();
+    this.selectedPayee = null;
+
+    // Reset form to initial state
+    this.requisitionForm.patchValue({
+      payee: '',
+      chequePayee: '',
+      payeeBankBranch: '',
+      payeeAccountNo: '',
+      narrative: '',
+      invoiceNo: '',
+      invoiceDate: '',
+      amount: '',
+      currency: 'NGN',
+      bankAccount: '',
+      type: '',
+      paymentOption: ''
+    });
+
+    // Mark form as pristine and untouched
+    this.requisitionForm.markAsPristine();
+    this.requisitionForm.markAsUntouched();
+
+    console.log('Form reset successfully');
   }
 }

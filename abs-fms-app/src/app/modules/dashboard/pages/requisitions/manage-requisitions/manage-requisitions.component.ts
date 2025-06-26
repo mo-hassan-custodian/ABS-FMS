@@ -1,86 +1,157 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { Router } from '@angular/router';
+import { Observable, Subject } from 'rxjs';
+import { takeUntil, debounceTime, distinctUntilChanged, startWith, map } from 'rxjs/operators';
 import { ToastrService } from 'ngx-toastr';
+import { Requisition, RequisitionFilter } from '../../../../../models/requisition.model';
 import { RequisitionService } from '../../../../../services/requisition.service';
-import { Requisition } from '../../../../../models/requisition.model';
-import { MatDialog } from '@angular/material/dialog';
-import { ConfirmationComponent } from '../../../../../shared/dialog/confirmation/confirmation.component';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-import { BANK_ACCOUNTS, BANK_BRANCHES, CREATED_FROM_OPTIONS, CURRENCIES, PAYEE_TYPES, PAYMENT_OPTIONS } from '../../../../../constants/requisition.constants';
-import * as RequisitionActions from '../../../../../app-state/action/requisitions.action'
-import { Store } from '@ngrx/store';
+import { CURRENCIES, PAYEE_TYPES, PAYMENT_OPTIONS } from '../../../../../constants/requisition.constants';
 
 @Component({
   selector: 'app-manage-requisitions',
   templateUrl: './manage-requisitions.component.html',
   styleUrls: ['./manage-requisitions.component.css']
 })
-export class ManageRequisitionsComponent implements OnInit {
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
-
+export class ManageRequisitionsComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
-  displayedColumns: string[] = ['code', 'payee', 'amount', 'invoiceNo', 'narrative', 'status', 'actions'];
-  dataSource = new MatTableDataSource<Requisition>([]);
-  requisitions: Requisition[] = [];
-
-  // Modal and form state
-  showViewDetailsModal = false;
-  showEditModal = false;
+  // Search and filter
+  searchForm!: FormGroup;
+  allRequisitions: Requisition[] = [];
+  filteredRequisitions!: Observable<Requisition[]>;
   selectedRequisition: Requisition | null = null;
-  editForm!: FormGroup;
 
   // Dropdown data
-  bankBranches = BANK_BRANCHES;
   currencies = CURRENCIES;
-  bankAccounts = BANK_ACCOUNTS;
   payeeTypes = PAYEE_TYPES;
-  createdFromOptions = CREATED_FROM_OPTIONS;
   paymentOptions = PAYMENT_OPTIONS;
+
+  statusOptions = [
+    { value: 'ALL', label: 'All Status' },
+    { value: 'Pending', label: 'Pending' },
+    { value: 'Approved', label: 'Approved' },
+    { value: 'Rejected', label: 'Rejected' }
+  ];
+
+  typeOptions = [
+    { value: 'ALL', label: 'All Types' },
+    { value: 'SUPPLIER', label: 'Supplier' },
+    { value: 'MEDICAL_PROVIDER', label: 'Medical Provider' },
+    { value: 'CONTRACTOR', label: 'Contractor' },
+    { value: 'EMPLOYEE', label: 'Employee' }
+  ];
 
   constructor(
     private formBuilder: FormBuilder,
     private requisitionService: RequisitionService,
-    private store: Store,
-    private toastr: ToastrService,
-    private _dialog: MatDialog
+    private router: Router,
+    private toastr: ToastrService
   ) { }
 
   ngOnInit(): void {
-    this.initializeForms();
+    this.initializeSearchForm();
     this.loadRequisitions();
+    this.setupAutocomplete();
   }
 
-  ngAfterViewInit(): void {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
-  loadRequisitions(): void {
+  private initializeSearchForm(): void {
+    this.searchForm = this.formBuilder.group({
+      searchTerm: [''],
+      type: ['ALL'],
+      status: ['ALL'],
+      dateFrom: [''],
+      dateTo: ['']
+    });
+  }
+
+  private loadRequisitions(): void {
     this.requisitionService.getAllRequisitions()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (requisitions) => {
-          this.requisitions = requisitions;
-          this.dataSource.data = requisitions;
+          this.allRequisitions = requisitions;
+          console.log('Loaded requisitions:', requisitions.length);
         },
         error: (error) => {
           console.error('Error loading requisitions:', error);
+          this.toastr.error('Error loading requisitions', 'Error');
         }
       });
   }
 
-  applyFilter(event: Event): void {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
+  private setupAutocomplete(): void {
+    this.filteredRequisitions = this.searchForm.get('searchTerm')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      distinctUntilChanged(),
+      map(searchValue => this.filterRequisitions(searchValue || ''))
+    );
+  }
+
+  filterRequisitions(searchValue: string): Requisition[] {
+    if (!searchValue.trim()) {
+      return [];
     }
+
+    const formValue = this.searchForm.value;
+    let filtered = [...this.allRequisitions];
+
+    console.log('Search term:', searchValue, 'Total requisitions:', this.allRequisitions.length);
+
+    // Apply search term filter
+    const searchTerm = searchValue.toLowerCase();
+    filtered = filtered.filter(requisition =>
+      requisition.code.toLowerCase().includes(searchTerm) ||
+      requisition.payee.toLowerCase().includes(searchTerm) ||
+      requisition.narrative.toLowerCase().includes(searchTerm) ||
+      requisition.invoiceNo.toLowerCase().includes(searchTerm) ||
+      requisition.chequePayee.toLowerCase().includes(searchTerm) ||
+      requisition.type.toLowerCase().includes(searchTerm) ||
+      requisition.status.toLowerCase().includes(searchTerm)
+    );
+
+    console.log('Filtered results:', filtered.length);
+
+    // Apply type filter
+    if (formValue.type && formValue.type !== 'ALL') {
+      filtered = filtered.filter(requisition => requisition.type === formValue.type);
+    }
+
+    // Apply status filter
+    if (formValue.status && formValue.status !== 'ALL') {
+      filtered = filtered.filter(requisition => requisition.status === formValue.status);
+    }
+
+    // Apply date range filter
+    if (formValue.dateFrom) {
+      const dateFrom = new Date(formValue.dateFrom);
+      filtered = filtered.filter(requisition => requisition.createdDate >= dateFrom);
+    }
+    if (formValue.dateTo) {
+      const dateTo = new Date(formValue.dateTo);
+      filtered = filtered.filter(requisition => requisition.createdDate <= dateTo);
+    }
+
+    return filtered;
+  }
+
+  onRequisitionSelected(requisition: Requisition): void {
+    this.selectedRequisition = requisition;
+    this.toastr.info(`Opening requisition ${requisition.code}`, 'Loading...');
+    this.router.navigate(['/App/requisition-view', requisition.id]);
+  }
+
+  displayRequisitionInfo(requisition: Requisition | null | undefined): string {
+    if (!requisition) {
+      return '';
+    }
+    return `${requisition.code} - ${requisition.payee}`;
   }
 
   formatCurrency(amount: number, currencyCode: string): string {
@@ -88,119 +159,30 @@ export class ManageRequisitionsComponent implements OnInit {
     return currency ? `${currency.symbol}${amount.toLocaleString()}` : amount.toString();
   }
 
-  authorize(element: Requisition): void {
-    this._dialog.open(ConfirmationComponent, {
-      width: '400px',
-      data: {
-        title: 'Authorize Requisition',
-        message: `Are you sure you want to authorize the requisition with code ${element.code}?`,
-        confirmButtonText: 'Authorize',
-        cancelButtonText: 'Cancel'
-      }
-    }).afterClosed().subscribe(result => {
-      if (result) {
-        this.store.dispatch(RequisitionActions.authorizeRequisition({ id: element.id }));
-      }
+  getTypeLabel(type: string): string {
+    const typeOption = this.typeOptions.find(option => option.value === type);
+    return typeOption ? typeOption.label : type;
+  }
+
+  getStatusLabel(status: string): string {
+    const statusOption = this.statusOptions.find(option => option.value === status);
+    return statusOption ? statusOption.label : status;
+  }
+
+  clearSearch(): void {
+    this.searchForm.patchValue({
+      searchTerm: '',
+      type: 'ALL',
+      status: 'ALL',
+      dateFrom: '',
+      dateTo: ''
     });
   }
 
-  reject(element: Requisition): void {
-    this._dialog.open(ConfirmationComponent, {
-      width: '400px',
-      data: {
-        title: 'Reject Requisition',
-        message: `Are you sure you want to reject the requisition with code ${element.code}?`,
-        confirmButtonText: 'Reject',
-        cancelButtonText: 'Cancel'
-      }
-    }).afterClosed().subscribe(result => {
-      if (result) {
-        this.store.dispatch(RequisitionActions.rejectRequisition({ id: element.id }));
-      }
-    });
-  }
-
-
-  viewDetails(item: Requisition): void {
-    this.selectedRequisition = item;
-    this.showViewDetailsModal = true;
-  }
-
-  closeViewDetailsModal(): void {
-    this.showViewDetailsModal = false;
-    this.selectedRequisition = null;
-    this.editForm.reset();
-  }
-
-  editRequisition(element: Requisition): void {
-    this.selectedRequisition = element;
-    this.showEditModal = true;
-    this.editForm.patchValue(element);
-  }
-
-  closeEditModal(): void {
-    this.showEditModal = false;
-    this.editForm.reset();
-  }
-
-  cancelEdit(): void {
-    this.editForm.reset();
-  }
-
-  updateRequisition(): void {
-  if (this.editForm.valid && this.selectedRequisition) {
-    const updates = this.editForm.value;
-    this.store.dispatch(RequisitionActions.updateRequisition({
-      requisition: { ...this.selectedRequisition, ...updates }
-    }));
-    this.closeEditModal();
-  } else {
-    this.markFormGroupTouched(this.editForm);
-    this.toastr.warning('Please fill in all required fields.', 'Validation Error');
+  trackByRequisitionId(index: number, requisition: Requisition): string {
+    return requisition.id;
   }
 }
-
-  deleteRequisition(element: Requisition): void {
-    // ...existing logic...
-  }
-
-  initializeForms(): void {
-    this.editForm = this.formBuilder.group({
-      payee: ['', Validators.required],
-      code: ['', [Validators.required, Validators.minLength(3)]],
-      chequePayee: ['', Validators.required],
-      payeeBankBranch: ['', Validators.required],
-      payeeAccountNo: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
-      narrative: ['', [Validators.required, Validators.maxLength(500)]],
-      invoiceNo: ['', Validators.required],
-      invoiceDate: [null, Validators.required],
-      amount: ['', [Validators.required, Validators.min(0.01)]],
-      currency: ['NGN', Validators.required],
-      bankAccount: ['', Validators.required],
-      type: ['', Validators.required],
-      paymentOption: ['', Validators.required]
-    });
-  }
-
-    // --- Form helpers ---
-  private markFormGroupTouched(formGroup: FormGroup): void {
-    Object.values(formGroup.controls).forEach(control => control.markAsTouched());
-  }
-}
-
-
-
-//   constructor(
-//     private formBuilder: FormBuilder,
-//     private requisitionService: RequisitionService,
-//     private payeeService: PayeeService,
-//     private toastr: ToastrService,
-//     private _dialog: MatDialog
-//   ) { }
-
-//   ngOnInit(): void {
-//     this.initializeForms();
-//     this.loadRequisitions();
 //     this.loadPayees();
 //     this.setupPayeeAutocomplete();
 //     this.subscribeToPayeeCreation();

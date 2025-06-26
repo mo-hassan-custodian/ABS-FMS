@@ -33,3 +33,11 @@ export interface RequisitionCreateRequest {
   type: string;
   paymentOption: string;
 }
+
+export interface RequisitionFilter {
+  searchTerm?: string;
+  type?: string;
+  status?: string;
+  dateFrom?: Date;
+  dateTo?: Date;
+}

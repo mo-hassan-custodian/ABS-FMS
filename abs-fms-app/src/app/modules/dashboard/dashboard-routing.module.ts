@@ -6,6 +6,7 @@ import { CreatePayeeComponent } from './pages/Payee/create-payee/create-payee.co
 import { ManageRequisitionsComponent } from './pages/requisitions/manage-requisitions/manage-requisitions.component';
 import { AuthorizedFileTransferComponent } from './pages/payments/authorized-file-transfer/authorized-file-transfer.component';
 import { AuthorizedFileTransferViewComponent } from './pages/payments/authorized-file-transfer-view/authorized-file-transfer-view.component';
+import { RequisitionViewComponent } from './pages/requisitions/requisition-view/requisition-view.component';
 
 const routes: Routes = [
   {
@@ -29,9 +30,12 @@ const routes: Routes = [
     component: AuthorizedFileTransferViewComponent
   },
   {
- 
     path: 'manage-requisitions',
     component: ManageRequisitionsComponent
+  },
+  {
+    path: 'requisition-view/:id',
+    component: RequisitionViewComponent
   }
   // Add more dashboard child routes here as needed
   // Example:

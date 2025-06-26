@@ -7,6 +7,7 @@ import { AuthorizedFileTransferComponent } from './modules/dashboard/pages/payme
 import { AuthorizedFileTransferViewComponent } from './modules/dashboard/pages/payments/authorized-file-transfer-view/authorized-file-transfer-view.component';
 import { CreatePayeeComponent } from './modules/dashboard/pages/Payee/create-payee/create-payee.component';
 import { ManageRequisitionsComponent } from './modules/dashboard/pages/requisitions/manage-requisitions/manage-requisitions.component';
+import { RequisitionViewComponent } from './modules/dashboard/pages/requisitions/requisition-view/requisition-view.component';
 
 const routes: Routes = [
   {
@@ -57,6 +58,10 @@ const routes: Routes = [
       {
         path: 'manage-requisitions',
         component: ManageRequisitionsComponent
+      },
+      {
+        path: 'requisition-view/:id',
+        component: RequisitionViewComponent
       }
     ]
   }

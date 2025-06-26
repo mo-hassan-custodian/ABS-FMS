@@ -12,6 +12,7 @@ import { SharedModule } from '../../shared/modules/shared.module';
 import { AuthorizedFileTransferComponent } from './pages/payments/authorized-file-transfer/authorized-file-transfer.component';
 import { AuthorizedFileTransferViewComponent } from './pages/payments/authorized-file-transfer-view/authorized-file-transfer-view.component';
 import { ManageRequisitionsComponent } from './pages/requisitions/manage-requisitions/manage-requisitions.component';
+import { RequisitionViewComponent } from './pages/requisitions/requisition-view/requisition-view.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { ManageRequisitionsComponent } from './pages/requisitions/manage-requisi
     CreatePayeeComponent,
     AuthorizedFileTransferComponent,
     AuthorizedFileTransferViewComponent,
-    ManageRequisitionsComponent
+    ManageRequisitionsComponent,
+    RequisitionViewComponent
   ],
   imports: [
     CommonModule,
