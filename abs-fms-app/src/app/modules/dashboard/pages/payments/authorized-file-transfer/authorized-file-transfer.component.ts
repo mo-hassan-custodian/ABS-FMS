@@ -46,6 +46,10 @@ export class AuthorizedFileTransferComponent implements OnInit, OnDestroy {
     this.initializeSearchForm();
     this.loadTransfers();
     this.setupAutocomplete();
+
+    // Temporary: Clear and regenerate data to fix any issues
+    // Remove this after testing
+    this.transferService.clearAndRegenerate();
   }
 
   ngOnDestroy(): void {
@@ -99,6 +103,8 @@ export class AuthorizedFileTransferComponent implements OnInit, OnDestroy {
 
     // Apply search term filter
     const searchTerm = searchValue.toLowerCase();
+    console.log('Search term:', searchTerm, 'Total transfers:', this.allTransfers.length);
+
     filtered = filtered.filter(transfer =>
       transfer.remarks.toLowerCase().includes(searchTerm) ||
       transfer.voucherNoRef.toLowerCase().includes(searchTerm) ||
@@ -106,8 +112,11 @@ export class AuthorizedFileTransferComponent implements OnInit, OnDestroy {
       transfer.bankAccount.toLowerCase().includes(searchTerm) ||
       transfer.authorisedBy.toLowerCase().includes(searchTerm) ||
       transfer.preparedBy.toLowerCase().includes(searchTerm) ||
-      transfer.document.toLowerCase().includes(searchTerm)
+      transfer.document.toLowerCase().includes(searchTerm) ||
+      (transfer.payee && transfer.payee.toLowerCase().includes(searchTerm))
     );
+
+    console.log('Filtered results:', filtered.length);
 
     // Apply type filter
     if (formValue.type && formValue.type !== 'ALL') {

@@ -20,6 +20,12 @@ export class AuthorizedFileTransferService {
     this.loadTransfersFromStorage();
   }
 
+  // Method to clear localStorage and regenerate data (for debugging)
+  clearAndRegenerate(): void {
+    localStorage.removeItem(this.STORAGE_KEY);
+    this.initializeSampleData();
+  }
+
   private loadTransfersFromStorage(): void {
     try {
       const stored = localStorage.getItem(this.STORAGE_KEY);
@@ -77,7 +83,8 @@ export class AuthorizedFileTransferService {
         preparedBy: 'Michael Chen',
         requestDate: getRandomDate(5),
         type: 'CLAIMS',
-        document: 'CLAIM_SETTLEMENT_FORM_001.pdf'
+        document: 'CLAIM_SETTLEMENT_FORM_001.pdf',
+        payee: 'Abel Jack'
       },
       {
         id: 'AFT-002',
@@ -93,7 +100,8 @@ export class AuthorizedFileTransferService {
         preparedBy: 'Lisa Anderson',
         requestDate: getRandomDate(4),
         type: 'CLAIMS',
-        document: 'FIRE_CLAIM_REPORT_002.pdf'
+        document: 'FIRE_CLAIM_REPORT_002.pdf',
+        payee: 'Bimbo Chidera'
       },
       {
         id: 'AFT-003',
@@ -109,7 +117,8 @@ export class AuthorizedFileTransferService {
         preparedBy: 'James Rodriguez',
         requestDate: getRandomDate(3),
         type: 'CLAIMS',
-        document: 'MEDICAL_CLAIM_003.pdf'
+        document: 'MEDICAL_CLAIM_003.pdf',
+        payee: 'Chioma Ade'
       },
       {
         id: 'AFT-004',
@@ -125,7 +134,8 @@ export class AuthorizedFileTransferService {
         preparedBy: 'Grace Adebayo',
         requestDate: getRandomDate(6),
         type: 'CLAIMS',
-        document: 'FLOOD_CLAIM_004.pdf'
+        document: 'FLOOD_CLAIM_004.pdf',
+        payee: 'Dolapo'
       },
       {
         id: 'AFT-005',
@@ -141,7 +151,8 @@ export class AuthorizedFileTransferService {
         preparedBy: 'Olumide Fashola',
         requestDate: getRandomDate(5),
         type: 'CLAIMS',
-        document: 'MARINE_CLAIM_005.pdf'
+        document: 'MARINE_CLAIM_005.pdf',
+        payee: 'Dayo'
       },
       {
         id: 'AFT-006',
@@ -157,7 +168,8 @@ export class AuthorizedFileTransferService {
         preparedBy: 'Emeka Okonkwo',
         requestDate: getRandomDate(7),
         type: 'CLAIMS',
-        document: 'AVIATION_CLAIM_006.pdf'
+        document: 'AVIATION_CLAIM_006.pdf',
+        payee: 'Segun'
       },
       {
         id: 'AFT-007',
@@ -173,7 +185,8 @@ export class AuthorizedFileTransferService {
         preparedBy: 'Funmi Adebisi',
         requestDate: getRandomDate(4),
         type: 'CLAIMS',
-        document: 'PROFESSIONAL_CLAIM_007.pdf'
+        document: 'PROFESSIONAL_CLAIM_007.pdf',
+        payee: 'Salewa'
       },
       {
         id: 'AFT-008',
@@ -189,7 +202,8 @@ export class AuthorizedFileTransferService {
         preparedBy: 'Kemi Ogundimu',
         requestDate: getRandomDate(3),
         type: 'CLAIMS',
-        document: 'WORKMEN_CLAIM_008.pdf'
+        document: 'WORKMEN_CLAIM_008.pdf',
+        payee: 'James'
       },
       {
         id: 'AFT-009',
@@ -205,7 +219,8 @@ export class AuthorizedFileTransferService {
         preparedBy: 'Tunde Bakare',
         requestDate: getRandomDate(8),
         type: 'CLAIMS',
-        document: 'CYBER_CLAIM_009.pdf'
+        document: 'CYBER_CLAIM_009.pdf',
+        payee: 'Johnson'
       },
       {
         id: 'AFT-010',
@@ -221,7 +236,8 @@ export class AuthorizedFileTransferService {
         preparedBy: 'Adebola Ogundipe',
         requestDate: getRandomDate(6),
         type: 'CLAIMS',
-        document: 'DO_CLAIM_010.pdf'
+        document: 'DO_CLAIM_010.pdf',
+        payee: 'Michael'
       },
 
       // Commission Data (Recent)
@@ -239,7 +255,8 @@ export class AuthorizedFileTransferService {
         preparedBy: 'Jennifer Lee',
         requestDate: getRandomDate(4),
         type: 'COMMISSIONS',
-        document: 'COMMISSION_STATEMENT_Q1_2024.pdf'
+        document: 'COMMISSION_STATEMENT_Q1_2024.pdf',
+        payee: 'Jonah'
       },
       {
         id: 'AFT-012',
@@ -255,7 +272,8 @@ export class AuthorizedFileTransferService {
         preparedBy: 'Kevin Brown',
         requestDate: getRandomDate(2),
         type: 'COMMISSIONS',
-        document: 'LIFE_BROKER_COMMISSION_012.pdf'
+        document: 'LIFE_BROKER_COMMISSION_012.pdf',
+        payee: 'Jamiu'
       },
       {
         id: 'AFT-013',
@@ -271,7 +289,8 @@ export class AuthorizedFileTransferService {
         preparedBy: 'Funmi Adebisi',
         requestDate: getRandomDate(6),
         type: 'COMMISSIONS',
-        document: 'REINSURANCE_COMMISSION_013.pdf'
+        document: 'REINSURANCE_COMMISSION_013.pdf',
+        payee: 'Rosemary'
       },
       {
         id: 'AFT-014',
@@ -287,7 +306,8 @@ export class AuthorizedFileTransferService {
         preparedBy: 'Tunde Bakare',
         requestDate: getRandomDate(5),
         type: 'COMMISSIONS',
-        document: 'MOTOR_AGENT_COMMISSION_014.pdf'
+        document: 'MOTOR_AGENT_COMMISSION_014.pdf',
+        payee: 'Sunday'
       },
       {
         id: 'AFT-015',
@@ -303,7 +323,8 @@ export class AuthorizedFileTransferService {
         preparedBy: 'Grace Adebayo',
         requestDate: getRandomDate(7),
         type: 'COMMISSIONS',
-        document: 'CORPORATE_BROKER_015.pdf'
+        document: 'CORPORATE_BROKER_015.pdf',
+        payee: 'Remi'
       },
       {
         id: 'AFT-016',
@@ -319,7 +340,8 @@ export class AuthorizedFileTransferService {
         preparedBy: 'Kemi Ogundimu',
         requestDate: getRandomDate(4),
         type: 'COMMISSIONS',
-        document: 'HEALTH_AGENT_016.pdf'
+        document: 'HEALTH_AGENT_016.pdf',
+        payee: 'Tunde'
       },
       {
         id: 'AFT-017',
@@ -335,7 +357,8 @@ export class AuthorizedFileTransferService {
         preparedBy: 'Olumide Fashola',
         requestDate: getRandomDate(8),
         type: 'COMMISSIONS',
-        document: 'MARINE_BROKER_017.pdf'
+        document: 'MARINE_BROKER_017.pdf',
+        payee: 'Taju'
       },
       {
         id: 'AFT-018',
@@ -351,7 +374,8 @@ export class AuthorizedFileTransferService {
         preparedBy: 'Emeka Okonkwo',
         requestDate: getRandomDate(3),
         type: 'COMMISSIONS',
-        document: 'AVIATION_COMMISSION_018.pdf'
+        document: 'AVIATION_COMMISSION_018.pdf',
+        payee: 'Bunmi'
       },
       {
         id: 'AFT-019',
@@ -367,7 +391,8 @@ export class AuthorizedFileTransferService {
         preparedBy: 'Adebola Ogundipe',
         requestDate: getRandomDate(6),
         type: 'COMMISSIONS',
-        document: 'PROFESSIONAL_BROKER_019.pdf'
+        document: 'PROFESSIONAL_BROKER_019.pdf',
+        payee: 'Bimpe'
       },
       {
         id: 'AFT-020',
@@ -383,7 +408,8 @@ export class AuthorizedFileTransferService {
         preparedBy: 'Funmi Adebisi',
         requestDate: getRandomDate(5),
         type: 'COMMISSIONS',
-        document: 'FIRE_AGENT_020.pdf'
+        document: 'FIRE_AGENT_020.pdf',
+        payee: 'Seun'
       },
 
       // Policy Maturity Data (Recent)
@@ -401,7 +427,8 @@ export class AuthorizedFileTransferService {
         preparedBy: 'Thomas Wilson',
         requestDate: getRandomDate(4),
         type: 'POLICY_MATURITY',
-        document: 'LIFE_MATURITY_021.pdf'
+        document: 'LIFE_MATURITY_021.pdf',
+        payee: 'kemi'
       },
       {
         id: 'AFT-022',
@@ -417,7 +444,8 @@ export class AuthorizedFileTransferService {
         preparedBy: 'Amanda Garcia',
         requestDate: getRandomDate(3),
         type: 'POLICY_MATURITY',
-        document: 'ENDOWMENT_MATURITY_022.pdf'
+        document: 'ENDOWMENT_MATURITY_022.pdf',
+        payee: 'Kunle'
       },
       {
         id: 'AFT-023',
@@ -433,7 +461,8 @@ export class AuthorizedFileTransferService {
         preparedBy: 'Grace Adebayo',
         requestDate: getRandomDate(6),
         type: 'POLICY_MATURITY',
-        document: 'TERM_MATURITY_023.pdf'
+        document: 'TERM_MATURITY_023.pdf',
+        payee: 'Kayode'
       },
       {
         id: 'AFT-024',
@@ -449,7 +478,8 @@ export class AuthorizedFileTransferService {
         preparedBy: 'Kemi Ogundimu',
         requestDate: getRandomDate(5),
         type: 'POLICY_MATURITY',
-        document: 'WHOLE_LIFE_024.pdf'
+        document: 'WHOLE_LIFE_024.pdf',
+        payee: 'Johanna'
       },
       {
         id: 'AFT-025',
@@ -465,7 +495,8 @@ export class AuthorizedFileTransferService {
         preparedBy: 'Tunde Bakare',
         requestDate: getRandomDate(7),
         type: 'POLICY_MATURITY',
-        document: 'UNIVERSAL_LIFE_025.pdf'
+        document: 'UNIVERSAL_LIFE_025.pdf',
+        payee: 'Bose'
       },
       {
         id: 'AFT-026',
@@ -481,7 +512,8 @@ export class AuthorizedFileTransferService {
         preparedBy: 'Olumide Fashola',
         requestDate: getRandomDate(4),
         type: 'POLICY_MATURITY',
-        document: 'VARIABLE_LIFE_026.pdf'
+        document: 'VARIABLE_LIFE_026.pdf',
+        payee: 'Dayo'
       },
       {
         id: 'AFT-027',
@@ -497,7 +529,8 @@ export class AuthorizedFileTransferService {
         preparedBy: 'Emeka Okonkwo',
         requestDate: getRandomDate(8),
         type: 'POLICY_MATURITY',
-        document: 'GROUP_LIFE_027.pdf'
+        document: 'GROUP_LIFE_027.pdf',
+        payee: 'Bayo'
       },
       {
         id: 'AFT-028',
@@ -513,7 +546,8 @@ export class AuthorizedFileTransferService {
         preparedBy: 'Funmi Adebisi',
         requestDate: getRandomDate(3),
         type: 'POLICY_MATURITY',
-        document: 'ANNUITY_028.pdf'
+        document: 'ANNUITY_028.pdf',
+        payee: 'Ife'
       },
       {
         id: 'AFT-029',
@@ -529,7 +563,8 @@ export class AuthorizedFileTransferService {
         preparedBy: 'Adebola Ogundipe',
         requestDate: getRandomDate(6),
         type: 'POLICY_MATURITY',
-        document: 'EDUCATION_029.pdf'
+        document: 'EDUCATION_029.pdf',
+        payee: 'Bright'
       },
       {
         id: 'AFT-030',
@@ -545,7 +580,8 @@ export class AuthorizedFileTransferService {
         preparedBy: 'Grace Adebayo',
         requestDate: getRandomDate(5),
         type: 'POLICY_MATURITY',
-        document: 'RETIREMENT_030.pdf'
+        document: 'RETIREMENT_030.pdf',
+        payee: 'Filomena'
       }
     ];
 
@@ -578,7 +614,8 @@ export class AuthorizedFileTransferService {
             transfer.bankAccount.toLowerCase().includes(searchTerm) ||
             transfer.authorisedBy.toLowerCase().includes(searchTerm) ||
             transfer.preparedBy.toLowerCase().includes(searchTerm) ||
-            transfer.document.toLowerCase().includes(searchTerm)
+            transfer.document.toLowerCase().includes(searchTerm) ||
+            transfer.payee.toLowerCase().includes(searchTerm)
           );
         }
 

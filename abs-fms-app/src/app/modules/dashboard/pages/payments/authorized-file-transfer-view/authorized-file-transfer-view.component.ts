@@ -28,6 +28,10 @@ export class AuthorizedFileTransferViewComponent implements OnInit, OnDestroy {
     { value: 'investment-006', label: 'Investment Account - 4444555566' }
   ];
 
+  // Modal states
+  showAuthorizationModal = false;
+  authorizationData: any = null;
+
   // Destroy subject for cleanup
   private destroy$ = new Subject<void>();
 
@@ -121,15 +125,30 @@ export class AuthorizedFileTransferViewComponent implements OnInit, OnDestroy {
 
     const selectedAccount = this.bankAccounts.find(account => account.value === this.selectedBankAccount);
     if (selectedAccount) {
-      // Show confirmation dialog or implement authorization logic
-      const confirmMessage = `Are you sure you want to authorize payment of ${this.formatCurrency(this.transfer.amountPayee, this.transfer.currencyCode)} from ${selectedAccount.label}?`;
-
-      if (confirm(confirmMessage)) {
-        this.toastr.success('Payment authorized successfully!', 'Authorized');
-        console.log('Payment authorized for:', this.transfer, 'from account:', selectedAccount);
-        // TODO: Implement actual authorization logic
-      }
+      // Prepare authorization data and show modal
+      this.authorizationData = {
+        transfer: this.transfer,
+        selectedAccount: selectedAccount,
+        amount: this.formatCurrency(this.transfer.amountPayee, this.transfer.currencyCode)
+      };
+      this.showAuthorizationModal = true;
     }
+  }
+
+  // Confirm authorization
+  confirmAuthorization(): void {
+    if (this.authorizationData) {
+      this.toastr.success('Payment authorized successfully!', 'Authorized');
+      console.log('Payment authorized for:', this.authorizationData.transfer, 'from account:', this.authorizationData.selectedAccount);
+      // TODO: Implement actual authorization logic
+      this.closeAuthorizationModal();
+    }
+  }
+
+  // Close authorization modal
+  closeAuthorizationModal(): void {
+    this.showAuthorizationModal = false;
+    this.authorizationData = null;
   }
 
   // Go to Update EFTs action

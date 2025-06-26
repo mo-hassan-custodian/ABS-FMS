@@ -13,6 +13,7 @@ export interface AuthorizedFileTransfer {
   requestDate: Date;
   type: 'CLAIMS' | 'COMMISSIONS' | 'POLICY_MATURITY';
   document: string;
+  payee: string;
 }
 
 export interface AuthorizedFileTransferCreateRequest {
@@ -29,6 +30,7 @@ export interface AuthorizedFileTransferCreateRequest {
   requestDate: Date;
   type: 'CLAIMS' | 'COMMISSIONS' | 'POLICY_MATURITY';
   document: string;
+  payee: string;
 }
 
 export interface AuthorizedFileTransferStats {
