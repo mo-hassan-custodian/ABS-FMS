@@ -2,7 +2,8 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { DashboardComponent } from './dashboard.component';
 import { CreateRequisitionsComponent } from './pages/requisitions/create-requisitions/create-requisitions.component';
-import { CreatePayeeComponent } from './pages/requisitions/create-payee/create-payee.component';
+import { CreatePayeeComponent } from './pages/Payee/create-payee/create-payee.component';
+import { ManageRequisitionsComponent } from './pages/requisitions/manage-requisitions/manage-requisitions.component';
 import { AuthorizedFileTransferComponent } from './pages/payments/authorized-file-transfer/authorized-file-transfer.component';
 import { AuthorizedFileTransferViewComponent } from './pages/payments/authorized-file-transfer-view/authorized-file-transfer-view.component';
 
@@ -27,7 +28,11 @@ const routes: Routes = [
     path: 'authorized-file-transfer-view',
     component: AuthorizedFileTransferViewComponent
   },
+  {
  
+    path: 'manage-requisitions',
+    component: ManageRequisitionsComponent
+  }
   // Add more dashboard child routes here as needed
   // Example:
   // {

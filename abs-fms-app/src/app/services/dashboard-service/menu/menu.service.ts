@@ -215,6 +215,12 @@ export class MenuService {
               "route": "/App/create-payee",
               "routeParameters": {}
             },
+            {
+              "icon": "visibility",
+              "name": "Manage Requisition",
+              "route": "/App/manage-requisitions",
+              "routeParameters": {}
+            },
           ]
         },
         {

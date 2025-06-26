@@ -13,6 +13,7 @@ export const selectRequisitionsLoading = createSelector(
     requisitionSelectors,
     (state) => state.loading
 );
+
 export const selectRequisitionsError = createSelector(
     requisitionSelectors,
     (state) => state.error
