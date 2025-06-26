@@ -3,7 +3,8 @@ import { RouterModule, Routes } from '@angular/router';
 import { DashboardComponent } from './modules/dashboard/dashboard.component';
 import { LayoutComponent } from './shared/layout/layout.component';
 import { CreateRequisitionsComponent } from './modules/dashboard/pages/requisitions/create-requisitions/create-requisitions.component';
-import { CreatePayeeComponent } from './modules/dashboard/pages/requisitions/create-payee/create-payee.component';
+import { CreatePayeeComponent } from './modules/dashboard/pages/Payee/create-payee/create-payee.component';
+import { ManageRequisitionsComponent } from './modules/dashboard/pages/requisitions/manage-requisitions/manage-requisitions.component';
 
 const routes: Routes = [
   {
@@ -42,6 +43,10 @@ const routes: Routes = [
       {
         path: 'create-payee',
         component: CreatePayeeComponent
+      },
+      {
+        path: 'manage-requisitions',
+        component: ManageRequisitionsComponent
       }
     ]
   }
