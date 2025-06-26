@@ -228,6 +228,12 @@ export class MenuService {
             },
             {
               "icon": "visibility",
+              "name": "Authorise File Transfer Payments",
+              "route": "/App/authorized-file-transfer",
+              "routeParameters": {}
+            },
+            {
+              "icon": "visibility",
               "name": "Setup Cheque Numbers",
               "route": "/App/setup-payments",
               "routeParameters": {}
@@ -325,12 +331,6 @@ export class MenuService {
             {
               "icon": "visibility",
               "name": "Cheques Status",
-              "route": "/App/setup-payments",
-              "routeParameters": {}
-            },
-            {
-              "icon": "visibility",
-              "name": "Authorise File Transfer Payments",
               "route": "/App/setup-payments",
               "routeParameters": {}
             },

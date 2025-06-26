@@ -9,12 +9,16 @@ import { CreateRequisitionsComponent } from './pages/requisitions/create-requisi
 import { CreatePayeeComponent } from './pages/requisitions/create-payee/create-payee.component';
 import { share } from 'rxjs';
 import { SharedModule } from '../../shared/modules/shared.module';
+import { AuthorizedFileTransferComponent } from './pages/payments/authorized-file-transfer/authorized-file-transfer.component';
+import { AuthorizedFileTransferViewComponent } from './pages/payments/authorized-file-transfer-view/authorized-file-transfer-view.component';
 
 @NgModule({
   declarations: [
     DashboardComponent,
     CreateRequisitionsComponent,
     CreatePayeeComponent,
+    AuthorizedFileTransferComponent,
+    AuthorizedFileTransferViewComponent
   ],
   imports: [
     CommonModule,
