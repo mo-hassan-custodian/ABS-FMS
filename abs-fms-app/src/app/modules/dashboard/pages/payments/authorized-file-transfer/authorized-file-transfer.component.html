@@ -2,8 +2,8 @@
   <!-- Header Section -->
   <div class="header-section">
     <div class="title-section">
-      <h2>Authorized File Transfer</h2>
-      <p>Search and manage authorized file transfers for claims, commissions, and policy maturity</p>
+      <h2>Authorized Payments</h2>
+      <p>Search and manage payments for claims, commissions, policy maturity, etc</p>
     </div>
   </div>
 
@@ -11,6 +11,35 @@
   <div class="search-filter-section">
     <form [formGroup]="searchForm" class="search-form">
       <div class="search-row">
+
+         <!-- Type Filter -->
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Type</mat-label>
+          <mat-select formControlName="type">
+            <mat-option *ngFor="let option of typeOptions" [value]="option.value">
+              {{ option.label }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Date Range Row -->
+      <div class="date-row">
+        <mat-form-field appearance="outline" class="date-field">
+          <mat-label>Date From</mat-label>
+          <input matInput [matDatepicker]="dateFromPicker" formControlName="dateFrom">
+          <mat-datepicker-toggle matSuffix [for]="dateFromPicker"></mat-datepicker-toggle>
+          <mat-datepicker #dateFromPicker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="date-field">
+          <mat-label>Date To</mat-label>
+          <input matInput [matDatepicker]="dateToPicker" formControlName="dateTo">
+          <mat-datepicker-toggle matSuffix [for]="dateToPicker"></mat-datepicker-toggle>
+          <mat-datepicker #dateToPicker></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+
         <!-- Search Input with Autocomplete -->
         <mat-form-field appearance="outline" class="search-field">
           <mat-label>Search Transfers</mat-label>
@@ -42,40 +71,25 @@
         </mat-form-field>
 
         <!-- Type Filter -->
-        <mat-form-field appearance="outline" class="filter-field">
+        <!-- <mat-form-field appearance="outline" class="filter-field">
           <mat-label>Type</mat-label>
           <mat-select formControlName="type">
             <mat-option *ngFor="let option of typeOptions" [value]="option.value">
               {{ option.label }}
             </mat-option>
           </mat-select>
-        </mat-form-field>
+        </mat-form-field> -->
 
 
 
         <!-- Clear Filters Button -->
-        <button mat-stroked-button type="button" (click)="clearFilters()" class="clear-btn">
+        <!-- <button mat-stroked-button type="button" (click)="clearFilters()" class="clear-btn">
           <mat-icon>clear</mat-icon>
           Clear Filters
-        </button>
+        </button> -->
       </div>
 
-      <!-- Date Range Row -->
-      <div class="date-row">
-        <mat-form-field appearance="outline" class="date-field">
-          <mat-label>Date From</mat-label>
-          <input matInput [matDatepicker]="dateFromPicker" formControlName="dateFrom">
-          <mat-datepicker-toggle matSuffix [for]="dateFromPicker"></mat-datepicker-toggle>
-          <mat-datepicker #dateFromPicker></mat-datepicker>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="date-field">
-          <mat-label>Date To</mat-label>
-          <input matInput [matDatepicker]="dateToPicker" formControlName="dateTo">
-          <mat-datepicker-toggle matSuffix [for]="dateToPicker"></mat-datepicker-toggle>
-          <mat-datepicker #dateToPicker></mat-datepicker>
-        </mat-form-field>
-      </div>
+      
     </form>
   </div>
 
