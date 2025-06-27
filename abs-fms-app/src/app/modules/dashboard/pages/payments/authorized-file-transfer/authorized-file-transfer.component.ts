@@ -1,9 +1,11 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ToastrService } from 'ngx-toastr';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
 
 import { AuthorizedFileTransfer, AuthorizedFileTransferFilter } from '../../../../../models/authorized-file-transfer.model';
 import { AuthorizedFileTransferService } from '../../../../../services/authorized-file-transfer.service';
@@ -13,11 +15,13 @@ import { AuthorizedFileTransferService } from '../../../../../services/authorize
   templateUrl: './authorized-file-transfer.component.html',
   styleUrl: './authorized-file-transfer.component.css'
 })
-export class AuthorizedFileTransferComponent implements OnInit, OnDestroy {
+export class AuthorizedFileTransferComponent implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+
   // Form and data
   searchForm!: FormGroup;
   allTransfers: AuthorizedFileTransfer[] = [];
-  searchResults: AuthorizedFileTransfer[] = [];
+  searchResults = new MatTableDataSource<AuthorizedFileTransfer>([]);
   searchPerformed = false;
 
   // Table configuration
@@ -56,6 +60,10 @@ export class AuthorizedFileTransferComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  ngAfterViewInit(): void {
+    this.searchResults.paginator = this.paginator;
   }
 
   initializeSearchForm(): void {
@@ -101,7 +109,7 @@ export class AuthorizedFileTransferComponent implements OnInit, OnDestroy {
 
     // Simulate API call delay
     setTimeout(() => {
-      this.searchResults = filtered;
+      this.searchResults.data = filtered;
       this.isLoading = false;
 
       if (filtered.length === 0 && searchTerm) {
@@ -179,7 +187,7 @@ export class AuthorizedFileTransferComponent implements OnInit, OnDestroy {
       dateFrom: '',
       dateTo: ''
     });
-    this.searchResults = [];
+    this.searchResults.data = [];
     this.searchPerformed = false;
   }
 

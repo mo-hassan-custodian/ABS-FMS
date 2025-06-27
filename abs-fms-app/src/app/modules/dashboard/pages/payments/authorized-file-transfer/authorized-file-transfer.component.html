@@ -67,7 +67,7 @@
   </div>
 
   <!-- Search Results Section -->
-  <div *ngIf="searchResults.length > 0 && !isLoading" class="search-results-section">
+  <div *ngIf="searchResults.data.length > 0 && !isLoading" class="search-results-section">
     <h3>Search Results</h3>
     <div class="table-container">
       <table mat-table [dataSource]="searchResults" class="search-results-table">
@@ -129,11 +129,20 @@
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="viewTransfer(row)" class="clickable-row"></tr>
       </table>
+
+      <!-- Pagination -->
+      <mat-paginator #paginator
+                     [length]="searchResults.data.length"
+                     [pageSize]="10"
+                     [pageSizeOptions]="[5, 10, 25, 50]"
+                     [showFirstLastButtons]="true"
+                     aria-label="Select page">
+      </mat-paginator>
     </div>
   </div>
 
   <!-- No Results Message -->
-  <div *ngIf="searchPerformed && searchResults.length === 0 && !isLoading" class="no-results-message">
+  <div *ngIf="searchPerformed && searchResults.data.length === 0 && !isLoading" class="no-results-message">
     <mat-icon>search_off</mat-icon>
     <h3>No Results Found</h3>
     <p>No payments found matching your search criteria. Please try different filters or search terms.</p>
