@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Requisition, RequisitionCreateRequest } from '../models/requisition.model';
 
 @Injectable({
@@ -45,6 +46,63 @@ export class RequisitionService {
       status: 'Pending',
       createdDate: new Date('2024-01-12'),
       createdBy: 'Jane Smith'
+    },
+    {
+      id: 'REQ-003',
+      code: 'REQ003',
+      payee: 'Tech Solutions Nigeria',
+      chequePayee: 'Tech Solutions Nigeria',
+      payeeBankBranch: 'Ikeja Branch',
+      payeeAccountNo: '1122334455',
+      narrative: 'IT equipment purchase for office upgrade',
+      invoiceNo: 'INV-2024-003',
+      invoiceDate: new Date('2024-01-16'),
+      amount: 250000,
+      currency: 'NGN',
+      bankAccount: 'Operating Account',
+      type: 'CONTRACTOR',
+      paymentOption: 'EFT',
+      status: 'Draft',
+      createdDate: new Date('2024-01-15'),
+      createdBy: 'Mike Johnson'
+    },
+    {
+      id: 'REQ-004',
+      code: 'REQ004',
+      payee: 'Employee Salary - Sarah Wilson',
+      chequePayee: 'Sarah Wilson',
+      payeeBankBranch: 'Lekki Branch',
+      payeeAccountNo: '5566778899',
+      narrative: 'Monthly salary payment for January 2024',
+      invoiceNo: 'SAL-2024-001',
+      invoiceDate: new Date('2024-01-31'),
+      amount: 180000,
+      currency: 'NGN',
+      bankAccount: 'Payroll Account',
+      type: 'EMPLOYEE',
+      paymentOption: 'EFT',
+      status: 'Approved',
+      createdDate: new Date('2024-01-28'),
+      createdBy: 'HR Department'
+    },
+    {
+      id: 'REQ-005',
+      code: 'REQ005',
+      payee: 'Lagos State Government',
+      chequePayee: 'Lagos State Government',
+      payeeBankBranch: 'Government House Branch',
+      payeeAccountNo: '9988776655',
+      narrative: 'Tax payment for Q4 2023',
+      invoiceNo: 'TAX-2023-Q4',
+      invoiceDate: new Date('2024-01-20'),
+      amount: 500000,
+      currency: 'NGN',
+      bankAccount: 'Operating Account',
+      type: 'SUPPLIER',
+      paymentOption: 'BANK_DRAFT',
+      status: 'Rejected',
+      createdDate: new Date('2024-01-18'),
+      createdBy: 'Finance Team'
     }
   ];
 
@@ -62,8 +120,10 @@ export class RequisitionService {
   }
 
   // Get requisition by ID
-  getRequisitionById(id: string): Requisition | undefined {
-    return this.requisitions.find(req => req.id === id);
+  getRequisitionById(id: string): Observable<Requisition | undefined> {
+    return this.requisitions$.pipe(
+      map(requisitions => requisitions.find(req => req.id === id))
+    );
   }
 
   // Create new requisition
@@ -146,7 +206,7 @@ export class RequisitionService {
   // Private helper methods
   private generateId(): string {
     const timestamp = Date.now().toString();
-    const random = Math.random().toString(36).substr(2, 5);
+    const random = Math.random().toString(36).substring(2, 7);
     return `REQ-${timestamp.slice(-6)}-${random.toUpperCase()}`;
   }
 

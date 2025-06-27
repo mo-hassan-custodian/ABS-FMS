@@ -1,0 +1,116 @@
+<!-- Manage Requisitions Page -->
+<div class="manage-requisitions-container">
+  <!-- Header -->
+  <div class="header-section">
+    <div class="title-section">
+      <h2>Manage Requisitions</h2>
+      <p>Search and filter requisitions</p>
+    </div>
+  </div>
+
+  <!-- Search and Filter Section -->
+  <div class="search-filter-section">
+    <form [formGroup]="searchForm" class="search-form">
+      
+      <!-- Filter Controls -->
+      <div class="filter-controls">
+        <!-- Type Filter -->
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Type</mat-label>
+          <mat-select formControlName="type">
+            <mat-option *ngFor="let type of typeOptions" [value]="type.value">
+              {{ type.label }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Date Range Filters -->
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>From Date</mat-label>
+          <input matInput [matDatepicker]="fromPicker" formControlName="dateFrom">
+          <mat-datepicker-toggle matSuffix [for]="fromPicker"></mat-datepicker-toggle>
+          <mat-datepicker #fromPicker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>To Date</mat-label>
+          <input matInput [matDatepicker]="toPicker" formControlName="dateTo">
+          <mat-datepicker-toggle matSuffix [for]="toPicker"></mat-datepicker-toggle>
+          <mat-datepicker #toPicker></mat-datepicker>
+        </mat-form-field>
+
+        <!-- Search Input with Autocomplete -->
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Search Requisitions</mat-label>
+          <input matInput
+                 formControlName="searchTerm"
+                 [matAutocomplete]="auto"
+                 placeholder="Search by typing requisition code, payee, invoice...">
+          <!-- <mat-icon matSuffix>search</mat-icon> -->
+        </mat-form-field>
+
+        <!-- Autocomplete Panel -->
+        <mat-autocomplete #auto="matAutocomplete"
+                          [displayWith]="displayRequisitionInfo"
+                          (optionSelected)="onRequisitionSelected($event.option.value)">
+          <mat-option *ngFor="let requisition of filteredRequisitions | async; trackBy: trackByRequisitionId" [value]="requisition">
+            <div class="autocomplete-option">
+              <div class="option-header">
+                <span class="code">{{ requisition.code }}</span>
+                <span class="type-badge type-{{ requisition.type.toLowerCase() }}">
+                  {{ getTypeLabel(requisition.type) }}
+                </span>
+              </div>
+              <div class="option-details">
+                <span class="payee">{{ requisition.payee }}</span>
+                <span class="amount">{{ formatCurrency(requisition.amount, requisition.currency) }}</span>
+              </div>
+              <div class="option-meta">
+                <span class="invoice">Invoice: {{ requisition.invoiceNo }}</span>
+                <span class="status status-{{ requisition.status.toLowerCase() }}">{{ requisition.status }}</span>
+              </div>
+              <div class="option-narrative">
+                <span class="narrative">{{ requisition.narrative.length > 60 ? (requisition.narrative | slice:0:60) + '...' : requisition.narrative }}</span>
+              </div>
+              <div class="option-dates">
+                <span class="created-date">Created: {{ requisition.createdDate | date:'shortDate' }}</span>
+                <span class="created-by">by {{ requisition.createdBy }}</span>
+              </div>
+            </div>
+          </mat-option>
+        </mat-autocomplete>
+
+
+        <!-- Clear Filters Button -->
+        <!-- <button mat-raised-button color="accent" (click)="clearSearch()" class="clear-button">
+          <mat-icon>clear</mat-icon>
+          Clear Filters
+        </button> -->
+      </div>
+    </form>
+  </div>
+
+  <!-- Search Instructions -->
+  <div class="search-instructions" *ngIf="!searchForm.get('searchTerm')?.value">
+    <mat-card class="instructions-card">
+      <mat-card-content>
+        <div class="instructions-content">
+          <mat-icon class="instructions-icon">info</mat-icon>
+          <div class="instructions-text">
+            <h3>Search Requisitions</h3>
+            <p>Use the search field above to find requisitions. You can search by:</p>
+            <ul>
+              <li>Requisition code or reference</li>
+              <li>Payee name</li>
+              <li>Narrative or description</li>
+              <li>Invoice number</li>
+              <li>Cheque payee information</li>
+            </ul>
+            <p>Use the filters to narrow down results by type, status, or date range.</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
+

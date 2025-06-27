@@ -17,7 +17,6 @@ import { requisitionReducer } from './app-state/reducers/requisition.reducer';
 @NgModule({
   declarations: [
     AppComponent,
-    // LayoutComponent
   ],
   imports: [
     BrowserModule,

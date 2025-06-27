@@ -42,11 +42,11 @@
 
         <!-- Search Input with Autocomplete -->
         <mat-form-field appearance="outline" class="search-field">
-          <mat-label>Search Transfers</mat-label>
+          <mat-label>Search Payments</mat-label>
           <input matInput formControlName="searchTerm"
-                 placeholder="Search by voucher, narrative, remarks, or payee"
+                 placeholder="Search by by typing Voucher's No, narrative, remarks, or payee"
                  [matAutocomplete]="auto">
-          <mat-icon matSuffix>search</mat-icon>
+          <!-- <mat-icon matSuffix>search</mat-icon> -->
           <mat-autocomplete #auto="matAutocomplete"
                            [displayWith]="displayTransfer.bind(this)"
                            (optionSelected)="onTransferSelected($event.option.value)">
@@ -70,23 +70,6 @@
           </mat-autocomplete>
         </mat-form-field>
 
-        <!-- Type Filter -->
-        <!-- <mat-form-field appearance="outline" class="filter-field">
-          <mat-label>Type</mat-label>
-          <mat-select formControlName="type">
-            <mat-option *ngFor="let option of typeOptions" [value]="option.value">
-              {{ option.label }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field> -->
-
-
-
-        <!-- Clear Filters Button -->
-        <!-- <button mat-stroked-button type="button" (click)="clearFilters()" class="clear-btn">
-          <mat-icon>clear</mat-icon>
-          Clear Filters
-        </button> -->
       </div>
 
       
@@ -107,7 +90,7 @@
           <mat-icon class="instructions-icon">info</mat-icon>
           <div class="instructions-text">
             <h3>How to Search</h3>
-            <p>Use the search field above to find authorized file transfers. You can search by:</p>
+            <p>Use the search field above to find authorized payments. You can search by:</p>
             <ul>
               <li>Voucher number or reference</li>
               <li>Narrative or description</li>
@@ -115,7 +98,7 @@
               <li>Authorized by or prepared by names</li>
               <li>Bank account information</li>
             </ul>
-            <p>Apply filters by type, or date range to narrow your search. Select a transfer from the dropdown to view full details.</p>
+            <p>Apply filters by type, or date range to narrow your search. Select a payment from the dropdown to view full details.</p>
           </div>
         </div>
       </mat-card-content>
