@@ -1,8 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Observable, Subject } from 'rxjs';
-import { takeUntil, debounceTime, distinctUntilChanged, startWith, map } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { ToastrService } from 'ngx-toastr';
 
 import { AuthorizedFileTransfer, AuthorizedFileTransferFilter } from '../../../../../models/authorized-file-transfer.model';
@@ -17,7 +17,11 @@ export class AuthorizedFileTransferComponent implements OnInit, OnDestroy {
   // Form and data
   searchForm!: FormGroup;
   allTransfers: AuthorizedFileTransfer[] = [];
-  filteredTransfers: Observable<AuthorizedFileTransfer[]>;
+  searchResults: AuthorizedFileTransfer[] = [];
+  searchPerformed = false;
+
+  // Table configuration
+  displayedColumns: string[] = ['voucherNoRef', 'type', 'payee', 'narrative', 'amount', 'date', 'actions'];
 
   // Filter options
   typeOptions = [
@@ -38,14 +42,11 @@ export class AuthorizedFileTransferComponent implements OnInit, OnDestroy {
     private transferService: AuthorizedFileTransferService,
     private toastr: ToastrService,
     private router: Router
-  ) {
-    this.filteredTransfers = new Observable<AuthorizedFileTransfer[]>();
-  }
+  ) {}
 
   ngOnInit(): void {
     this.initializeSearchForm();
     this.loadTransfers();
-    this.setupAutocomplete();
 
     // Temporary: Clear and regenerate data to fix any issues
     // Remove this after testing
@@ -66,14 +67,49 @@ export class AuthorizedFileTransferComponent implements OnInit, OnDestroy {
     });
   }
 
-  setupAutocomplete(): void {
-    // Set up autocomplete filtering
-    this.filteredTransfers = this.searchForm.get('searchTerm')!.valueChanges.pipe(
-      startWith(''),
-      debounceTime(300),
-      distinctUntilChanged(),
-      map(value => this.filterTransfers(value || ''))
-    );
+  performSearch(): void {
+    this.isLoading = true;
+    this.searchPerformed = true;
+
+    const formValue = this.searchForm.value;
+    const searchTerm = formValue.searchTerm?.trim().toLowerCase() || '';
+
+    // Filter transfers based on search criteria
+    let filtered = [...this.allTransfers];
+
+    // Apply payee name filter
+    if (searchTerm) {
+      filtered = filtered.filter(transfer =>
+        transfer.payee && transfer.payee.toLowerCase().includes(searchTerm) || transfer.narrative && transfer.narrative.toLowerCase().includes(searchTerm)
+      );
+    }
+
+    // Apply type filter
+    if (formValue.type && formValue.type !== 'ALL') {
+      filtered = filtered.filter(transfer => transfer.type === formValue.type);
+    }
+
+    // Apply date range filter
+    if (formValue.dateFrom) {
+      const dateFrom = new Date(formValue.dateFrom);
+      filtered = filtered.filter(transfer => transfer.date >= dateFrom);
+    }
+    if (formValue.dateTo) {
+      const dateTo = new Date(formValue.dateTo);
+      filtered = filtered.filter(transfer => transfer.date <= dateTo);
+    }
+
+    // Simulate API call delay
+    setTimeout(() => {
+      this.searchResults = filtered;
+      this.isLoading = false;
+
+      if (filtered.length === 0 && searchTerm) {
+        this.toastr.info(`No transfers found for payee "${formValue.searchTerm}"`, 'Search Results');
+      } else if (filtered.length > 0) {
+        this.toastr.success(`Found ${filtered.length} payment(s)`, 'Search Results');
+      }
+    }, 500);
   }
 
   loadTransfers(): void {
@@ -87,7 +123,7 @@ export class AuthorizedFileTransferComponent implements OnInit, OnDestroy {
         },
         error: (error) => {
           console.error('Error loading transfers:', error);
-          this.toastr.error('Error loading authorized file transfers', 'Error');
+          this.toastr.error('Error loading payments', 'Error');
           this.isLoading = false;
         }
       });
@@ -143,18 +179,15 @@ export class AuthorizedFileTransferComponent implements OnInit, OnDestroy {
       dateFrom: '',
       dateTo: ''
     });
+    this.searchResults = [];
+    this.searchPerformed = false;
   }
 
-  onTransferSelected(transfer: AuthorizedFileTransfer): void {
+  viewTransfer(transfer: AuthorizedFileTransfer): void {
     // Navigate to the view component with the transfer ID
     this.router.navigate(['/App/authorized-file-transfer-view'], {
       queryParams: { id: transfer.id }
     });
-  }
-
-  displayTransfer(transfer: AuthorizedFileTransfer): string {
-    if (!transfer) return '';
-    return `${transfer.voucherNoRef} - ${transfer.narrative} (${this.getTypeLabel(transfer.type)})`;
   }
 
 
