@@ -25,13 +25,6 @@
               <div class="payee-details">{{payee.pinNo}} | {{payee.bankName}}</div>
             </div>
           </mat-option>
-          <mat-option class="create-payee-option" value="CREATE_NEW"
-            (onSelectionChange)="$event.isUserInput && openCreatePayeeFromRequisition()">
-            <div class="create-payee-button">
-              <mat-icon>add</mat-icon>
-              <span>Create New Payee</span>
-            </div>
-          </mat-option>
         </mat-autocomplete>
         <mat-hint *ngIf="!selectedPayee">Search by name, PIN, or bank name</mat-hint>
         <mat-hint *ngIf="selectedPayee" class="auto-populated-hint">
@@ -209,7 +202,7 @@
 
   <!-- Action Buttons -->
   <div class="action-buttons">
-    <button mat-button >Clear</button>
-    <button mat-raised-button color="primary" (click)="saveRequisition()">Save</button>
+    <!-- <button mat-button >Clear</button> -->
+    <button mat-raised-button color="primary" (click)="saveRequisition()" [disabled]="!isFormValid">Save</button>
   </div>
 </div>

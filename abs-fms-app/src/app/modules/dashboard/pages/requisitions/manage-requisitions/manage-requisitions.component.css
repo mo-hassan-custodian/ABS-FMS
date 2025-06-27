@@ -9,7 +9,6 @@ th.mat-header-cell:last-child {
 .manage-requisitions-container {
   padding: 20px;
   background-color: #f5f5f5;
-  min-height: 100vh;
 }
 
 .header-section {
@@ -61,15 +60,13 @@ th.mat-header-cell:last-child {
 }
 
 .filter-field {
-  min-width: 150px;
+  min-width: 180px;
   flex: 1;
-  max-width: 200px;
 }
 
 .search-field {
   flex: 2;
-  min-width: 300px;
-  max-width: 400px;
+  min-width: 350px;
 }
 
 .clear-button {
