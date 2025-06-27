@@ -6,6 +6,7 @@ import { ToastrService } from 'ngx-toastr';
 
 import { AuthorizedFileTransfer } from '../../../../../models/authorized-file-transfer.model';
 import { AuthorizedFileTransferService } from '../../../../../services/authorized-file-transfer.service';
+import { BankAccount } from '../../../../../models/bank-account.model';
 
 @Component({
   selector: 'app-authorized-file-transfer-view',
@@ -18,15 +19,7 @@ export class AuthorizedFileTransferViewComponent implements OnInit, OnDestroy {
   transferId: string | null = null;
 
   // Bank account selection
-  selectedBankAccount: string = '';
-  bankAccounts = [
-    { value: 'operating-001', label: 'Operating Account - 1234567890' },
-    { value: 'claims-002', label: 'Claims Settlement Account - 1234567890' },
-    { value: 'commission-003', label: 'Commission Payment Account - 9876543210' },
-    { value: 'benefits-004', label: 'Policy Benefits Account - 5555666677' },
-    { value: 'reserve-005', label: 'Reserve Account - 1111222233' },
-    { value: 'investment-006', label: 'Investment Account - 4444555566' }
-  ];
+  selectedBankAccount: BankAccount | null = null;
 
   // Modal states
   showAuthorizationModal = false;
@@ -90,10 +83,15 @@ export class AuthorizedFileTransferViewComponent implements OnInit, OnDestroy {
     this.router.navigate(['/App/authorized-file-transfer']);
   }
 
-  // Bank account change handler
-  onBankAccountChange(event: any): void {
-    this.selectedBankAccount = event.value;
-    console.log('Bank account changed to:', event.value);
+  // Bank account selection handlers
+  onBankAccountSelected(account: BankAccount): void {
+    this.selectedBankAccount = account;
+    console.log('Bank account selected:', account);
+  }
+
+  onBankAccountCleared(): void {
+    this.selectedBankAccount = null;
+    console.log('Bank account selection cleared');
   }
 
   // Change bank account action
@@ -103,12 +101,9 @@ export class AuthorizedFileTransferViewComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const selectedAccount = this.bankAccounts.find(account => account.value === this.selectedBankAccount);
-    if (selectedAccount) {
-      this.toastr.success(`Bank account changed to: ${selectedAccount.label}`, 'Success');
-      console.log('Bank account changed to:', selectedAccount);
-      // TODO: Implement actual bank account change logic
-    }
+    this.toastr.success(`Bank account changed to: ${this.selectedBankAccount.name}`, 'Success');
+    console.log('Bank account changed to:', this.selectedBankAccount);
+    // TODO: Implement actual bank account change logic
   }
 
   // Authorize payment action
@@ -123,16 +118,13 @@ export class AuthorizedFileTransferViewComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const selectedAccount = this.bankAccounts.find(account => account.value === this.selectedBankAccount);
-    if (selectedAccount) {
-      // Prepare authorization data and show modal
-      this.authorizationData = {
-        transfer: this.transfer,
-        selectedAccount: selectedAccount,
-        amount: this.formatCurrency(this.transfer.amountPayee, this.transfer.currencyCode)
-      };
-      this.showAuthorizationModal = true;
-    }
+    // Prepare authorization data and show modal
+    this.authorizationData = {
+      transfer: this.transfer,
+      selectedAccount: this.selectedBankAccount,
+      amount: this.formatCurrency(this.transfer.amountPayee, this.transfer.currencyCode)
+    };
+    this.showAuthorizationModal = true;
   }
 
   // Confirm authorization

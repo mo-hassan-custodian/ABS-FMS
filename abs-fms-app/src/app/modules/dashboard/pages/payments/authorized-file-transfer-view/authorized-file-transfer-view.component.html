@@ -23,14 +23,18 @@
         <div class="action-buttons-container">
           <!-- Change Bank Account Button -->
           <div class="bank-account-section">
-            <mat-form-field appearance="outline" class="bank-account-field">
-              <mat-label>Select Bank Account</mat-label>
-              <mat-select [(value)]="selectedBankAccount" (selectionChange)="onBankAccountChange($event)">
-                <mat-option *ngFor="let account of bankAccounts" [value]="account.value">
-                  {{ account.label }}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
+            <app-bank-account-selector
+              label="Select Bank Account"
+              placeholder="Choose bank account for payment"
+              [required]="true"
+              [showBalance]="false"
+              [showAccountNumber]="true"
+              [showBankName]="true"
+              filterByStatus="Active"
+              (accountSelected)="onBankAccountSelected($event)"
+              (accountCleared)="onBankAccountCleared()"
+              class="bank-account-field">
+            </app-bank-account-selector>
           </div>
 
           <!-- Authorize Button -->
