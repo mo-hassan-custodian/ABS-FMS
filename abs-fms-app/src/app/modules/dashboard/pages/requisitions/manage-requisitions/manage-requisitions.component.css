@@ -53,15 +53,6 @@ th.mat-header-cell:last-child {
   gap: 20px;
 }
 
-.search-input-container {
-  width: 100%;
-}
-
-.search-field {
-  width: 100%;
-  max-width: 600px;
-}
-
 .filter-controls {
   display: flex;
   gap: 16px;
@@ -73,6 +64,12 @@ th.mat-header-cell:last-child {
   min-width: 150px;
   flex: 1;
   max-width: 200px;
+}
+
+.search-field {
+  flex: 2;
+  min-width: 300px;
+  max-width: 400px;
 }
 
 .clear-button {
@@ -290,6 +287,7 @@ th.mat-header-cell:last-child {
   }
 
   .filter-controls {
+    display: flex;
     flex-direction: column;
     align-items: stretch;
     gap: 12px;

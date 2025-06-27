@@ -24,16 +24,6 @@
           </mat-select>
         </mat-form-field>
 
-        <!-- Status Filter -->
-        <!-- <mat-form-field appearance="outline" class="filter-field">
-          <mat-label>Status</mat-label>
-          <mat-select formControlName="status">
-            <mat-option *ngFor="let status of statusOptions" [value]="status.value">
-              {{ status.label }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field> -->
-
         <!-- Date Range Filters -->
         <mat-form-field appearance="outline" class="filter-field">
           <mat-label>From Date</mat-label>
@@ -50,7 +40,6 @@
         </mat-form-field>
 
         <!-- Search Input with Autocomplete -->
-      <div class="search-input-container">
         <mat-form-field appearance="outline" class="search-field">
           <mat-label>Search Requisitions</mat-label>
           <input matInput
@@ -90,7 +79,6 @@
             </div>
           </mat-option>
         </mat-autocomplete>
-      </div>
 
 
         <!-- Clear Filters Button -->
