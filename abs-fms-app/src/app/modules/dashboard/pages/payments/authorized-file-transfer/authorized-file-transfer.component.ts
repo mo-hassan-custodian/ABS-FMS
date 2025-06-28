@@ -88,7 +88,7 @@ export class AuthorizedFileTransferComponent implements OnInit, OnDestroy, After
     // Apply payee name filter
     if (searchTerm) {
       filtered = filtered.filter(transfer =>
-        transfer.payee && transfer.payee.toLowerCase().includes(searchTerm) || transfer.narrative && transfer.narrative.toLowerCase().includes(searchTerm)
+        transfer.payee && transfer.payee.toLowerCase().includes(searchTerm)
       );
     }
 

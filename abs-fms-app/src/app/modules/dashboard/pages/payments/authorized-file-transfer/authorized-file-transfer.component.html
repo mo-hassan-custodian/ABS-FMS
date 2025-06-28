@@ -42,7 +42,7 @@
 
         <!-- Search Input -->
         <mat-form-field appearance="outline" class="search-field">
-          <mat-label>Payee Name / Narration</mat-label>
+          <mat-label>Payee Name</mat-label>
           <input matInput formControlName="searchTerm"
                  placeholder="Enter payee name to search"
                  (keyup.enter)="performSearch()">
@@ -68,7 +68,7 @@
 
   <!-- Search Results Section -->
   <div *ngIf="searchResults.data.length > 0 && !isLoading" class="search-results-section">
-    <h3>Search Results</h3>
+    <!-- <h3>Search Results</h3> -->
     <div class="table-container">
       <table mat-table [dataSource]="searchResults" class="search-results-table">
 
