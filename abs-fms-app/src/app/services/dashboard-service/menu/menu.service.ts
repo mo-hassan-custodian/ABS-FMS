@@ -234,7 +234,7 @@ export class MenuService {
             },
             {
               "icon": "visibility",
-              "name": "Authorise File Transfer Payments",
+              "name": "Authorize Payments",
               "route": "/App/authorized-file-transfer",
               "routeParameters": {}
             },

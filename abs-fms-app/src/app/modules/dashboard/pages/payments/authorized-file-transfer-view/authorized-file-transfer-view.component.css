@@ -1,15 +1,26 @@
 /* Container and Layout */
 .container {
-  padding: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
+  padding: 12px;
+  max-width: 100vw;
+  margin: 0;
+  height: 93vh;
+  overflow-x: auto;
+  overflow-y: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.mat-mdc-card-header {
+    display: flex;
+    padding: 0px 16px 0;
 }
 
 /* Header Section */
 .header-section {
-  margin-bottom: 30px;
-  padding-bottom: 20px;
+  margin-bottom: 3px;
+  padding-bottom: 4px;
   border-bottom: 1px solid #e0e0e0;
+  flex-shrink: 0;
 }
 
 .title-section {
@@ -29,16 +40,16 @@
 }
 
 .title-content h2 {
-  margin: 0 0 4px 0;
+  margin: 0 0 2px 0;
   color: #333;
-  font-size: 28px;
+  font-size: 22px;
   font-weight: 500;
 }
 
 .title-content p {
   margin: 0;
   color: #666;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 /* Loading */
@@ -47,18 +58,21 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 60px;
+  padding: 30px;
   color: #666;
 }
 
 .loading-container p {
-  margin-top: 16px;
+  margin-top: 12px;
   font-size: 14px;
 }
 
 /* Details Section */
 .details-section {
-  margin-top: 20px;
+  margin-top: 8px;
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
 .details-card {
@@ -83,29 +97,32 @@
 
 /* Action Buttons Section */
 .action-buttons-section {
-  padding: 0px 24px;
+  padding: 8px 16px;
   border-bottom: 1px solid #e0e0e0;
   background-color: #f8f9fa;
+  flex-shrink: 0;
 }
 
 .action-buttons-container {
   display: flex;
   align-items: flex-end;
-  gap: 20px;
-  flex-wrap: wrap;
+  gap: 12px;
+  flex-wrap: nowrap;
+  min-width: fit-content;
 }
 
 .bank-account-section {
   display: flex;
   align-items: flex-end;
-  gap: 12px;
+  gap: 8px;
   flex: 1;
-  min-width: 300px;
+  min-width: 280px;
 }
 
 .bank-account-field {
-  min-width: 250px;
+  min-width: 220px;
   flex: 1;
+  margin-bottom: -15px;
 }
 
 .bank-account-field .mat-mdc-form-field-wrapper {
@@ -113,18 +130,20 @@
 }
 
 .change-account-btn {
-  height: 56px;
-  min-width: 180px;
+  height: 48px;
+  min-width: 140px;
   white-space: nowrap;
   margin-bottom: 1.34375em;
+  font-size: 13px;
 }
 
 .authorize-btn {
-  height: 56px;
-  min-width: 160px;
+  height: 48px;
+  min-width: 120px;
   background-color: #4caf50;
   color: white;
   margin-bottom: 1.34375em;
+  font-size: 13px;
 }
 
 .authorize-btn:hover:not(:disabled) {
@@ -137,11 +156,12 @@
 }
 
 .update-efts-btn {
-  height: 56px;
-  min-width: 180px;
+  height: 48px;
+  min-width: 140px;
   background-color: #ff9800;
   color: white;
   margin-bottom: 1.34375em;
+  font-size: 13px;
 }
 
 .update-efts-btn:hover {
@@ -151,16 +171,19 @@
 /* Details Grid */
 .details-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 32px;
-  margin-top: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+  margin-top: 12px;
+  min-width: fit-content;
+  overflow-x: auto;
 }
 
 .detail-section {
   background: #f8f9fa;
-  padding: 20px;
-  border-radius: 8px;
+  padding: 12px;
+  border-radius: 6px;
   border: 1px solid #e9ecef;
+  min-width: 280px;
 }
 
 .detail-section.full-width {
@@ -168,19 +191,19 @@
 }
 
 .section-title {
-  margin: 0 0 16px 0;
+  margin: 0 0 8px 0;
   color: #495057;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
-  border-bottom: 2px solid #dee2e6;
-  padding-bottom: 8px;
+  border-bottom: 1px solid #dee2e6;
+  padding-bottom: 4px;
 }
 
 .detail-row {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  margin-bottom: 16px;
+  gap: 2px;
+  margin-bottom: 8px;
 }
 
 .detail-row:last-child {
@@ -190,29 +213,30 @@
 .detail-row label {
   font-weight: 600;
   color: #6c757d;
-  font-size: 13px;
+  font-size: 11px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
 }
 
 .detail-row span {
   color: #333;
-  font-size: 14px;
-  line-height: 1.4;
+  font-size: 13px;
+  line-height: 1.3;
 }
 
 .description-text {
   background: white;
-  padding: 12px;
+  padding: 8px;
   border-radius: 4px;
   border: 1px solid #dee2e6;
-  line-height: 1.5;
+  line-height: 1.4;
+  font-size: 12px;
 }
 
 .amount-highlight {
   font-weight: 700;
   color: #2e7d32;
-  font-size: 18px;
+  font-size: 16px;
 }
 
 .document-link {
@@ -304,19 +328,24 @@
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
   .container {
-    padding: 16px;
+    padding: 8px;
+    height: 100vh;
+    overflow-x: auto;
+    overflow-y: hidden;
   }
 
   .title-section {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
+    gap: 8px;
+  }
+
+  .title-content h2 {
+    font-size: 18px;
   }
 
   .card-title-content {
     flex-direction: column;
     align-items: flex-start;
-    gap: 12px;
+    gap: 8px;
   }
 
   .badges {
@@ -324,64 +353,77 @@
   }
 
   .details-grid {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
-
-  .detail-section.full-width {
-    grid-column: 1;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 12px;
+    min-width: 800px; /* Force horizontal scroll on mobile */
   }
 
   .detail-section {
-    padding: 16px;
+    padding: 10px;
+    min-width: 240px;
   }
 
   .section-title {
-    font-size: 14px;
+    font-size: 13px;
   }
 
   .amount-highlight {
-    font-size: 16px;
+    font-size: 15px;
   }
 
   .action-buttons-container {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 16px;
+    flex-wrap: nowrap;
+    gap: 8px;
+    min-width: 600px; /* Force horizontal scroll for buttons */
   }
 
   .bank-account-section {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
-    min-width: unset;
+    min-width: 200px;
   }
 
   .bank-account-field {
-    min-width: unset;
-    width: 100%;
+    min-width: 180px;
   }
 
   .change-account-btn,
   .authorize-btn,
   .update-efts-btn {
-    width: 100%;
-    min-width: unset;
+    min-width: 100px;
+    font-size: 12px;
+    height: 44px;
   }
 }
 
 @media (max-width: 480px) {
+  .container {
+    padding: 6px;
+  }
+
   .title-content h2 {
-    font-size: 24px;
+    font-size: 16px;
   }
 
   .detail-row {
-    margin-bottom: 12px;
+    margin-bottom: 6px;
   }
 
   .type-badge {
-    padding: 4px 8px;
-    font-size: 11px;
+    padding: 3px 6px;
+    font-size: 10px;
+  }
+
+  .details-grid {
+    min-width: 700px; /* Ensure horizontal scroll on small screens */
+    gap: 10px;
+  }
+
+  .detail-section {
+    min-width: 220px;
+    padding: 8px;
+  }
+
+  .action-buttons-container {
+    min-width: 500px;
   }
 
   .error-icon {
@@ -391,11 +433,11 @@
   }
 
   .error-content h3 {
-    font-size: 20px;
+    font-size: 18px;
   }
 
   .error-content p {
-    font-size: 14px;
+    font-size: 13px;
   }
 }
 
