@@ -71,94 +71,91 @@
 
       
       <mat-card-content>
-        <div class="details-grid">
-          <!-- Basic Information -->
-          <div class="detail-section">
-            <h3 class="section-title">Basic Information</h3>
-            <div class="detail-row">
-              <label>Voucher No/Ref:</label>
-              <span>{{ transfer.voucherNoRef }}</span>
+        <mat-tab-group class="details-tabs" animationDuration="300ms">
+          <!-- Basic Information Tab -->
+          <mat-tab label="Basic Information">
+            <div class="tab-content">
+              <div class="detail-row">
+                <label>Voucher No/Ref:</label>
+                <span class="detail-value">{{ transfer.voucherNoRef }}</span>
+              </div>
+              <div class="detail-row">
+                <label>Date:</label>
+                <span class="detail-value">{{ transfer.date | date:'dd/MM/yyyy' }}</span>
+              </div>
+              <div class="detail-row">
+                <label>Type:</label>
+                <span class="type-badge type-{{ transfer.type.toLowerCase() }}">
+                  {{ getTypeLabel(transfer.type) }}
+                </span>
+              </div>
             </div>
-            <div class="detail-row">
-              <label>Date:</label>
-              <span>{{ transfer.date | date:'dd/MM/yyyy' }}</span>
-            </div>
-            <div class="detail-row">
-              <label>Type:</label>
-              <span class="type-badge type-{{ transfer.type.toLowerCase() }}">
-                {{ getTypeLabel(transfer.type) }}
-              </span>
-            </div>
-          </div>
+          </mat-tab>
 
-          <!-- Financial Information -->
-          <div class="detail-section">
-            <h3 class="section-title">Financial Information</h3>
-            <div class="detail-row">
-              <label>Payee:</label>
-              <span class="detail-row">
-                {{ transfer.payee }}
-              </span>
+          <!-- Financial Information Tab -->
+          <mat-tab label="Financial Information">
+            <div class="tab-content">
+              <div class="detail-row">
+                <label>Payee:</label>
+                <span class="detail-value">{{ transfer.payee }}</span>
+              </div>
+              <div class="detail-row">
+                <label>Amount:</label>
+                <span class="detail-value amount-highlight">
+                  {{ formatCurrency(transfer.amountPayee, transfer.currencyCode) }}
+                </span>
+              </div>
+              <div class="detail-row">
+                <label>Currency Code:</label>
+                <span class="detail-value">{{ transfer.currencyCode }}</span>
+              </div>
+              <div class="detail-row">
+                <label>Bank Account:</label>
+                <span class="detail-value">{{ transfer.bankAccount }}</span>
+              </div>
             </div>
-            <div class="detail-row">
-              <label>Amount:</label>
-              <span class="amount-highlight">
-                {{ formatCurrency(transfer.amountPayee, transfer.currencyCode) }}
-              </span>
-            </div>
-            <div class="detail-row">
-              <label>Currency Code:</label>
-              <span>{{ transfer.currencyCode }}</span>
-            </div>
-            <div class="detail-row">
-              <label>Bank Account:</label>
-              <span>{{ transfer.bankAccount }}</span>
-            </div>
-          </div>
+          </mat-tab>
 
-          <!-- Authorization Information -->
-          <div class="detail-section">
-            <h3 class="section-title">Authorization Information</h3>
-            <div class="detail-row">
-              <label>Authorized By:</label>
-              <span>{{ transfer.authorisedBy }}</span>
+          <!-- Authorization Information Tab -->
+          <mat-tab label="Authorization Information">
+            <div class="tab-content">
+              <div class="detail-row">
+                <label>Authorized By:</label>
+                <span class="detail-value">{{ transfer.authorisedBy }}</span>
+              </div>
+              <div class="detail-row">
+                <label>Authorization Date:</label>
+                <span class="detail-value">{{ transfer.authorizationDate | date:'dd/MM/yyyy' }}</span>
+              </div>
+              <div class="detail-row">
+                <label>Prepared By:</label>
+                <span class="detail-value">{{ transfer.preparedBy }}</span>
+              </div>
+              <div class="detail-row">
+                <label>Request Date:</label>
+                <span class="detail-value">{{ transfer.requestDate | date:'dd/MM/yyyy' }}</span>
+              </div>
             </div>
-            <div class="detail-row">
-              <label>Authorization Date:</label>
-              <span>{{ transfer.authorizationDate | date:'dd/MM/yyyy' }}</span>
-            </div>
-            <div class="detail-row">
-              <label>Prepared By:</label>
-              <span>{{ transfer.preparedBy }}</span>
-            </div>
-            <div class="detail-row">
-              <label>Request Date:</label>
-              <span>{{ transfer.requestDate | date:'dd/MM/yyyy' }}</span>
-            </div>
-          </div>
+          </mat-tab>
 
-          <!-- Document Information -->
-          <div class="detail-section">
-            <h3 class="section-title">Document Information</h3>
-            <div class="detail-row">
-              <label>Document:</label>
-              <span class="document-link">{{ transfer.document }}</span>
+          <!-- Document Information Tab -->
+          <mat-tab label="Document Information">
+            <div class="tab-content">
+              <div class="detail-row">
+                <label>Document:</label>
+                <span class="detail-value document-link">{{ transfer.document }}</span>
+              </div>
+              <div class="detail-row">
+                <label>Remarks:</label>
+                <span class="detail-value description-text">{{ transfer.remarks }}</span>
+              </div>
+              <div class="detail-row">
+                <label>Narrative:</label>
+                <span class="detail-value description-text">{{ transfer.narrative }}</span>
+              </div>
             </div>
-          </div>
-
-          <!-- Description Information -->
-          <div class="detail-section full-width">
-            <h3 class="section-title">Description</h3>
-            <div class="detail-row">
-              <label>Remarks:</label>
-              <span class="description-text">{{ transfer.remarks }}</span>
-            </div>
-            <div class="detail-row">
-              <label>Narrative:</label>
-              <span class="description-text">{{ transfer.narrative }}</span>
-            </div>
-          </div>
-        </div>
+          </mat-tab>
+        </mat-tab-group>
       </mat-card-content>
 
       <!-- <mat-card-actions class="card-actions">
