@@ -740,7 +740,7 @@
 .summary-grid {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 5px;
 }
 
 .summary-row {
@@ -825,6 +825,11 @@
 
 .authorize-button:hover {
   background-color: #45a049;
+}
+
+.button-spinner {
+  margin-right: 8px;
+  display: inline-block;
 }
 
 /* Mobile Responsiveness for Modal */

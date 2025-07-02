@@ -45,10 +45,10 @@
           </button>
 
           <!-- Go to Update EFTs Button -->
-          <button mat-raised-button color="warn" (click)="goToUpdateEFTs()" class="update-efts-btn">
+          <!-- <button mat-raised-button color="warn" (click)="goToUpdateEFTs()" class="update-efts-btn">
             <mat-icon>update</mat-icon>
             Go to Update EFTs
-          </button>
+          </button> -->
         </div>
       </div>
 
@@ -200,10 +200,10 @@
 
     <div class="modal-body" *ngIf="authorizationData">
       <div class="authorization-details">
-        <div class="warning-section">
+        <!-- <div class="warning-section">
           <mat-icon class="warning-icon">warning</mat-icon>
           <p>You are about to authorize a payment. Please review the details carefully before proceeding.</p>
-        </div>
+        </div> -->
 
         <div class="payment-summary">
           <h4>Payment Summary</h4>
@@ -221,8 +221,12 @@
               <span class="value amount-highlight">{{ authorizationData.amount }}</span>
             </div>
             <div class="summary-row">
+              <label>Payee Bank Account:</label>
+              <span class="value">{{ authorizationData.transfer.bankAccount }}</span>
+            </div>
+            <div class="summary-row">
               <label>From Account:</label>
-              <span class="value">{{ authorizationData.selectedAccount.label }}</span>
+              <span class="value">{{ authorizationData.selectedAccount.bankName }} - {{ authorizationData.selectedAccount.accountNumber }}</span>
             </div>
             <div class="summary-row">
               <label>Transfer Type:</label>
@@ -247,13 +251,14 @@
     </div>
 
     <div class="modal-footer">
-      <button mat-button (click)="closeAuthorizationModal()" class="cancel-button">
+      <button mat-button (click)="closeAuthorizationModal()" class="cancel-button" [disabled]="isLoading">
         <mat-icon>cancel</mat-icon>
         Cancel
       </button>
-      <button mat-raised-button color="primary" (click)="confirmAuthorization()" class="authorize-button">
-        <mat-icon>verified</mat-icon>
-        Authorize Payment
+      <button mat-raised-button color="primary" (click)="confirmAuthorization()" class="authorize-button" [disabled]="isLoading">
+        <mat-spinner *ngIf="isLoading" diameter="20" class="button-spinner"></mat-spinner>
+        <mat-icon *ngIf="!isLoading">verified</mat-icon>
+        {{ isLoading ? 'Authorizing...' : 'Authorize Payment' }}
       </button>
     </div>
   </div>

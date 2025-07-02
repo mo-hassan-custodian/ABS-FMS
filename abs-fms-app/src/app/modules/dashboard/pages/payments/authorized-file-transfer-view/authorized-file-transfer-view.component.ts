@@ -65,7 +65,7 @@ export class AuthorizedFileTransferViewComponent implements OnInit, OnDestroy {
           if (transfer) {
             this.transfer = transfer;
           } else {
-            this.toastr.error('Transfer not found', 'Error');
+            // this.toastr.error('Transfer not found', 'Error');
             this.goBack();
           }
           this.isLoading = false;
@@ -129,11 +129,37 @@ export class AuthorizedFileTransferViewComponent implements OnInit, OnDestroy {
 
   // Confirm authorization
   confirmAuthorization(): void {
-    if (this.authorizationData) {
-      this.toastr.success('Payment authorized successfully!', 'Authorized');
-      console.log('Payment authorized for:', this.authorizationData.transfer, 'from account:', this.authorizationData.selectedAccount);
-      // TODO: Implement actual authorization logic
-      this.closeAuthorizationModal();
+    if (this.authorizationData && this.transfer) {
+      // Show loading state
+      this.isLoading = true;
+
+      // Call the service to authorize the payment
+      this.transferService.authorizePayment(this.transfer.id, this.authorizationData)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (result) => {
+            this.isLoading = false;
+            if (result.success) {
+              this.toastr.success(result.message, 'Payment Authorized');
+              console.log('Payment authorized successfully:', this.authorizationData);
+
+              // Close modal and navigate back to the list
+              this.closeAuthorizationModal();
+
+              // Navigate back to the authorized file transfer list
+              setTimeout(() => {
+                this.router.navigate(['/App/authorized-file-transfer']);
+              }, 1500);
+            } else {
+              this.toastr.error(result.message, 'Authorization Failed');
+            }
+          },
+          error: (error) => {
+            this.isLoading = false;
+            console.error('Error authorizing payment:', error);
+            this.toastr.error('Failed to authorize payment. Please try again.', 'Error');
+          }
+        });
     }
   }
 

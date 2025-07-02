@@ -650,6 +650,97 @@ export class AuthorizedFileTransferService {
     );
   }
 
+  // Authorize a payment and remove it from the list
+  authorizePayment(transferId: string, authorizationData: any): Observable<{ success: boolean; message: string }> {
+    return new Observable(observer => {
+      // Simulate API call delay
+      setTimeout(() => {
+        try {
+          const currentTransfers = this.transfersSubject.value;
+          const transferIndex = currentTransfers.findIndex(t => t.id === transferId);
+
+          if (transferIndex === -1) {
+            observer.next({ success: false, message: 'Transfer not found' });
+            observer.complete();
+            return;
+          }
+
+          const transfer = currentTransfers[transferIndex];
+
+          // Create authorization record for backend (simulate sending to API)
+          const authorizationRecord = {
+            transferId: transfer.id,
+            voucherNoRef: transfer.voucherNoRef,
+            payee: transfer.payee,
+            amount: transfer.amountPayee,
+            currencyCode: transfer.currencyCode,
+            fromAccount: {
+              bankName: authorizationData.selectedAccount.bankName,
+              accountNumber: authorizationData.selectedAccount.accountNumber,
+              accountType: authorizationData.selectedAccount.accountType
+            },
+            payeeBankAccount: transfer.bankAccount,
+            transferType: transfer.type,
+            narrative: transfer.narrative,
+            authorizedBy: 'Current User', // In real app, get from auth service
+            authorizedAt: new Date().toISOString(),
+            status: 'AUTHORIZED'
+          };
+
+          // Log the authorization record (simulate sending to backend)
+          console.log('Sending authorization to backend:', authorizationRecord);
+
+          // Store authorization record in localStorage (simulate backend storage)
+          this.storeAuthorizationRecord(authorizationRecord);
+
+          // Remove the transfer from the pending list
+          const updatedTransfers = currentTransfers.filter(t => t.id !== transferId);
+          this.transfersSubject.next(updatedTransfers);
+          this.saveTransfersToStorage(updatedTransfers);
+
+          observer.next({
+            success: true,
+            message: `Payment ${transfer.voucherNoRef} authorized successfully and removed from pending list`
+          });
+          observer.complete();
+        } catch (error) {
+          observer.next({
+            success: false,
+            message: 'Failed to authorize payment. Please try again.'
+          });
+          observer.complete();
+        }
+      }, 1000); // Simulate 1 second API call
+    });
+  }
+
+  // Store authorization record (simulate backend API call)
+  private storeAuthorizationRecord(authorizationRecord: any): void {
+    try {
+      const existingRecords = JSON.parse(localStorage.getItem('abs_fms_authorized_payments') || '[]');
+      existingRecords.push(authorizationRecord);
+      localStorage.setItem('abs_fms_authorized_payments', JSON.stringify(existingRecords));
+      console.log('Authorization record stored successfully');
+    } catch (error) {
+      console.error('Error storing authorization record:', error);
+    }
+  }
+
+  // Get all authorized payments (for future reference)
+  getAuthorizedPayments(): Observable<any[]> {
+    return new Observable(observer => {
+      try {
+        const records = JSON.parse(localStorage.getItem('abs_fms_authorized_payments') || '[]');
+        observer.next(records);
+        observer.complete();
+      } catch (error) {
+        console.error('Error retrieving authorized payments:', error);
+        observer.next([]);
+        observer.complete();
+      }
+    });
+  }
+
   private generateId(): string {
     return 'AFT-' + Math.random().toString(36).substr(2, 9).toUpperCase();
   }
