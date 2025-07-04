@@ -32,7 +32,9 @@ export class AuthorizedFileTransferComponent implements OnInit, OnDestroy, After
     { value: 'ALL', label: 'All Types' },
     { value: 'CLAIMS', label: 'Claims' },
     { value: 'COMMISSIONS', label: 'Commissions' },
-    { value: 'POLICY_MATURITY', label: 'Policy Maturity' }
+    { value: 'POLICY_MATURITY', label: 'Policy Maturity' },
+    { value: 'SURRENDERS', label: 'Surrenders' },
+    { value: 'FINES', label: 'Fines' }
   ];
 
   // Loading states
@@ -208,6 +210,10 @@ export class AuthorizedFileTransferComponent implements OnInit, OnDestroy, After
         return 'Commissions';
       case 'POLICY_MATURITY':
         return 'Policy Maturity';
+      case 'SURRENDERS':
+        return 'Surrenders';
+      case 'FINES':
+        return 'Fines';
       default:
         return type;
     }

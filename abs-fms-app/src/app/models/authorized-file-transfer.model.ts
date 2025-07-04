@@ -11,7 +11,7 @@ export interface AuthorizedFileTransfer {
   authorizationDate: Date;
   preparedBy: string;
   requestDate: Date;
-  type: 'CLAIMS' | 'COMMISSIONS' | 'POLICY_MATURITY';
+  type: 'CLAIMS' | 'COMMISSIONS' | 'POLICY_MATURITY' | 'SURRENDERS' | 'FINES';
   document: string;
   payee: string;
 }
@@ -28,7 +28,7 @@ export interface AuthorizedFileTransferCreateRequest {
   authorizationDate: Date;
   preparedBy: string;
   requestDate: Date;
-  type: 'CLAIMS' | 'COMMISSIONS' | 'POLICY_MATURITY';
+  type: 'CLAIMS' | 'COMMISSIONS' | 'POLICY_MATURITY' | 'SURRENDERS' | 'FINES';
   document: string;
   payee: string;
 }

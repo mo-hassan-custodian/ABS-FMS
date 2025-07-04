@@ -346,6 +346,16 @@
   color: #388e3c;
 }
 
+.type-surrenders {
+  background-color: #e8f5e8;
+  color: #7b1fa2;
+}
+
+.type-fines {
+  background-color: #e8f5e8;
+  color: #388e3c;
+}
+
 /* No Results Message */
 .no-results-message {
   display: flex;

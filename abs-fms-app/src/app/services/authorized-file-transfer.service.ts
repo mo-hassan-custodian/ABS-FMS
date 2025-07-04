@@ -465,6 +465,23 @@ export class AuthorizedFileTransferService {
         payee: 'Kayode'
       },
       {
+        id: 'AFT-0113',
+        remarks: 'Term life insurance maturity payout',
+        voucherNoRef: 'VCH-MAT-2024-0113',
+        date: getRandomDate(3),
+        narrative: 'Term life maturity - Policy No: TERM-2019-023',
+        bankAccount: 'Surrenders Account - 5555666677',
+        currencyCode: 'NGN',
+        amountPayee: getRandomAmount(600000, 1100000),
+        authorisedBy: 'Sarah Johnson',
+        authorizationDate: getRandomDate(4),
+        preparedBy: 'Grace Adebayo',
+        requestDate: getRandomDate(6),
+        type: 'SURRENDERS',
+        document: 'SURRENDERS_023.pdf',
+        payee: 'Bayo'
+      },
+      {
         id: 'AFT-024',
         remarks: 'Whole life insurance policy maturity',
         voucherNoRef: 'VCH-MAT-2024-024',
@@ -480,6 +497,23 @@ export class AuthorizedFileTransferService {
         type: 'POLICY_MATURITY',
         document: 'WHOLE_LIFE_024.pdf',
         payee: 'Johanna'
+      },
+      {
+        id: 'AFT-0214',
+        remarks: 'Whole life insurance policy maturity',
+        voucherNoRef: 'VCH-MAT-2024-0214',
+        date: getRandomDate(2),
+        narrative: 'Whole life maturity - Policy No: WHL-2017-024',
+        bankAccount: 'Policy Benefits Account - 5555666677',
+        currencyCode: 'NGN',
+        amountPayee: getRandomAmount(1500000, 2800000),
+        authorisedBy: 'David Wilson',
+        authorizationDate: getRandomDate(3),
+        preparedBy: 'Kemi Ogundimu',
+        requestDate: getRandomDate(5),
+        type: 'FINES',
+        document: 'WHOLE_LIFE_024.pdf',
+        payee: 'John'
       },
       {
         id: 'AFT-025',
@@ -644,7 +678,9 @@ export class AuthorizedFileTransferService {
         byType: {
           claims: transfers.filter(t => t.type === 'CLAIMS').length,
           commissions: transfers.filter(t => t.type === 'COMMISSIONS').length,
-          policyMaturity: transfers.filter(t => t.type === 'POLICY_MATURITY').length
+          policyMaturity: transfers.filter(t => t.type === 'POLICY_MATURITY').length,
+          surrenders: transfers.filter(t => t.type === 'SURRENDERS').length,
+          fines: transfers.filter(t => t.type === 'FINES').length
         }
       }))
     );

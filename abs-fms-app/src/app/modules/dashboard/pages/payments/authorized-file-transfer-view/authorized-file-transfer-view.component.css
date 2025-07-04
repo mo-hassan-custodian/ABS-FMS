@@ -347,6 +347,18 @@
   border: 1px solid #c8e6c9;
 }
 
+.type-surrenders {
+  background-color: #e8f5e8;
+  color: #7b1fa2;
+  border: 1px solid #c8e6c9;
+}
+
+.type-fines {
+  background-color: #e8f5e8;
+  color: #2e7d32;
+  border: 1px solid #c8e6c9;
+}
+
 /* Card Actions */
 .card-actions {
   padding: 16px 24px;
