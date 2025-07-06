@@ -1,15 +1,15 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { map, delay } from 'rxjs/operators';
-import { 
-  AuthorizedFileTransfer, 
-  AuthorizedFileTransferCreateRequest, 
+import {
+  AuthorizedFileTransfer,
+  AuthorizedFileTransferCreateRequest,
   AuthorizedFileTransferStats,
-  AuthorizedFileTransferFilter 
+  AuthorizedFileTransferFilter,
 } from '../models/authorized-file-transfer.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthorizedFileTransferService {
   private readonly STORAGE_KEY = 'abs_fms_authorized_transfers';
@@ -34,7 +34,7 @@ export class AuthorizedFileTransferService {
           ...t,
           date: new Date(t.date),
           authorizationDate: new Date(t.authorizationDate),
-          requestDate: new Date(t.requestDate)
+          requestDate: new Date(t.requestDate),
         }));
         this.transfersSubject.next(transfers);
       } else {
@@ -68,176 +68,148 @@ export class AuthorizedFileTransferService {
     };
 
     const sampleTransfers: AuthorizedFileTransfer[] = [
-      // Recent Claims Data (Days 0-7)
+      // Death Claims Data
       {
         id: 'AFT-001',
-        remarks: 'Motor insurance claim settlement for policy holder John Doe',
-        voucherNoRef: 'VCH-CLM-2024-001',
+        remarks:
+          'Life insurance death claim settlement for policy holder John Doe',
+        voucherNoRef: 'VCH-DTH-2024-001',
         date: getRandomDate(2),
-        narrative: 'Settlement of motor vehicle accident claim - Policy No: POL-MOT-2023-456',
-        bankAccount: 'Claims Settlement Account - 1234567890',
+        narrative: 'Death claim settlement - Policy No: LIF-2020-456',
+        bankAccount: 'Death Claims Account - 1234567890',
         currencyCode: 'NGN',
-        amountPayee: 850000,
+        amountPayee: 2500000,
         authorisedBy: 'Sarah Johnson',
         authorizationDate: getRandomDate(3),
         preparedBy: 'Michael Chen',
         requestDate: getRandomDate(5),
-        type: 'CLAIMS',
-        document: 'CLAIM_SETTLEMENT_FORM_001.pdf',
-        payee: 'Abel Jack'
+        type: 'DEATH_CLAIM',
+        document: 'DEATH_CLAIM_FORM_001.pdf',
+        payee: 'Abel Jack',
       },
       {
         id: 'AFT-002',
-        remarks: 'Fire insurance claim for commercial property damage',
-        voucherNoRef: 'VCH-CLM-2024-002',
+        remarks: 'Group life insurance death benefit payment',
+        voucherNoRef: 'VCH-DTH-2024-002',
         date: getRandomDate(1),
-        narrative: 'Fire damage claim settlement - ABC Manufacturing Ltd',
-        bankAccount: 'Claims Settlement Account - 1234567890',
+        narrative: 'Group life death benefit - Employee ID: EMP-2023-789',
+        bankAccount: 'Death Claims Account - 1234567890',
         currencyCode: 'NGN',
-        amountPayee: 2500000,
+        amountPayee: 1800000,
         authorisedBy: 'David Wilson',
         authorizationDate: getRandomDate(2),
         preparedBy: 'Lisa Anderson',
         requestDate: getRandomDate(4),
-        type: 'CLAIMS',
-        document: 'FIRE_CLAIM_REPORT_002.pdf',
-        payee: 'Bimbo Chidera'
+        type: 'DEATH_CLAIM',
+        document: 'GROUP_DEATH_CLAIM_002.pdf',
+        payee: 'Bimbo Chidera',
       },
       {
         id: 'AFT-003',
-        remarks: 'Health insurance claim for medical treatment',
-        voucherNoRef: 'VCH-CLM-2024-003',
+        remarks: 'Term life insurance death claim payout',
+        voucherNoRef: 'VCH-DTH-2024-003',
         date: new Date(), // Today
-        narrative: 'Medical claim settlement - Lagos University Teaching Hospital',
-        bankAccount: 'Claims Settlement Account - 1234567890',
+        narrative: 'Term life death claim - Policy No: TERM-2019-123',
+        bankAccount: 'Death Claims Account - 1234567890',
         currencyCode: 'NGN',
-        amountPayee: 450000,
+        amountPayee: 3200000,
         authorisedBy: 'Sarah Johnson',
         authorizationDate: getRandomDate(1),
         preparedBy: 'James Rodriguez',
         requestDate: getRandomDate(3),
-        type: 'CLAIMS',
-        document: 'MEDICAL_CLAIM_003.pdf',
-        payee: 'Chioma Ade'
+        type: 'DEATH_CLAIM',
+        document: 'TERM_DEATH_CLAIM_003.pdf',
+        payee: 'Chioma Ade',
       },
+
+      // Policy Surrender Data
       {
         id: 'AFT-004',
-        remarks: 'Property insurance claim for flood damage',
-        voucherNoRef: 'VCH-CLM-2024-004',
+        remarks: 'Whole life policy surrender value payment',
+        voucherNoRef: 'VCH-SUR-2024-004',
         date: getRandomDate(3),
-        narrative: 'Flood damage claim - Residential Property Lagos',
-        bankAccount: 'Claims Settlement Account - 1234567890',
+        narrative: 'Policy surrender - Policy No: WHL-2018-456',
+        bankAccount: 'Policy Surrender Account - 2345678901',
         currencyCode: 'NGN',
-        amountPayee: getRandomAmount(300000, 800000),
+        amountPayee: getRandomAmount(800000, 1500000),
         authorisedBy: 'Michael Thompson',
         authorizationDate: getRandomDate(4),
         preparedBy: 'Grace Adebayo',
         requestDate: getRandomDate(6),
-        type: 'CLAIMS',
-        document: 'FLOOD_CLAIM_004.pdf',
-        payee: 'Dolapo'
+        type: 'POLICY_SURRENDER',
+        document: 'POLICY_SURRENDER_004.pdf',
+        payee: 'Dolapo',
       },
       {
         id: 'AFT-005',
-        remarks: 'Marine cargo insurance claim settlement',
-        voucherNoRef: 'VCH-CLM-2024-005',
+        remarks: 'Endowment policy early surrender',
+        voucherNoRef: 'VCH-SUR-2024-005',
         date: getRandomDate(2),
-        narrative: 'Cargo damage claim - Import shipment from China',
-        bankAccount: 'Claims Settlement Account - 1234567890',
-        currencyCode: 'USD',
-        amountPayee: getRandomAmount(15000, 45000),
+        narrative: 'Early surrender - Endowment Policy No: END-2020-789',
+        bankAccount: 'Policy Surrender Account - 2345678901',
+        currencyCode: 'NGN',
+        amountPayee: getRandomAmount(600000, 1200000),
         authorisedBy: 'David Wilson',
         authorizationDate: getRandomDate(3),
         preparedBy: 'Olumide Fashola',
         requestDate: getRandomDate(5),
-        type: 'CLAIMS',
-        document: 'MARINE_CLAIM_005.pdf',
-        payee: 'Dayo'
+        type: 'POLICY_SURRENDER',
+        document: 'ENDOWMENT_SURRENDER_005.pdf',
+        payee: 'Dayo',
       },
+
+      // Commission Data
       {
         id: 'AFT-006',
-        remarks: 'Aviation insurance claim for aircraft damage',
-        voucherNoRef: 'VCH-CLM-2024-006',
+        remarks: 'Agent commission payment for Q1 2024 sales performance',
+        voucherNoRef: 'VCH-COM-2024-006',
         date: getRandomDate(4),
-        narrative: 'Aircraft maintenance claim - Nigerian Airways',
-        bankAccount: 'Claims Settlement Account - 1234567890',
+        narrative: 'Quarterly commission payment - Agent: Adebayo Ogundimu',
+        bankAccount: 'Commission Payment Account - 9876543210',
         currencyCode: 'NGN',
-        amountPayee: getRandomAmount(5000000, 8000000),
+        amountPayee: getRandomAmount(180000, 350000),
         authorisedBy: 'Sarah Johnson',
         authorizationDate: getRandomDate(5),
         preparedBy: 'Emeka Okonkwo',
         requestDate: getRandomDate(7),
-        type: 'CLAIMS',
-        document: 'AVIATION_CLAIM_006.pdf',
-        payee: 'Segun'
+        type: 'COMMISSION',
+        document: 'COMMISSION_STATEMENT_Q1_2024.pdf',
+        payee: 'Segun',
       },
       {
         id: 'AFT-007',
-        remarks: 'Professional indemnity claim settlement',
-        voucherNoRef: 'VCH-CLM-2024-007',
+        remarks: 'Broker commission for life insurance placement',
+        voucherNoRef: 'VCH-COM-2024-007',
         date: getRandomDate(1),
-        narrative: 'Professional liability claim - Legal Services Ltd',
-        bankAccount: 'Claims Settlement Account - 1234567890',
+        narrative:
+          'Life insurance broker commission - Premium Insurance Brokers',
+        bankAccount: 'Commission Payment Account - 9876543210',
         currencyCode: 'NGN',
-        amountPayee: getRandomAmount(200000, 600000),
+        amountPayee: getRandomAmount(450000, 850000),
         authorisedBy: 'Patricia Davis',
         authorizationDate: getRandomDate(2),
         preparedBy: 'Funmi Adebisi',
         requestDate: getRandomDate(4),
-        type: 'CLAIMS',
-        document: 'PROFESSIONAL_CLAIM_007.pdf',
-        payee: 'Salewa'
+        type: 'COMMISSION',
+        document: 'LIFE_BROKER_COMMISSION_007.pdf',
+        payee: 'Salewa',
       },
       {
         id: 'AFT-008',
-        remarks: 'Workmen compensation claim payment',
-        voucherNoRef: 'VCH-CLM-2024-008',
+        remarks: 'Reinsurance commission payment',
+        voucherNoRef: 'VCH-COM-2024-008',
         date: new Date(), // Today
-        narrative: 'Work injury compensation - Construction Worker',
-        bankAccount: 'Claims Settlement Account - 1234567890',
-        currencyCode: 'NGN',
-        amountPayee: getRandomAmount(150000, 400000),
+        narrative: 'Reinsurance commission - Continental Re',
+        bankAccount: 'Commission Payment Account - 9876543210',
+        currencyCode: 'USD',
+        amountPayee: getRandomAmount(25000, 75000),
         authorisedBy: 'Robert Taylor',
         authorizationDate: getRandomDate(1),
         preparedBy: 'Kemi Ogundimu',
         requestDate: getRandomDate(3),
-        type: 'CLAIMS',
-        document: 'WORKMEN_CLAIM_008.pdf',
-        payee: 'James'
-      },
-      {
-        id: 'AFT-009',
-        remarks: 'Cyber liability insurance claim',
-        voucherNoRef: 'VCH-CLM-2024-009',
-        date: getRandomDate(5),
-        narrative: 'Data breach incident claim - Tech Solutions Nigeria',
-        bankAccount: 'Claims Settlement Account - 1234567890',
-        currencyCode: 'NGN',
-        amountPayee: getRandomAmount(1000000, 3000000),
-        authorisedBy: 'Michael Thompson',
-        authorizationDate: getRandomDate(6),
-        preparedBy: 'Tunde Bakare',
-        requestDate: getRandomDate(8),
-        type: 'CLAIMS',
-        document: 'CYBER_CLAIM_009.pdf',
-        payee: 'Johnson'
-      },
-      {
-        id: 'AFT-010',
-        remarks: 'Directors and officers liability claim',
-        voucherNoRef: 'VCH-CLM-2024-010',
-        date: getRandomDate(3),
-        narrative: 'D&O liability claim - Corporate Board Decision',
-        bankAccount: 'Claims Settlement Account - 1234567890',
-        currencyCode: 'NGN',
-        amountPayee: getRandomAmount(2000000, 5000000),
-        authorisedBy: 'Sarah Johnson',
-        authorizationDate: getRandomDate(4),
-        preparedBy: 'Adebola Ogundipe',
-        requestDate: getRandomDate(6),
-        type: 'CLAIMS',
-        document: 'DO_CLAIM_010.pdf',
-        payee: 'Michael'
+        type: 'COMMISSION',
+        document: 'REINSURANCE_COMMISSION_008.pdf',
+        payee: 'James',
       },
 
       // Commission Data (Recent)
@@ -254,16 +226,17 @@ export class AuthorizedFileTransferService {
         authorizationDate: getRandomDate(2),
         preparedBy: 'Jennifer Lee',
         requestDate: getRandomDate(4),
-        type: 'COMMISSIONS',
+        type: 'COMMISSION',
         document: 'COMMISSION_STATEMENT_Q1_2024.pdf',
-        payee: 'Jonah'
+        payee: 'Jonah',
       },
       {
         id: 'AFT-012',
         remarks: 'Broker commission for life insurance placement',
         voucherNoRef: 'VCH-COM-2024-012',
         date: new Date(), // Today
-        narrative: 'Life insurance broker commission - Premium Insurance Brokers',
+        narrative:
+          'Life insurance broker commission - Premium Insurance Brokers',
         bankAccount: 'Commission Payment Account - 9876543210',
         currencyCode: 'NGN',
         amountPayee: getRandomAmount(450000, 850000),
@@ -271,9 +244,9 @@ export class AuthorizedFileTransferService {
         authorizationDate: getRandomDate(1),
         preparedBy: 'Kevin Brown',
         requestDate: getRandomDate(2),
-        type: 'COMMISSIONS',
+        type: 'COMMISSION',
         document: 'LIFE_BROKER_COMMISSION_012.pdf',
-        payee: 'Jamiu'
+        payee: 'Jamiu',
       },
       {
         id: 'AFT-013',
@@ -288,9 +261,9 @@ export class AuthorizedFileTransferService {
         authorizationDate: getRandomDate(4),
         preparedBy: 'Funmi Adebisi',
         requestDate: getRandomDate(6),
-        type: 'COMMISSIONS',
+        type: 'COMMISSION',
         document: 'REINSURANCE_COMMISSION_013.pdf',
-        payee: 'Rosemary'
+        payee: 'Rosemary',
       },
       {
         id: 'AFT-014',
@@ -305,9 +278,9 @@ export class AuthorizedFileTransferService {
         authorizationDate: getRandomDate(3),
         preparedBy: 'Tunde Bakare',
         requestDate: getRandomDate(5),
-        type: 'COMMISSIONS',
+        type: 'COMMISSION',
         document: 'MOTOR_AGENT_COMMISSION_014.pdf',
-        payee: 'Sunday'
+        payee: 'Sunday',
       },
       {
         id: 'AFT-015',
@@ -322,9 +295,9 @@ export class AuthorizedFileTransferService {
         authorizationDate: getRandomDate(5),
         preparedBy: 'Grace Adebayo',
         requestDate: getRandomDate(7),
-        type: 'COMMISSIONS',
+        type: 'COMMISSION',
         document: 'CORPORATE_BROKER_015.pdf',
-        payee: 'Remi'
+        payee: 'Remi',
       },
       {
         id: 'AFT-016',
@@ -339,9 +312,9 @@ export class AuthorizedFileTransferService {
         authorizationDate: getRandomDate(2),
         preparedBy: 'Kemi Ogundimu',
         requestDate: getRandomDate(4),
-        type: 'COMMISSIONS',
+        type: 'COMMISSION',
         document: 'HEALTH_AGENT_016.pdf',
-        payee: 'Tunde'
+        payee: 'Tunde',
       },
       {
         id: 'AFT-017',
@@ -356,9 +329,9 @@ export class AuthorizedFileTransferService {
         authorizationDate: getRandomDate(6),
         preparedBy: 'Olumide Fashola',
         requestDate: getRandomDate(8),
-        type: 'COMMISSIONS',
+        type: 'COMMISSION',
         document: 'MARINE_BROKER_017.pdf',
-        payee: 'Taju'
+        payee: 'Taju',
       },
       {
         id: 'AFT-018',
@@ -373,9 +346,9 @@ export class AuthorizedFileTransferService {
         authorizationDate: getRandomDate(1),
         preparedBy: 'Emeka Okonkwo',
         requestDate: getRandomDate(3),
-        type: 'COMMISSIONS',
+        type: 'COMMISSION',
         document: 'AVIATION_COMMISSION_018.pdf',
-        payee: 'Bunmi'
+        payee: 'Bunmi',
       },
       {
         id: 'AFT-019',
@@ -390,9 +363,9 @@ export class AuthorizedFileTransferService {
         authorizationDate: getRandomDate(4),
         preparedBy: 'Adebola Ogundipe',
         requestDate: getRandomDate(6),
-        type: 'COMMISSIONS',
+        type: 'COMMISSION',
         document: 'PROFESSIONAL_BROKER_019.pdf',
-        payee: 'Bimpe'
+        payee: 'Bimpe',
       },
       {
         id: 'AFT-020',
@@ -407,9 +380,9 @@ export class AuthorizedFileTransferService {
         authorizationDate: getRandomDate(3),
         preparedBy: 'Funmi Adebisi',
         requestDate: getRandomDate(5),
-        type: 'COMMISSIONS',
+        type: 'COMMISSION',
         document: 'FIRE_AGENT_020.pdf',
-        payee: 'Seun'
+        payee: 'Seun',
       },
 
       // Policy Maturity Data (Recent)
@@ -426,9 +399,9 @@ export class AuthorizedFileTransferService {
         authorizationDate: getRandomDate(2),
         preparedBy: 'Thomas Wilson',
         requestDate: getRandomDate(4),
-        type: 'POLICY_MATURITY',
+        type: 'FULL_MATURITIES',
         document: 'LIFE_MATURITY_021.pdf',
-        payee: 'kemi'
+        payee: 'kemi',
       },
       {
         id: 'AFT-022',
@@ -443,9 +416,9 @@ export class AuthorizedFileTransferService {
         authorizationDate: getRandomDate(1),
         preparedBy: 'Amanda Garcia',
         requestDate: getRandomDate(3),
-        type: 'POLICY_MATURITY',
+        type: 'FULL_MATURITIES',
         document: 'ENDOWMENT_MATURITY_022.pdf',
-        payee: 'Kunle'
+        payee: 'Kunle',
       },
       {
         id: 'AFT-023',
@@ -460,9 +433,26 @@ export class AuthorizedFileTransferService {
         authorizationDate: getRandomDate(4),
         preparedBy: 'Grace Adebayo',
         requestDate: getRandomDate(6),
-        type: 'POLICY_MATURITY',
+        type: 'FULL_MATURITIES',
         document: 'TERM_MATURITY_023.pdf',
-        payee: 'Kayode'
+        payee: 'Kayode',
+      },
+      {
+        id: 'AFT-0113',
+        remarks: 'Term life insurance maturity payout',
+        voucherNoRef: 'VCH-MAT-2024-0113',
+        date: getRandomDate(3),
+        narrative: 'Term life maturity - Policy No: TERM-2019-023',
+        bankAccount: 'Surrenders Account - 5555666677',
+        currencyCode: 'NGN',
+        amountPayee: getRandomAmount(600000, 1100000),
+        authorisedBy: 'Sarah Johnson',
+        authorizationDate: getRandomDate(4),
+        preparedBy: 'Grace Adebayo',
+        requestDate: getRandomDate(6),
+        type: 'POLICY_SURRENDER',
+        document: 'SURRENDERS_023.pdf',
+        payee: 'Bayo',
       },
       {
         id: 'AFT-024',
@@ -477,9 +467,26 @@ export class AuthorizedFileTransferService {
         authorizationDate: getRandomDate(3),
         preparedBy: 'Kemi Ogundimu',
         requestDate: getRandomDate(5),
-        type: 'POLICY_MATURITY',
+        type: 'FULL_MATURITIES',
         document: 'WHOLE_LIFE_024.pdf',
-        payee: 'Johanna'
+        payee: 'Johanna',
+      },
+      {
+        id: 'AFT-0214',
+        remarks: 'Policy cancellation refund for cancelled policy',
+        voucherNoRef: 'VCH-CAN-2024-0214',
+        date: getRandomDate(2),
+        narrative: 'Policy cancellation refund - Policy No: WHL-2017-024',
+        bankAccount: 'Cancellation Refund Account - 9999000011',
+        currencyCode: 'NGN',
+        amountPayee: getRandomAmount(50000, 150000),
+        authorisedBy: 'David Wilson',
+        authorizationDate: getRandomDate(3),
+        preparedBy: 'Kemi Ogundimu',
+        requestDate: getRandomDate(5),
+        type: 'POLICY_CANCELLATION',
+        document: 'CANCELLATION_0214.pdf',
+        payee: 'John',
       },
       {
         id: 'AFT-025',
@@ -494,9 +501,9 @@ export class AuthorizedFileTransferService {
         authorizationDate: getRandomDate(5),
         preparedBy: 'Tunde Bakare',
         requestDate: getRandomDate(7),
-        type: 'POLICY_MATURITY',
+        type: 'FULL_MATURITIES',
         document: 'UNIVERSAL_LIFE_025.pdf',
-        payee: 'Bose'
+        payee: 'Bose',
       },
       {
         id: 'AFT-026',
@@ -511,9 +518,9 @@ export class AuthorizedFileTransferService {
         authorizationDate: getRandomDate(2),
         preparedBy: 'Olumide Fashola',
         requestDate: getRandomDate(4),
-        type: 'POLICY_MATURITY',
+        type: 'FULL_MATURITIES',
         document: 'VARIABLE_LIFE_026.pdf',
-        payee: 'Dayo'
+        payee: 'Dayo',
       },
       {
         id: 'AFT-027',
@@ -528,9 +535,9 @@ export class AuthorizedFileTransferService {
         authorizationDate: getRandomDate(6),
         preparedBy: 'Emeka Okonkwo',
         requestDate: getRandomDate(8),
-        type: 'POLICY_MATURITY',
+        type: 'FULL_MATURITIES',
         document: 'GROUP_LIFE_027.pdf',
-        payee: 'Bayo'
+        payee: 'Bayo',
       },
       {
         id: 'AFT-028',
@@ -545,9 +552,9 @@ export class AuthorizedFileTransferService {
         authorizationDate: getRandomDate(1),
         preparedBy: 'Funmi Adebisi',
         requestDate: getRandomDate(3),
-        type: 'POLICY_MATURITY',
+        type: 'ANNUITY_MATURITIES',
         document: 'ANNUITY_028.pdf',
-        payee: 'Ife'
+        payee: 'Ife',
       },
       {
         id: 'AFT-029',
@@ -562,9 +569,9 @@ export class AuthorizedFileTransferService {
         authorizationDate: getRandomDate(4),
         preparedBy: 'Adebola Ogundipe',
         requestDate: getRandomDate(6),
-        type: 'POLICY_MATURITY',
+        type: 'FULL_MATURITIES',
         document: 'EDUCATION_029.pdf',
-        payee: 'Bright'
+        payee: 'Bright',
       },
       {
         id: 'AFT-030',
@@ -579,10 +586,194 @@ export class AuthorizedFileTransferService {
         authorizationDate: getRandomDate(3),
         preparedBy: 'Grace Adebayo',
         requestDate: getRandomDate(5),
-        type: 'POLICY_MATURITY',
+        type: 'FULL_MATURITIES',
         document: 'RETIREMENT_030.pdf',
-        payee: 'Filomena'
-      }
+        payee: 'Filomena',
+      },
+
+      // Partial Maturities Data
+      {
+        id: 'AFT-031',
+        remarks: 'Partial maturity withdrawal from endowment policy',
+        voucherNoRef: 'VCH-PAR-2024-031',
+        date: getRandomDate(1),
+        narrative: 'Partial maturity - Policy No: END-2020-031',
+        bankAccount: 'Policy Benefits Account - 5555666677',
+        currencyCode: 'NGN',
+        amountPayee: getRandomAmount(300000, 600000),
+        authorisedBy: 'Robert Taylor',
+        authorizationDate: getRandomDate(2),
+        preparedBy: 'Jennifer Lee',
+        requestDate: getRandomDate(4),
+        type: 'PARTIAL_MATURITIES',
+        document: 'PARTIAL_MATURITY_031.pdf',
+        payee: 'Jonah',
+      },
+      {
+        id: 'AFT-032',
+        remarks: 'Partial maturity benefit from whole life policy',
+        voucherNoRef: 'VCH-PAR-2024-032',
+        date: new Date(), // Today
+        narrative: 'Partial maturity withdrawal - Policy No: WHL-2019-032',
+        bankAccount: 'Policy Benefits Account - 5555666677',
+        currencyCode: 'NGN',
+        amountPayee: getRandomAmount(450000, 850000),
+        authorisedBy: 'Patricia Davis',
+        authorizationDate: getRandomDate(1),
+        preparedBy: 'Kevin Brown',
+        requestDate: getRandomDate(2),
+        type: 'PARTIAL_MATURITIES',
+        document: 'PARTIAL_WHOLE_LIFE_032.pdf',
+        payee: 'Jamiu',
+      },
+
+      // Investment Maturities Data
+      {
+        id: 'AFT-033',
+        remarks: 'Investment-linked policy maturity payout',
+        voucherNoRef: 'VCH-INV-2024-033',
+        date: getRandomDate(3),
+        narrative: 'Investment maturity - Policy No: INV-2019-033',
+        bankAccount: 'Investment Account - 7777888899',
+        currencyCode: 'NGN',
+        amountPayee: getRandomAmount(900000, 1800000),
+        authorisedBy: 'Michael Thompson',
+        authorizationDate: getRandomDate(4),
+        preparedBy: 'Grace Adebayo',
+        requestDate: getRandomDate(6),
+        type: 'INVESTMENT_MATURITIES',
+        document: 'INVESTMENT_MATURITY_033.pdf',
+        payee: 'Dolapo',
+      },
+      {
+        id: 'AFT-034',
+        remarks: 'Unit-linked investment policy maturity',
+        voucherNoRef: 'VCH-INV-2024-034',
+        date: getRandomDate(2),
+        narrative: 'Unit-linked maturity - Policy No: UNI-2020-034',
+        bankAccount: 'Investment Account - 7777888899',
+        currencyCode: 'USD',
+        amountPayee: getRandomAmount(15000, 45000),
+        authorisedBy: 'David Wilson',
+        authorizationDate: getRandomDate(3),
+        preparedBy: 'Olumide Fashola',
+        requestDate: getRandomDate(5),
+        type: 'INVESTMENT_MATURITIES',
+        document: 'UNIT_LINKED_034.pdf',
+        payee: 'Dayo',
+      },
+
+      // Policy Loan Data
+      {
+        id: 'AFT-035',
+        remarks: 'Policy loan disbursement against whole life policy',
+        voucherNoRef: 'VCH-LON-2024-035',
+        date: getRandomDate(4),
+        narrative: 'Policy loan - Policy No: WHL-2018-035',
+        bankAccount: 'Policy Loan Account - 3333444455',
+        currencyCode: 'NGN',
+        amountPayee: getRandomAmount(200000, 500000),
+        authorisedBy: 'Sarah Johnson',
+        authorizationDate: getRandomDate(5),
+        preparedBy: 'Emeka Okonkwo',
+        requestDate: getRandomDate(7),
+        type: 'POLICY_LOAN',
+        document: 'POLICY_LOAN_035.pdf',
+        payee: 'Segun',
+      },
+      {
+        id: 'AFT-036',
+        remarks: 'Emergency policy loan against endowment policy',
+        voucherNoRef: 'VCH-LON-2024-036',
+        date: getRandomDate(1),
+        narrative: 'Emergency loan - Policy No: END-2019-036',
+        bankAccount: 'Policy Loan Account - 3333444455',
+        currencyCode: 'NGN',
+        amountPayee: getRandomAmount(150000, 400000),
+        authorisedBy: 'Patricia Davis',
+        authorizationDate: getRandomDate(2),
+        preparedBy: 'Funmi Adebisi',
+        requestDate: getRandomDate(4),
+        type: 'POLICY_LOAN',
+        document: 'EMERGENCY_LOAN_036.pdf',
+        payee: 'Salewa',
+      },
+
+      // Policy Termination Data
+      {
+        id: 'AFT-037',
+        remarks: 'Policy termination refund for cancelled term life',
+        voucherNoRef: 'VCH-TER-2024-037',
+        date: new Date(), // Today
+        narrative: 'Policy termination - Policy No: TERM-2023-037',
+        bankAccount: 'Policy Termination Account - 4444555566',
+        currencyCode: 'NGN',
+        amountPayee: getRandomAmount(100000, 300000),
+        authorisedBy: 'Robert Taylor',
+        authorizationDate: getRandomDate(1),
+        preparedBy: 'Kemi Ogundimu',
+        requestDate: getRandomDate(3),
+        type: 'POLICY_TERMINATION',
+        document: 'TERMINATION_037.pdf',
+        payee: 'James',
+      },
+
+      // Partial Withdrawal Data
+      {
+        id: 'AFT-038',
+        remarks: 'Partial withdrawal from universal life policy',
+        voucherNoRef: 'VCH-WIT-2024-038',
+        date: getRandomDate(5),
+        narrative: 'Partial withdrawal - Policy No: UNI-2020-038',
+        bankAccount: 'Withdrawal Account - 6666777788',
+        currencyCode: 'NGN',
+        amountPayee: getRandomAmount(250000, 600000),
+        authorisedBy: 'Michael Thompson',
+        authorizationDate: getRandomDate(6),
+        preparedBy: 'Tunde Bakare',
+        requestDate: getRandomDate(8),
+        type: 'PARTIAL_WITHDRAWAL',
+        document: 'PARTIAL_WITHDRAWAL_038.pdf',
+        payee: 'Johnson',
+      },
+
+      // Annuity Maturities Data
+      {
+        id: 'AFT-039',
+        remarks: 'Annuity policy maturity payout',
+        voucherNoRef: 'VCH-ANN-2024-039',
+        date: getRandomDate(3),
+        narrative: 'Annuity maturity - Policy No: ANN-2017-039',
+        bankAccount: 'Annuity Account - 8888999900',
+        currencyCode: 'NGN',
+        amountPayee: getRandomAmount(1100000, 2100000),
+        authorisedBy: 'Sarah Johnson',
+        authorizationDate: getRandomDate(4),
+        preparedBy: 'Adebola Ogundipe',
+        requestDate: getRandomDate(6),
+        type: 'ANNUITY_MATURITIES',
+        document: 'ANNUITY_039.pdf',
+        payee: 'Michael',
+      },
+
+      // Policy Cancellation Data
+      {
+        id: 'AFT-040',
+        remarks: 'Policy cancellation refund for motor insurance',
+        voucherNoRef: 'VCH-CAN-2024-040',
+        date: getRandomDate(2),
+        narrative: 'Policy cancellation - Policy No: MOT-2024-040',
+        bankAccount: 'Cancellation Refund Account - 9999000011',
+        currencyCode: 'NGN',
+        amountPayee: getRandomAmount(50000, 150000),
+        authorisedBy: 'David Wilson',
+        authorizationDate: getRandomDate(3),
+        preparedBy: 'Grace Adebayo',
+        requestDate: getRandomDate(5),
+        type: 'POLICY_CANCELLATION',
+        document: 'CANCELLATION_040.pdf',
+        payee: 'Filomena',
+      },
     ];
 
     this.transfersSubject.next(sampleTransfers);
@@ -595,41 +786,50 @@ export class AuthorizedFileTransferService {
 
   getTransferById(id: string): Observable<AuthorizedFileTransfer | undefined> {
     return this.transfers$.pipe(
-      map(transfers => transfers.find(t => t.id === id))
+      map((transfers) => transfers.find((t) => t.id === id))
     );
   }
 
-  searchTransfers(filter: AuthorizedFileTransferFilter): Observable<AuthorizedFileTransfer[]> {
+  searchTransfers(
+    filter: AuthorizedFileTransferFilter
+  ): Observable<AuthorizedFileTransfer[]> {
     return this.transfers$.pipe(
-      map(transfers => {
+      map((transfers) => {
         let filtered = [...transfers];
 
         // Apply search term filter
         if (filter.searchTerm && filter.searchTerm.trim()) {
           const searchTerm = filter.searchTerm.toLowerCase();
-          filtered = filtered.filter(transfer =>
-            transfer.remarks.toLowerCase().includes(searchTerm) ||
-            transfer.voucherNoRef.toLowerCase().includes(searchTerm) ||
-            transfer.narrative.toLowerCase().includes(searchTerm) ||
-            transfer.bankAccount.toLowerCase().includes(searchTerm) ||
-            transfer.authorisedBy.toLowerCase().includes(searchTerm) ||
-            transfer.preparedBy.toLowerCase().includes(searchTerm) ||
-            transfer.document.toLowerCase().includes(searchTerm) ||
-            transfer.payee.toLowerCase().includes(searchTerm)
+          filtered = filtered.filter(
+            (transfer) =>
+              transfer.remarks.toLowerCase().includes(searchTerm) ||
+              transfer.voucherNoRef.toLowerCase().includes(searchTerm) ||
+              transfer.narrative.toLowerCase().includes(searchTerm) ||
+              transfer.bankAccount.toLowerCase().includes(searchTerm) ||
+              transfer.authorisedBy.toLowerCase().includes(searchTerm) ||
+              transfer.preparedBy.toLowerCase().includes(searchTerm) ||
+              transfer.document.toLowerCase().includes(searchTerm) ||
+              transfer.payee.toLowerCase().includes(searchTerm)
           );
         }
 
         // Apply type filter
         if (filter.type && filter.type !== 'ALL') {
-          filtered = filtered.filter(transfer => transfer.type === filter.type);
+          filtered = filtered.filter(
+            (transfer) => transfer.type === filter.type
+          );
         }
 
         // Apply date range filter
         if (filter.dateFrom) {
-          filtered = filtered.filter(transfer => transfer.date >= filter.dateFrom!);
+          filtered = filtered.filter(
+            (transfer) => transfer.date >= filter.dateFrom!
+          );
         }
         if (filter.dateTo) {
-          filtered = filtered.filter(transfer => transfer.date <= filter.dateTo!);
+          filtered = filtered.filter(
+            (transfer) => transfer.date <= filter.dateTo!
+          );
         }
 
         return filtered;
@@ -639,15 +839,143 @@ export class AuthorizedFileTransferService {
 
   getTransferStats(): Observable<AuthorizedFileTransferStats> {
     return this.transfers$.pipe(
-      map(transfers => ({
+      map((transfers) => ({
         total: transfers.length,
         byType: {
-          claims: transfers.filter(t => t.type === 'CLAIMS').length,
-          commissions: transfers.filter(t => t.type === 'COMMISSIONS').length,
-          policyMaturity: transfers.filter(t => t.type === 'POLICY_MATURITY').length
-        }
+          policySurrender: transfers.filter(
+            (t) => t.type === 'POLICY_SURRENDER'
+          ).length,
+          partialMaturities: transfers.filter(
+            (t) => t.type === 'PARTIAL_MATURITIES'
+          ).length,
+          fullMaturities: transfers.filter((t) => t.type === 'FULL_MATURITIES')
+            .length,
+          investmentMaturities: transfers.filter(
+            (t) => t.type === 'INVESTMENT_MATURITIES'
+          ).length,
+          policyLoan: transfers.filter((t) => t.type === 'POLICY_LOAN').length,
+          policyTermination: transfers.filter(
+            (t) => t.type === 'POLICY_TERMINATION'
+          ).length,
+          partialWithdrawal: transfers.filter(
+            (t) => t.type === 'PARTIAL_WITHDRAWAL'
+          ).length,
+          annuityMaturities: transfers.filter(
+            (t) => t.type === 'ANNUITY_MATURITIES'
+          ).length,
+          deathClaim: transfers.filter((t) => t.type === 'DEATH_CLAIM').length,
+          commission: transfers.filter((t) => t.type === 'COMMISSION').length,
+          policyCancellation: transfers.filter(
+            (t) => t.type === 'POLICY_CANCELLATION'
+          ).length,
+        },
       }))
     );
+  }
+
+  // Authorize a payment and remove it from the list
+  authorizePayment(
+    transferId: string,
+    authorizationData: any
+  ): Observable<{ success: boolean; message: string }> {
+    return new Observable((observer) => {
+      // Simulate API call delay
+      setTimeout(() => {
+        try {
+          const currentTransfers = this.transfersSubject.value;
+          const transferIndex = currentTransfers.findIndex(
+            (t) => t.id === transferId
+          );
+
+          if (transferIndex === -1) {
+            observer.next({ success: false, message: 'Transfer not found' });
+            observer.complete();
+            return;
+          }
+
+          const transfer = currentTransfers[transferIndex];
+
+          // Create authorization record for backend (simulate sending to API)
+          const authorizationRecord = {
+            transferId: transfer.id,
+            voucherNoRef: transfer.voucherNoRef,
+            payee: transfer.payee,
+            amount: transfer.amountPayee,
+            currencyCode: transfer.currencyCode,
+            fromAccount: {
+              bankName: authorizationData.selectedAccount.bankName,
+              accountNumber: authorizationData.selectedAccount.accountNumber,
+              accountType: authorizationData.selectedAccount.accountType,
+            },
+            payeeBankAccount: transfer.bankAccount,
+            transferType: transfer.type,
+            narrative: transfer.narrative,
+            authorizedBy: 'Current User', // In real app, get from auth service
+            authorizedAt: new Date().toISOString(),
+            status: 'AUTHORIZED',
+          };
+
+          // Log the authorization record (simulate sending to backend)
+          console.log('Sending authorization to backend:', authorizationRecord);
+
+          // Store authorization record in localStorage (simulate backend storage)
+          this.storeAuthorizationRecord(authorizationRecord);
+
+          // Remove the transfer from the pending list
+          const updatedTransfers = currentTransfers.filter(
+            (t) => t.id !== transferId
+          );
+          this.transfersSubject.next(updatedTransfers);
+          this.saveTransfersToStorage(updatedTransfers);
+
+          observer.next({
+            success: true,
+            message: `Payment ${transfer.voucherNoRef} authorized successfully and removed from pending list`,
+          });
+          observer.complete();
+        } catch (error) {
+          observer.next({
+            success: false,
+            message: 'Failed to authorize payment. Please try again.',
+          });
+          observer.complete();
+        }
+      }, 1000); // Simulate 1 second API call
+    });
+  }
+
+  // Store authorization record (simulate backend API call)
+  private storeAuthorizationRecord(authorizationRecord: any): void {
+    try {
+      const existingRecords = JSON.parse(
+        localStorage.getItem('abs_fms_authorized_payments') || '[]'
+      );
+      existingRecords.push(authorizationRecord);
+      localStorage.setItem(
+        'abs_fms_authorized_payments',
+        JSON.stringify(existingRecords)
+      );
+      console.log('Authorization record stored successfully');
+    } catch (error) {
+      console.error('Error storing authorization record:', error);
+    }
+  }
+
+  // Get all authorized payments (for future reference)
+  getAuthorizedPayments(): Observable<any[]> {
+    return new Observable((observer) => {
+      try {
+        const records = JSON.parse(
+          localStorage.getItem('abs_fms_authorized_payments') || '[]'
+        );
+        observer.next(records);
+        observer.complete();
+      } catch (error) {
+        console.error('Error retrieving authorized payments:', error);
+        observer.next([]);
+        observer.complete();
+      }
+    });
   }
 
   private generateId(): string {

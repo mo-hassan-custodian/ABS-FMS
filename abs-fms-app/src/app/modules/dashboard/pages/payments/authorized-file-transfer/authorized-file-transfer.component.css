@@ -58,7 +58,8 @@
 
 .search-field {
   flex: 1;
-  min-width: 300px;
+  min-width: 250px;
+  max-width: 350px;
 }
 
 .filter-field {
@@ -67,6 +68,18 @@
 
 .date-field {
   min-width: 180px;
+}
+
+.search-btn {
+  height: 56px;
+  min-width: 120px;
+  margin-bottom: 1.34375em;
+  background-color: #1976d2;
+  color: white;
+}
+
+.search-btn:hover {
+  background-color: #1565c0;
 }
 
 .clear-btn {
@@ -229,22 +242,231 @@
   letter-spacing: 0.5px;
 }
 
-.type-claims {
+.type-policy_surrender {
+  background-color: #fff3e0;
+  color: #f57c00;
+  border: 1px solid #ffcc02;
+}
+
+.type-partial_maturities {
+  background-color: #e8f5e8;
+  color: #388e3c;
+  border: 1px solid #c8e6c9;
+}
+
+.type-full_maturities {
+  background-color: #e8f5e8;
+  color: #2e7d32;
+  border: 1px solid #c8e6c9;
+}
+
+.type-investment_maturities {
   background-color: #e3f2fd;
-  color: #1565c0;
+  color: #1976d2;
   border: 1px solid #bbdefb;
 }
 
-.type-commissions {
+.type-policy_loan {
+  background-color: #fce4ec;
+  color: #c2185b;
+  border: 1px solid #f8bbd9;
+}
+
+.type-policy_termination {
+  background-color: #ffebee;
+  color: #d32f2f;
+  border: 1px solid #ffcdd2;
+}
+
+.type-partial_withdrawal {
   background-color: #f3e5f5;
   color: #7b1fa2;
   border: 1px solid #e1bee7;
 }
 
-.type-policy_maturity {
+.type-annuity_maturities {
+  background-color: #e0f2f1;
+  color: #00695c;
+  border: 1px solid #b2dfdb;
+}
+
+.type-death_claim {
+  background-color: #ffebee;
+  color: #c62828;
+  border: 1px solid #ffcdd2;
+}
+
+.type-commission {
+  background-color: #f3e5f5;
+  color: #7b1fa2;
+  border: 1px solid #e1bee7;
+}
+
+.type-policy_cancellation {
+  background-color: #fafafa;
+  color: #616161;
+  border: 1px solid #e0e0e0;
+}
+
+/* Search Results Section */
+.search-results-section {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  padding: 20px;
+}
+
+.search-results-section h3 {
+  margin: 0 0 20px 0;
+  color: #333;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+/* Table Styles */
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.search-results-table {
+  width: 100%;
+  background: white;
+}
+
+.search-results-table .mat-mdc-header-cell {
+  font-weight: 600;
+  color: #333;
+  background-color: #f8f9fa;
+}
+
+.search-results-table .mat-mdc-cell {
+  padding: 12px 8px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.search-results-table .mat-mdc-row:hover {
+  background-color: #f5f5f5;
+}
+
+.clickable-row {
+  cursor: pointer;
+}
+
+.narrative-cell {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.amount-header {
+  text-align: right;
+}
+
+.amount-cell {
+  font-weight: 600;
+  color: #2e7d32;
+  text-align: right;
+}
+
+.type-badge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.type-policy_surrender {
+  background-color: #fff3e0;
+  color: #f57c00;
+}
+
+.type-partial_maturities {
+  background-color: #e8f5e8;
+  color: #388e3c;
+}
+
+.type-full_maturities {
   background-color: #e8f5e8;
   color: #2e7d32;
-  border: 1px solid #c8e6c9;
+}
+
+.type-investment_maturities {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.type-policy_loan {
+  background-color: #fce4ec;
+  color: #c2185b;
+}
+
+.type-policy_termination {
+  background-color: #ffebee;
+  color: #d32f2f;
+}
+
+.type-partial_withdrawal {
+  background-color: #f3e5f5;
+  color: #7b1fa2;
+}
+
+.type-annuity_maturities {
+  background-color: #e0f2f1;
+  color: #00695c;
+}
+
+.type-death_claim {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.type-commission {
+  background-color: #f3e5f5;
+  color: #7b1fa2;
+}
+
+.type-policy_cancellation {
+  background-color: #fafafa;
+  color: #616161;
+}
+
+/* No Results Message */
+.no-results-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+  color: #666;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.no-results-message mat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  color: #ccc;
+  margin-bottom: 16px;
+}
+
+.no-results-message h3 {
+  margin: 0 0 8px 0;
+  color: #333;
+  font-size: 18px;
+}
+
+.no-results-message p {
+  margin: 0;
+  font-size: 14px;
+  text-align: center;
+  max-width: 400px;
 }
 
 /* Loading and No Data */
@@ -392,18 +614,34 @@
     gap: 16px;
   }
 
-  .search-row, .date-row {
+  .search-row,
+  .date-row {
     flex-direction: column;
     align-items: stretch;
   }
 
-  .search-field, .filter-field, .date-field {
+  .search-field,
+  .filter-field,
+  .date-field {
     min-width: unset;
     width: 100%;
   }
 
+  .search-btn,
   .clear-btn {
     width: 100%;
+  }
+
+  .search-results-table {
+    font-size: 12px;
+  }
+
+  .search-results-table .mat-mdc-cell {
+    padding: 8px 4px;
+  }
+
+  .narrative-cell {
+    max-width: 120px;
   }
 
   .transfers-table {
@@ -443,7 +681,8 @@
     font-size: 11px;
   }
 
-  .status-badge, .type-badge {
+  .status-badge,
+  .type-badge {
     padding: 2px 8px;
     font-size: 10px;
   }

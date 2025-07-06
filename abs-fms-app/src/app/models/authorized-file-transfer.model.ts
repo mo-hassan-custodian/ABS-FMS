@@ -11,7 +11,18 @@ export interface AuthorizedFileTransfer {
   authorizationDate: Date;
   preparedBy: string;
   requestDate: Date;
-  type: 'CLAIMS' | 'COMMISSIONS' | 'POLICY_MATURITY';
+  type:
+    | 'POLICY_SURRENDER'
+    | 'PARTIAL_MATURITIES'
+    | 'FULL_MATURITIES'
+    | 'INVESTMENT_MATURITIES'
+    | 'POLICY_LOAN'
+    | 'POLICY_TERMINATION'
+    | 'PARTIAL_WITHDRAWAL'
+    | 'ANNUITY_MATURITIES'
+    | 'DEATH_CLAIM'
+    | 'COMMISSION'
+    | 'POLICY_CANCELLATION';
   document: string;
   payee: string;
 }
@@ -28,7 +39,18 @@ export interface AuthorizedFileTransferCreateRequest {
   authorizationDate: Date;
   preparedBy: string;
   requestDate: Date;
-  type: 'CLAIMS' | 'COMMISSIONS' | 'POLICY_MATURITY';
+  type:
+    | 'POLICY_SURRENDER'
+    | 'PARTIAL_MATURITIES'
+    | 'FULL_MATURITIES'
+    | 'INVESTMENT_MATURITIES'
+    | 'POLICY_LOAN'
+    | 'POLICY_TERMINATION'
+    | 'PARTIAL_WITHDRAWAL'
+    | 'ANNUITY_MATURITIES'
+    | 'DEATH_CLAIM'
+    | 'COMMISSION'
+    | 'POLICY_CANCELLATION';
   document: string;
   payee: string;
 }
@@ -36,15 +58,35 @@ export interface AuthorizedFileTransferCreateRequest {
 export interface AuthorizedFileTransferStats {
   total: number;
   byType: {
-    claims: number;
-    commissions: number;
-    policyMaturity: number;
+    policySurrender: number;
+    partialMaturities: number;
+    fullMaturities: number;
+    investmentMaturities: number;
+    policyLoan: number;
+    policyTermination: number;
+    partialWithdrawal: number;
+    annuityMaturities: number;
+    deathClaim: number;
+    commission: number;
+    policyCancellation: number;
   };
 }
 
 export interface AuthorizedFileTransferFilter {
   searchTerm?: string;
-  type?: 'CLAIMS' | 'COMMISSIONS' | 'POLICY_MATURITY' | 'ALL';
+  type?:
+    | 'POLICY_SURRENDER'
+    | 'PARTIAL_MATURITIES'
+    | 'FULL_MATURITIES'
+    | 'INVESTMENT_MATURITIES'
+    | 'POLICY_LOAN'
+    | 'POLICY_TERMINATION'
+    | 'PARTIAL_WITHDRAWAL'
+    | 'ANNUITY_MATURITIES'
+    | 'DEATH_CLAIM'
+    | 'COMMISSION'
+    | 'POLICY_CANCELLATION'
+    | 'ALL';
   dateFrom?: Date;
   dateTo?: Date;
 }

@@ -6,11 +6,12 @@ import { ToastrService } from 'ngx-toastr';
 
 import { AuthorizedFileTransfer } from '../../../../../models/authorized-file-transfer.model';
 import { AuthorizedFileTransferService } from '../../../../../services/authorized-file-transfer.service';
+import { BankAccount } from '../../../../../models/bank-account.model';
 
 @Component({
   selector: 'app-authorized-file-transfer-view',
   templateUrl: './authorized-file-transfer-view.component.html',
-  styleUrl: './authorized-file-transfer-view.component.css'
+  styleUrl: './authorized-file-transfer-view.component.css',
 })
 export class AuthorizedFileTransferViewComponent implements OnInit, OnDestroy {
   transfer: AuthorizedFileTransfer | null = null;
@@ -18,15 +19,7 @@ export class AuthorizedFileTransferViewComponent implements OnInit, OnDestroy {
   transferId: string | null = null;
 
   // Bank account selection
-  selectedBankAccount: string = '';
-  bankAccounts = [
-    { value: 'operating-001', label: 'Operating Account - 1234567890' },
-    { value: 'claims-002', label: 'Claims Settlement Account - 1234567890' },
-    { value: 'commission-003', label: 'Commission Payment Account - 9876543210' },
-    { value: 'benefits-004', label: 'Policy Benefits Account - 5555666677' },
-    { value: 'reserve-005', label: 'Reserve Account - 1111222233' },
-    { value: 'investment-006', label: 'Investment Account - 4444555566' }
-  ];
+  selectedBankAccount: BankAccount | null = null;
 
   // Modal states
   showAuthorizationModal = false;
@@ -45,7 +38,7 @@ export class AuthorizedFileTransferViewComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.route.queryParams
       .pipe(takeUntil(this.destroy$))
-      .subscribe(params => {
+      .subscribe((params) => {
         this.transferId = params['id'];
         if (this.transferId) {
           this.loadTransferDetails();
@@ -65,14 +58,15 @@ export class AuthorizedFileTransferViewComponent implements OnInit, OnDestroy {
     if (!this.transferId) return;
 
     this.isLoading = true;
-    this.transferService.getTransferById(this.transferId)
+    this.transferService
+      .getTransferById(this.transferId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (transfer) => {
           if (transfer) {
             this.transfer = transfer;
           } else {
-            this.toastr.error('Transfer not found', 'Error');
+            // this.toastr.error('Transfer not found', 'Error');
             this.goBack();
           }
           this.isLoading = false;
@@ -82,7 +76,7 @@ export class AuthorizedFileTransferViewComponent implements OnInit, OnDestroy {
           this.toastr.error('Error loading transfer details', 'Error');
           this.isLoading = false;
           this.goBack();
-        }
+        },
       });
   }
 
@@ -90,10 +84,15 @@ export class AuthorizedFileTransferViewComponent implements OnInit, OnDestroy {
     this.router.navigate(['/App/authorized-file-transfer']);
   }
 
-  // Bank account change handler
-  onBankAccountChange(event: any): void {
-    this.selectedBankAccount = event.value;
-    console.log('Bank account changed to:', event.value);
+  // Bank account selection handlers
+  onBankAccountSelected(account: BankAccount): void {
+    this.selectedBankAccount = account;
+    console.log('Bank account selected:', account);
+  }
+
+  onBankAccountCleared(): void {
+    this.selectedBankAccount = null;
+    console.log('Bank account selection cleared');
   }
 
   // Change bank account action
@@ -103,12 +102,12 @@ export class AuthorizedFileTransferViewComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const selectedAccount = this.bankAccounts.find(account => account.value === this.selectedBankAccount);
-    if (selectedAccount) {
-      this.toastr.success(`Bank account changed to: ${selectedAccount.label}`, 'Success');
-      console.log('Bank account changed to:', selectedAccount);
-      // TODO: Implement actual bank account change logic
-    }
+    this.toastr.success(
+      `Bank account changed to: ${this.selectedBankAccount.name}`,
+      'Success'
+    );
+    console.log('Bank account changed to:', this.selectedBankAccount);
+    // TODO: Implement actual bank account change logic
   }
 
   // Authorize payment action
@@ -123,25 +122,58 @@ export class AuthorizedFileTransferViewComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const selectedAccount = this.bankAccounts.find(account => account.value === this.selectedBankAccount);
-    if (selectedAccount) {
-      // Prepare authorization data and show modal
-      this.authorizationData = {
-        transfer: this.transfer,
-        selectedAccount: selectedAccount,
-        amount: this.formatCurrency(this.transfer.amountPayee, this.transfer.currencyCode)
-      };
-      this.showAuthorizationModal = true;
-    }
+    // Prepare authorization data and show modal
+    this.authorizationData = {
+      transfer: this.transfer,
+      selectedAccount: this.selectedBankAccount,
+      amount: this.formatCurrency(
+        this.transfer.amountPayee,
+        this.transfer.currencyCode
+      ),
+    };
+    this.showAuthorizationModal = true;
   }
 
   // Confirm authorization
   confirmAuthorization(): void {
-    if (this.authorizationData) {
-      this.toastr.success('Payment authorized successfully!', 'Authorized');
-      console.log('Payment authorized for:', this.authorizationData.transfer, 'from account:', this.authorizationData.selectedAccount);
-      // TODO: Implement actual authorization logic
-      this.closeAuthorizationModal();
+    if (this.authorizationData && this.transfer) {
+      // Show loading state
+      this.isLoading = true;
+
+      // Call the service to authorize the payment
+      this.transferService
+        .authorizePayment(this.transfer.id, this.authorizationData)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (result) => {
+            this.isLoading = false;
+            if (result.success) {
+              this.toastr.success(result.message, 'Payment Authorized');
+              console.log(
+                'Payment authorized successfully:',
+                this.authorizationData
+              );
+
+              // Close modal and navigate back to the list
+              this.closeAuthorizationModal();
+
+              // Navigate back to the authorized file transfer list
+              setTimeout(() => {
+                this.router.navigate(['/App/authorized-file-transfer']);
+              }, 1500);
+            } else {
+              this.toastr.error(result.message, 'Authorization Failed');
+            }
+          },
+          error: (error) => {
+            this.isLoading = false;
+            console.error('Error authorizing payment:', error);
+            this.toastr.error(
+              'Failed to authorize payment. Please try again.',
+              'Error'
+            );
+          },
+        });
     }
   }
 
@@ -159,16 +191,30 @@ export class AuthorizedFileTransferViewComponent implements OnInit, OnDestroy {
     // this.router.navigate(['/App/update-efts'], { queryParams: { transferId: this.transferId } });
   }
 
-
-
   getTypeLabel(type: string): string {
     switch (type) {
-      case 'CLAIMS':
-        return 'Claims';
-      case 'COMMISSIONS':
-        return 'Commissions';
-      case 'POLICY_MATURITY':
-        return 'Policy Maturity';
+      case 'POLICY_SURRENDER':
+        return 'Policy surrender';
+      case 'PARTIAL_MATURITIES':
+        return 'Partial Maturities';
+      case 'FULL_MATURITIES':
+        return 'Full Maturities';
+      case 'INVESTMENT_MATURITIES':
+        return 'Investment Maturities';
+      case 'POLICY_LOAN':
+        return 'Policy Loan';
+      case 'POLICY_TERMINATION':
+        return 'Policy termination';
+      case 'PARTIAL_WITHDRAWAL':
+        return 'Partial Withdrawal';
+      case 'ANNUITY_MATURITIES':
+        return 'Annuity Maturities';
+      case 'DEATH_CLAIM':
+        return 'Death Claim';
+      case 'COMMISSION':
+        return 'Commission';
+      case 'POLICY_CANCELLATION':
+        return 'Policy cancellation';
       default:
         return type;
     }
@@ -178,7 +224,7 @@ export class AuthorizedFileTransferViewComponent implements OnInit, OnDestroy {
     return new Intl.NumberFormat('en-NG', {
       style: 'currency',
       currency: currency,
-      minimumFractionDigits: 2
+      minimumFractionDigits: 2,
     }).format(amount);
   }
 }

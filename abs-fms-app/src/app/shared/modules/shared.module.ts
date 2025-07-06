@@ -22,11 +22,15 @@ import { MatCardModule } from '@angular/material/card';
 import { MatSelectModule } from '@angular/material/select';
 import { CommonModule } from '@angular/common'; 
 import { MatStepperModule } from '@angular/material/stepper';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ConfirmationComponent } from '../dialog/confirmation/confirmation.component';
+import { BankAccountSelectorComponent } from '../components/bank-account-selector/bank-account-selector.component';
 @NgModule({
  
   declarations: [
-    ConfirmationComponent
+    ConfirmationComponent,
+    BankAccountSelectorComponent
   ],
   imports: [ReactiveFormsModule,
     MatSidenavModule,
@@ -51,10 +55,13 @@ import { ConfirmationComponent } from '../dialog/confirmation/confirmation.compo
     MatRippleModule,
     MatMenuModule,
     CommonModule,
-    MatStepperModule
+    MatStepperModule,
+    MatAutocompleteModule,
+    MatProgressSpinnerModule
   ],
   exports: [
     ConfirmationComponent,
+    BankAccountSelectorComponent,
     ReactiveFormsModule,
     MatSidenavModule,
     MatToolbarModule,
@@ -75,7 +82,9 @@ import { ConfirmationComponent } from '../dialog/confirmation/confirmation.compo
     MatRadioModule,
     MatCardModule,
     MatSelectModule,
-    MatStepperModule
+    MatStepperModule,
+    MatAutocompleteModule,
+    MatProgressSpinnerModule
   ],
 
 })
