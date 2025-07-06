@@ -11,7 +11,7 @@ import { BankAccount } from '../../../../../models/bank-account.model';
 @Component({
   selector: 'app-authorized-file-transfer-view',
   templateUrl: './authorized-file-transfer-view.component.html',
-  styleUrl: './authorized-file-transfer-view.component.css'
+  styleUrl: './authorized-file-transfer-view.component.css',
 })
 export class AuthorizedFileTransferViewComponent implements OnInit, OnDestroy {
   transfer: AuthorizedFileTransfer | null = null;
@@ -38,7 +38,7 @@ export class AuthorizedFileTransferViewComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.route.queryParams
       .pipe(takeUntil(this.destroy$))
-      .subscribe(params => {
+      .subscribe((params) => {
         this.transferId = params['id'];
         if (this.transferId) {
           this.loadTransferDetails();
@@ -58,7 +58,8 @@ export class AuthorizedFileTransferViewComponent implements OnInit, OnDestroy {
     if (!this.transferId) return;
 
     this.isLoading = true;
-    this.transferService.getTransferById(this.transferId)
+    this.transferService
+      .getTransferById(this.transferId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (transfer) => {
@@ -75,7 +76,7 @@ export class AuthorizedFileTransferViewComponent implements OnInit, OnDestroy {
           this.toastr.error('Error loading transfer details', 'Error');
           this.isLoading = false;
           this.goBack();
-        }
+        },
       });
   }
 
@@ -101,7 +102,10 @@ export class AuthorizedFileTransferViewComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.toastr.success(`Bank account changed to: ${this.selectedBankAccount.name}`, 'Success');
+    this.toastr.success(
+      `Bank account changed to: ${this.selectedBankAccount.name}`,
+      'Success'
+    );
     console.log('Bank account changed to:', this.selectedBankAccount);
     // TODO: Implement actual bank account change logic
   }
@@ -122,7 +126,10 @@ export class AuthorizedFileTransferViewComponent implements OnInit, OnDestroy {
     this.authorizationData = {
       transfer: this.transfer,
       selectedAccount: this.selectedBankAccount,
-      amount: this.formatCurrency(this.transfer.amountPayee, this.transfer.currencyCode)
+      amount: this.formatCurrency(
+        this.transfer.amountPayee,
+        this.transfer.currencyCode
+      ),
     };
     this.showAuthorizationModal = true;
   }
@@ -134,14 +141,18 @@ export class AuthorizedFileTransferViewComponent implements OnInit, OnDestroy {
       this.isLoading = true;
 
       // Call the service to authorize the payment
-      this.transferService.authorizePayment(this.transfer.id, this.authorizationData)
+      this.transferService
+        .authorizePayment(this.transfer.id, this.authorizationData)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: (result) => {
             this.isLoading = false;
             if (result.success) {
               this.toastr.success(result.message, 'Payment Authorized');
-              console.log('Payment authorized successfully:', this.authorizationData);
+              console.log(
+                'Payment authorized successfully:',
+                this.authorizationData
+              );
 
               // Close modal and navigate back to the list
               this.closeAuthorizationModal();
@@ -157,8 +168,11 @@ export class AuthorizedFileTransferViewComponent implements OnInit, OnDestroy {
           error: (error) => {
             this.isLoading = false;
             console.error('Error authorizing payment:', error);
-            this.toastr.error('Failed to authorize payment. Please try again.', 'Error');
-          }
+            this.toastr.error(
+              'Failed to authorize payment. Please try again.',
+              'Error'
+            );
+          },
         });
     }
   }
@@ -177,16 +191,30 @@ export class AuthorizedFileTransferViewComponent implements OnInit, OnDestroy {
     // this.router.navigate(['/App/update-efts'], { queryParams: { transferId: this.transferId } });
   }
 
-
-
   getTypeLabel(type: string): string {
     switch (type) {
-      case 'CLAIMS':
-        return 'Claims';
-      case 'COMMISSIONS':
-        return 'Commissions';
-      case 'POLICY_MATURITY':
-        return 'Policy Maturity';
+      case 'POLICY_SURRENDER':
+        return 'Policy surrender';
+      case 'PARTIAL_MATURITIES':
+        return 'Partial Maturities';
+      case 'FULL_MATURITIES':
+        return 'Full Maturities';
+      case 'INVESTMENT_MATURITIES':
+        return 'Investment Maturities';
+      case 'POLICY_LOAN':
+        return 'Policy Loan';
+      case 'POLICY_TERMINATION':
+        return 'Policy termination';
+      case 'PARTIAL_WITHDRAWAL':
+        return 'Partial Withdrawal';
+      case 'ANNUITY_MATURITIES':
+        return 'Annuity Maturities';
+      case 'DEATH_CLAIM':
+        return 'Death Claim';
+      case 'COMMISSION':
+        return 'Commission';
+      case 'POLICY_CANCELLATION':
+        return 'Policy cancellation';
       default:
         return type;
     }
@@ -196,7 +224,7 @@ export class AuthorizedFileTransferViewComponent implements OnInit, OnDestroy {
     return new Intl.NumberFormat('en-NG', {
       style: 'currency',
       currency: currency,
-      minimumFractionDigits: 2
+      minimumFractionDigits: 2,
     }).format(amount);
   }
 }

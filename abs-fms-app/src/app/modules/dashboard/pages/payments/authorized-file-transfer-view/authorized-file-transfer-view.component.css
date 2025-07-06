@@ -11,8 +11,8 @@
 }
 
 .mat-mdc-card-header {
-    display: flex;
-    padding: 0px 16px 0;
+  display: flex;
+  padding: 0px 16px 0;
 }
 
 /* Header Section */
@@ -243,29 +243,38 @@
 }
 
 .tab-content {
-  padding: 24px 20px;
+  padding: 32px 24px;
   background: #f8f9fa;
-  min-height: 250px;
+  min-height: 300px;
   border-radius: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 .section-title {
-  margin: 0 0 8px 0;
+  margin: 0 0 16px 0;
   color: #495057;
-  font-size: 14px;
-  font-weight: 600;
-  border-bottom: 1px solid #dee2e6;
-  padding-bottom: 4px;
+  font-size: 18px;
+  font-weight: 700;
+  border-bottom: 2px solid #dee2e6;
+  padding-bottom: 8px;
+  text-align: center;
+  width: 100%;
 }
 
 .detail-row {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
-  padding: 8px 0;
+  gap: 8px;
+  margin-bottom: 24px;
+  padding: 16px 0;
   flex-wrap: wrap;
+  text-align: center;
+  width: 100%;
+  max-width: 600px;
 }
 
 .detail-row:last-child {
@@ -273,90 +282,135 @@
 }
 
 .detail-row label {
-  font-weight: 700;
+  font-weight: 800;
   color: #333;
-  font-size: 14px;
+  font-size: 16px;
   text-transform: uppercase;
-  letter-spacing: 0.8px;
-  min-width: 140px;
+  letter-spacing: 1.2px;
+  min-width: unset;
   flex-shrink: 0;
+  text-align: center;
 }
 
 .detail-value {
   color: #333;
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 22px;
+  font-weight: 800;
   line-height: 1.4;
   flex: 1;
+  text-align: center;
+  word-break: break-word;
 }
 
 .description-text {
   background: white;
-  padding: 12px;
-  border-radius: 6px;
-  border: 1px solid #dee2e6;
-  line-height: 1.5;
-  font-size: 16px !important;
-  font-weight: 600 !important;
+  padding: 16px;
+  border-radius: 8px;
+  border: 2px solid #dee2e6;
+  line-height: 1.6;
+  font-size: 20px !important;
+  font-weight: 700 !important;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .amount-highlight {
   color: #2e7d32 !important;
-  font-size: 22px !important;
-  font-weight: 800 !important;
+  font-size: 28px !important;
+  font-weight: 900 !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .document-link {
   color: #1976d2 !important;
   text-decoration: underline;
   cursor: pointer;
-  font-size: 18px !important;
-  font-weight: 700 !important;
+  font-size: 22px !important;
+  font-weight: 800 !important;
+  transition: all 0.2s ease;
 }
 
 .document-link:hover {
   color: #1565c0 !important;
+  transform: scale(1.05);
 }
 
 /* Type Badges */
 .type-badge {
-  padding: 6px 12px;
-  border-radius: 16px;
-  font-size: 12px;
-  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.8px;
   display: inline-block;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.type-claims {
+.type-policy_surrender {
+  background-color: #fff3e0;
+  color: #f57c00;
+  border: 1px solid #ffcc02;
+}
+
+.type-partial_maturities {
+  background-color: #e8f5e8;
+  color: #388e3c;
+  border: 1px solid #c8e6c9;
+}
+
+.type-full_maturities {
+  background-color: #e8f5e8;
+  color: #2e7d32;
+  border: 1px solid #c8e6c9;
+}
+
+.type-investment_maturities {
   background-color: #e3f2fd;
-  color: #1565c0;
+  color: #1976d2;
   border: 1px solid #bbdefb;
 }
 
-.type-commissions {
+.type-policy_loan {
+  background-color: #fce4ec;
+  color: #c2185b;
+  border: 1px solid #f8bbd9;
+}
+
+.type-policy_termination {
+  background-color: #ffebee;
+  color: #d32f2f;
+  border: 1px solid #ffcdd2;
+}
+
+.type-partial_withdrawal {
   background-color: #f3e5f5;
   color: #7b1fa2;
   border: 1px solid #e1bee7;
 }
 
-.type-policy_maturity {
-  background-color: #e8f5e8;
-  color: #2e7d32;
-  border: 1px solid #c8e6c9;
+.type-annuity_maturities {
+  background-color: #e0f2f1;
+  color: #00695c;
+  border: 1px solid #b2dfdb;
 }
 
-.type-surrenders {
-  background-color: #e8f5e8;
+.type-death_claim {
+  background-color: #ffebee;
+  color: #c62828;
+  border: 1px solid #ffcdd2;
+}
+
+.type-commission {
+  background-color: #f3e5f5;
   color: #7b1fa2;
-  border: 1px solid #c8e6c9;
+  border: 1px solid #e1bee7;
 }
 
-.type-fines {
-  background-color: #e8f5e8;
-  color: #2e7d32;
-  border: 1px solid #c8e6c9;
+.type-policy_cancellation {
+  background-color: #fafafa;
+  color: #616161;
+  border: 1px solid #e0e0e0;
 }
 
 /* Card Actions */
@@ -477,27 +531,35 @@
   }
 
   .tab-content {
-    padding: 16px 12px;
-    min-height: 150px;
+    padding: 24px 16px;
+    min-height: 200px;
   }
 
   .detail-row {
-    flex-direction: row;
-    gap: 8px;
-    margin-bottom: 12px;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 20px;
+    text-align: center;
   }
 
   .detail-row label {
-    min-width: 120px;
-    font-size: 12px;
+    min-width: unset;
+    font-size: 14px;
+    font-weight: 800;
   }
 
   .detail-value {
-    font-size: 16px;
+    font-size: 18px;
+    font-weight: 800;
   }
 
   .amount-highlight {
-    font-size: 20px !important;
+    font-size: 24px !important;
+  }
+
+  .description-text {
+    font-size: 18px !important;
+    padding: 14px;
   }
 
   .action-buttons-container {
@@ -537,8 +599,9 @@
   }
 
   .type-badge {
-    padding: 3px 6px;
-    font-size: 10px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 600;
   }
 
   .details-tabs .mat-mdc-tab {
@@ -585,28 +648,36 @@
   }
 
   .tab-content {
-    padding: 12px 8px;
-    min-height: 120px;
+    padding: 20px 12px;
+    min-height: 180px;
   }
 
   .detail-row {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
-    margin-bottom: 10px;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 16px;
+    text-align: center;
   }
 
   .detail-row label {
     min-width: unset;
-    font-size: 11px;
+    font-size: 13px;
+    font-weight: 800;
   }
 
   .detail-value {
-    font-size: 15px;
+    font-size: 16px;
+    font-weight: 800;
   }
 
   .amount-highlight {
-    font-size: 18px !important;
+    font-size: 22px !important;
+  }
+
+  .description-text {
+    font-size: 16px !important;
+    padding: 12px;
   }
 
   .action-buttons-container {

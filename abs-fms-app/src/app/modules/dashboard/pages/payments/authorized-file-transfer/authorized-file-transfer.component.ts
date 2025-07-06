@@ -1,4 +1,10 @@
-import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  ViewChild,
+  AfterViewInit,
+} from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
@@ -7,15 +13,20 @@ import { ToastrService } from 'ngx-toastr';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 
-import { AuthorizedFileTransfer, AuthorizedFileTransferFilter } from '../../../../../models/authorized-file-transfer.model';
+import {
+  AuthorizedFileTransfer,
+  AuthorizedFileTransferFilter,
+} from '../../../../../models/authorized-file-transfer.model';
 import { AuthorizedFileTransferService } from '../../../../../services/authorized-file-transfer.service';
 
 @Component({
   selector: 'app-authorized-file-transfer',
   templateUrl: './authorized-file-transfer.component.html',
-  styleUrl: './authorized-file-transfer.component.css'
+  styleUrl: './authorized-file-transfer.component.css',
 })
-export class AuthorizedFileTransferComponent implements OnInit, OnDestroy, AfterViewInit {
+export class AuthorizedFileTransferComponent
+  implements OnInit, OnDestroy, AfterViewInit
+{
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   // Form and data
@@ -25,16 +36,30 @@ export class AuthorizedFileTransferComponent implements OnInit, OnDestroy, After
   searchPerformed = false;
 
   // Table configuration
-  displayedColumns: string[] = ['voucherNoRef', 'type', 'payee', 'narrative', 'amount', 'date', 'actions'];
+  displayedColumns: string[] = [
+    'voucherNoRef',
+    'type',
+    'payee',
+    'narrative',
+    'amount',
+    'date',
+    'actions',
+  ];
 
   // Filter options
   typeOptions = [
     { value: 'ALL', label: 'All Types' },
-    { value: 'CLAIMS', label: 'Claims' },
-    { value: 'COMMISSIONS', label: 'Commissions' },
-    { value: 'POLICY_MATURITY', label: 'Policy Maturity' },
-    { value: 'SURRENDERS', label: 'Surrenders' },
-    { value: 'FINES', label: 'Fines' }
+    { value: 'POLICY_SURRENDER', label: 'Policy surrender' },
+    { value: 'PARTIAL_MATURITIES', label: 'Partial Maturities' },
+    { value: 'FULL_MATURITIES', label: 'Full Maturities' },
+    { value: 'INVESTMENT_MATURITIES', label: 'Investment Maturities' },
+    { value: 'POLICY_LOAN', label: 'Policy Loan' },
+    { value: 'POLICY_TERMINATION', label: 'Policy termination' },
+    { value: 'PARTIAL_WITHDRAWAL', label: 'Partial Withdrawal' },
+    { value: 'ANNUITY_MATURITIES', label: 'Annuity Maturities' },
+    { value: 'DEATH_CLAIM', label: 'Death Claim' },
+    { value: 'COMMISSION', label: 'Commission' },
+    { value: 'POLICY_CANCELLATION', label: 'Policy cancellation' },
   ];
 
   // Loading states
@@ -73,7 +98,7 @@ export class AuthorizedFileTransferComponent implements OnInit, OnDestroy, After
       searchTerm: [''],
       type: ['ALL'],
       dateFrom: [''],
-      dateTo: ['']
+      dateTo: [''],
     });
   }
 
@@ -89,24 +114,27 @@ export class AuthorizedFileTransferComponent implements OnInit, OnDestroy, After
 
     // Apply payee name filter
     if (searchTerm) {
-      filtered = filtered.filter(transfer =>
-        transfer.payee && transfer.payee.toLowerCase().includes(searchTerm)
+      filtered = filtered.filter(
+        (transfer) =>
+          transfer.payee && transfer.payee.toLowerCase().includes(searchTerm)
       );
     }
 
     // Apply type filter
     if (formValue.type && formValue.type !== 'ALL') {
-      filtered = filtered.filter(transfer => transfer.type === formValue.type);
+      filtered = filtered.filter(
+        (transfer) => transfer.type === formValue.type
+      );
     }
 
     // Apply date range filter
     if (formValue.dateFrom) {
       const dateFrom = new Date(formValue.dateFrom);
-      filtered = filtered.filter(transfer => transfer.date >= dateFrom);
+      filtered = filtered.filter((transfer) => transfer.date >= dateFrom);
     }
     if (formValue.dateTo) {
       const dateTo = new Date(formValue.dateTo);
-      filtered = filtered.filter(transfer => transfer.date <= dateTo);
+      filtered = filtered.filter((transfer) => transfer.date <= dateTo);
     }
 
     // Simulate API call delay
@@ -115,16 +143,23 @@ export class AuthorizedFileTransferComponent implements OnInit, OnDestroy, After
       this.isLoading = false;
 
       if (filtered.length === 0 && searchTerm) {
-        this.toastr.info(`No transfers found for payee "${formValue.searchTerm}"`, 'Search Results');
+        this.toastr.info(
+          `No transfers found for payee "${formValue.searchTerm}"`,
+          'Search Results'
+        );
       } else if (filtered.length > 0) {
-        this.toastr.success(`Found ${filtered.length} payment(s)`, 'Search Results');
+        this.toastr.success(
+          `Found ${filtered.length} payment(s)`,
+          'Search Results'
+        );
       }
     }, 500);
   }
 
   loadTransfers(): void {
     this.isLoading = true;
-    this.transferService.getAllTransfers()
+    this.transferService
+      .getAllTransfers()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (transfers) => {
@@ -135,7 +170,7 @@ export class AuthorizedFileTransferComponent implements OnInit, OnDestroy, After
           console.error('Error loading transfers:', error);
           this.toastr.error('Error loading payments', 'Error');
           this.isLoading = false;
-        }
+        },
       });
   }
 
@@ -149,34 +184,42 @@ export class AuthorizedFileTransferComponent implements OnInit, OnDestroy, After
 
     // Apply search term filter
     const searchTerm = searchValue.toLowerCase();
-    console.log('Search term:', searchTerm, 'Total transfers:', this.allTransfers.length);
+    console.log(
+      'Search term:',
+      searchTerm,
+      'Total transfers:',
+      this.allTransfers.length
+    );
 
-    filtered = filtered.filter(transfer =>
-      transfer.remarks.toLowerCase().includes(searchTerm) ||
-      transfer.voucherNoRef.toLowerCase().includes(searchTerm) ||
-      transfer.narrative.toLowerCase().includes(searchTerm) ||
-      transfer.bankAccount.toLowerCase().includes(searchTerm) ||
-      transfer.authorisedBy.toLowerCase().includes(searchTerm) ||
-      transfer.preparedBy.toLowerCase().includes(searchTerm) ||
-      transfer.document.toLowerCase().includes(searchTerm) ||
-      (transfer.payee && transfer.payee.toLowerCase().includes(searchTerm))
+    filtered = filtered.filter(
+      (transfer) =>
+        transfer.remarks.toLowerCase().includes(searchTerm) ||
+        transfer.voucherNoRef.toLowerCase().includes(searchTerm) ||
+        transfer.narrative.toLowerCase().includes(searchTerm) ||
+        transfer.bankAccount.toLowerCase().includes(searchTerm) ||
+        transfer.authorisedBy.toLowerCase().includes(searchTerm) ||
+        transfer.preparedBy.toLowerCase().includes(searchTerm) ||
+        transfer.document.toLowerCase().includes(searchTerm) ||
+        (transfer.payee && transfer.payee.toLowerCase().includes(searchTerm))
     );
 
     console.log('Filtered results:', filtered.length);
 
     // Apply type filter
     if (formValue.type && formValue.type !== 'ALL') {
-      filtered = filtered.filter(transfer => transfer.type === formValue.type);
+      filtered = filtered.filter(
+        (transfer) => transfer.type === formValue.type
+      );
     }
 
     // Apply date range filter
     if (formValue.dateFrom) {
       const dateFrom = new Date(formValue.dateFrom);
-      filtered = filtered.filter(transfer => transfer.date >= dateFrom);
+      filtered = filtered.filter((transfer) => transfer.date >= dateFrom);
     }
     if (formValue.dateTo) {
       const dateTo = new Date(formValue.dateTo);
-      filtered = filtered.filter(transfer => transfer.date <= dateTo);
+      filtered = filtered.filter((transfer) => transfer.date <= dateTo);
     }
 
     return filtered;
@@ -187,7 +230,7 @@ export class AuthorizedFileTransferComponent implements OnInit, OnDestroy, After
       searchTerm: '',
       type: 'ALL',
       dateFrom: '',
-      dateTo: ''
+      dateTo: '',
     });
     this.searchResults.data = [];
     this.searchPerformed = false;
@@ -196,24 +239,34 @@ export class AuthorizedFileTransferComponent implements OnInit, OnDestroy, After
   viewTransfer(transfer: AuthorizedFileTransfer): void {
     // Navigate to the view component with the transfer ID
     this.router.navigate(['/App/authorized-file-transfer-view'], {
-      queryParams: { id: transfer.id }
+      queryParams: { id: transfer.id },
     });
   }
 
-
-
   getTypeLabel(type: string): string {
     switch (type) {
-      case 'CLAIMS':
-        return 'Claims';
-      case 'COMMISSIONS':
-        return 'Commissions';
-      case 'POLICY_MATURITY':
-        return 'Policy Maturity';
-      case 'SURRENDERS':
-        return 'Surrenders';
-      case 'FINES':
-        return 'Fines';
+      case 'POLICY_SURRENDER':
+        return 'Policy surrender';
+      case 'PARTIAL_MATURITIES':
+        return 'Partial Maturities';
+      case 'FULL_MATURITIES':
+        return 'Full Maturities';
+      case 'INVESTMENT_MATURITIES':
+        return 'Investment Maturities';
+      case 'POLICY_LOAN':
+        return 'Policy Loan';
+      case 'POLICY_TERMINATION':
+        return 'Policy termination';
+      case 'PARTIAL_WITHDRAWAL':
+        return 'Partial Withdrawal';
+      case 'ANNUITY_MATURITIES':
+        return 'Annuity Maturities';
+      case 'DEATH_CLAIM':
+        return 'Death Claim';
+      case 'COMMISSION':
+        return 'Commission';
+      case 'POLICY_CANCELLATION':
+        return 'Policy cancellation';
       default:
         return type;
     }
@@ -223,7 +276,7 @@ export class AuthorizedFileTransferComponent implements OnInit, OnDestroy, After
     return new Intl.NumberFormat('en-NG', {
       style: 'currency',
       currency: currency,
-      minimumFractionDigits: 2
+      minimumFractionDigits: 2,
     }).format(amount);
   }
 }
