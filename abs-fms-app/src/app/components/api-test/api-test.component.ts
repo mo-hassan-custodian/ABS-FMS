@@ -42,13 +42,25 @@ import { environment } from '../../../environments/environment';
           <h4>Troubleshooting Steps:</h4>
           <ol>
             <li>
+              <strong>CORS Error?</strong> Add CORS headers to your backend:
+              <br /><code
+                >Access-Control-Allow-Origin: http://localhost:4200</code
+              >
+              <br />See <code>CORS_SETUP.md</code> for framework-specific
+              examples
+            </li>
+            <li>
               Check if your ngrok tunnel is running:
               <code>ngrok http 8080</code> (or your backend port)
             </li>
             <li>Verify your backend API is running and accessible</li>
-            <li>Update the ngrok URL in proxy.conf.json if it has changed</li>
-            <li>Restart the Angular dev server: <code>ng serve</code></li>
+            <li>
+              Update the ngrok URL in
+              <code>src/environments/environment.ts</code>
+            </li>
+            <li>Test the ngrok URL directly in your browser</li>
             <li>Check browser console for detailed error messages</li>
+            <li>Restart the Angular dev server: <code>ng serve</code></li>
           </ol>
         </div>
       </div>
@@ -172,10 +184,8 @@ export class ApiTestComponent implements OnInit {
 
   // Configuration properties for display
   apiBaseUrl = environment.apiBaseUrl;
-  fullApiUrl = `${
-    environment.apiBaseUrl || 'http://localhost:4200'
-  }/api/authorized-file-transfers`;
-  proxyEnabled = !environment.apiBaseUrl; // If no base URL, we're using proxy
+  fullApiUrl = `${environment.apiBaseUrl}/api/authorized-file-transfers`;
+  proxyEnabled = false; // No longer using proxy
 
   constructor(private transferService: AuthorizedFileTransferService) {}
 
@@ -212,8 +222,13 @@ export class ApiTestComponent implements OnInit {
         let errorMessage = '❌ API connection failed: ';
 
         if (error.status === 0) {
-          errorMessage +=
-            'Network error - ngrok tunnel may be offline or CORS issue';
+          if (error.message && error.message.includes('CORS')) {
+            errorMessage +=
+              'CORS error - your backend needs CORS headers for http://localhost:4200';
+          } else {
+            errorMessage +=
+              'Network error - ngrok tunnel may be offline or CORS issue';
+          }
         } else if (error.status === 404) {
           errorMessage +=
             'API endpoint not found (404) - check if your backend implements the expected routes';

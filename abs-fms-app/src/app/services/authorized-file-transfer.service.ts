@@ -785,22 +785,41 @@ export class AuthorizedFileTransferService {
   }
 
   getAllTransfers(): Observable<AuthorizedFileTransfer[]> {
-    return this.http
-      .get<AuthorizedFileTransfer[]>(
-        `${this.API_BASE_URL}/api/authorized-file-transfers`
-      )
-      .pipe(
-        map((transfers) => {
-          // Update local subject with API data
-          this.transfersSubject.next(transfers);
-          return transfers;
-        }),
-        catchError((error) => {
-          console.error('Error fetching transfers from API:', error);
-          // Fallback to localStorage data
-          return this.transfers$;
-        })
-      );
+    // For now, let's add some debugging and better error handling
+    const apiUrl = `${this.API_BASE_URL}/api/authorized-file-transfers`;
+    console.log('Attempting to fetch from:', apiUrl);
+
+    return this.http.get<AuthorizedFileTransfer[]>(apiUrl).pipe(
+      map((transfers) => {
+        console.log(
+          'API call successful, received transfers:',
+          transfers.length
+        );
+        // Update local subject with API data
+        this.transfersSubject.next(transfers);
+        return transfers;
+      }),
+      catchError((error) => {
+        console.error('API call failed, using fallback data:', {
+          url: apiUrl,
+          status: error.status,
+          message: error.message,
+          error: error,
+        });
+
+        // Fallback to localStorage data
+        return this.transfers$.pipe(
+          map((localTransfers) => {
+            console.log(
+              'Fallback: Using localStorage data with',
+              localTransfers.length,
+              'transfers'
+            );
+            return localTransfers;
+          })
+        );
+      })
+    );
   }
 
   getTransferById(id: string): Observable<AuthorizedFileTransfer | undefined> {
