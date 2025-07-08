@@ -1,0 +1,11 @@
+{
+  "/api/*": {
+    "target": "https://5b08-102-88-112-3.ngrok-free.app",
+    "secure": true,
+    "changeOrigin": true,
+    "logLevel": "debug",
+    "headers": {
+      "ngrok-skip-browser-warning": "true"
+    }
+  }
+}

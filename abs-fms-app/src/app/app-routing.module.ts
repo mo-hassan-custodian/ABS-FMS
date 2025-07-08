@@ -8,12 +8,13 @@ import { AuthorizedFileTransferViewComponent } from './modules/dashboard/pages/p
 import { CreatePayeeComponent } from './modules/dashboard/pages/Payee/create-payee/create-payee.component';
 import { ManageRequisitionsComponent } from './modules/dashboard/pages/requisitions/manage-requisitions/manage-requisitions.component';
 import { RequisitionViewComponent } from './modules/dashboard/pages/requisitions/requisition-view/requisition-view.component';
+import { ApiTestComponent } from './components/api-test/api-test.component';
 
 const routes: Routes = [
   {
     path: '',
     redirectTo: '/home',
-    pathMatch: 'full'
+    pathMatch: 'full',
   },
   {
     path: 'home',
@@ -21,9 +22,9 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        component: DashboardComponent
-      }
-    ]
+        component: DashboardComponent,
+      },
+    ],
   },
   {
     path: 'dashboard',
@@ -31,9 +32,9 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        component: DashboardComponent
-      }
-    ]
+        component: DashboardComponent,
+      },
+    ],
   },
   {
     path: 'App',
@@ -41,35 +42,39 @@ const routes: Routes = [
     children: [
       {
         path: 'create-requisition',
-        component: CreateRequisitionsComponent
+        component: CreateRequisitionsComponent,
       },
       {
         path: 'create-payee',
-        component: CreatePayeeComponent
+        component: CreatePayeeComponent,
       },
       {
         path: 'authorized-file-transfer',
-        component: AuthorizedFileTransferComponent
+        component: AuthorizedFileTransferComponent,
       },
       {
         path: 'authorized-file-transfer-view',
-        component: AuthorizedFileTransferViewComponent
+        component: AuthorizedFileTransferViewComponent,
       },
       {
         path: 'manage-requisitions',
-        component: ManageRequisitionsComponent
+        component: ManageRequisitionsComponent,
       },
       {
         path: 'requisition-view/:id',
-        component: RequisitionViewComponent
-      }
-    ]
-  }
+        component: RequisitionViewComponent,
+      },
+      {
+        path: 'api-test',
+        component: ApiTestComponent,
+      },
+    ],
+  },
   // Add more routes here as needed
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

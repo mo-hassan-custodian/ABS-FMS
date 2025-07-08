@@ -1,7 +1,7 @@
 import { NgModule, isDevMode } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { ToastrModule } from 'ngx-toastr';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { AppRoutingModule } from './app-routing.module';
@@ -13,11 +13,11 @@ import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { requisitionReducer } from './app-state/reducers/requisition.reducer';
+import { ApiInterceptor } from './interceptors/api.interceptor';
+import { ApiTestComponent } from './components/api-test/api-test.component';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-  ],
+  declarations: [AppComponent, ApiTestComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
@@ -28,20 +28,25 @@ import { requisitionReducer } from './app-state/reducers/requisition.reducer';
       preventDuplicates: true,
       progressBar: true,
       closeButton: true,
-      enableHtml: true
+      enableHtml: true,
     }),
     AppRoutingModule,
     MaterialModule,
     DashboardModule,
     LayoutModule,
-    StoreModule.forRoot({requisitionState: requisitionReducer}, {}),
+    StoreModule.forRoot({ requisitionState: requisitionReducer }, {}),
     EffectsModule.forRoot([]),
     StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: !isDevMode() }),
   ],
- providers: [
+  providers: [
     { provide: MAT_DIALOG_DATA, useValue: {} },
-    { provide: MatDialogRef, useValue: {} } 
+    { provide: MatDialogRef, useValue: {} },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: ApiInterceptor,
+      multi: true,
+    },
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
