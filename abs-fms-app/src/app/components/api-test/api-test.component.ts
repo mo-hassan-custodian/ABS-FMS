@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthorizedFileTransferService } from '../../services/authorized-file-transfer.service';
 import { AuthorizedFileTransfer } from '../../models/authorized-file-transfer.model';
-import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-api-test',
@@ -13,60 +12,45 @@ import { environment } from '../../../environments/environment';
         <h3>Configuration Info</h3>
         <div class="config-info">
           <p>
-            <strong>API Base URL:</strong>
-            {{ apiBaseUrl || 'Using proxy (relative URLs)' }}
+            <strong>Data Source:</strong>
+            Local Mock Data (No API calls)
           </p>
-          <p><strong>Expected Endpoint:</strong> {{ fullApiUrl }}</p>
-          <p>
-            <strong>Proxy Status:</strong>
-            {{ proxyEnabled ? 'Enabled' : 'Disabled' }}
-          </p>
+          <p><strong>Status:</strong> Using in-memory data storage</p>
         </div>
       </div>
 
       <div class="test-section">
-        <h3>Test API Connection</h3>
-        <button (click)="testApiConnection()" [disabled]="loading">
-          {{ loading ? 'Testing...' : 'Test API' }}
+        <h3>Test Local Data</h3>
+        <button (click)="testLocalData()" [disabled]="loading">
+          {{ loading ? 'Loading...' : 'Load Mock Data' }}
         </button>
 
         <div
-          *ngIf="apiStatus"
+          *ngIf="dataStatus"
           class="status-message"
-          [ngClass]="apiStatus.type"
+          [ngClass]="dataStatus.type"
         >
-          {{ apiStatus.message }}
+          {{ dataStatus.message }}
         </div>
 
-        <div *ngIf="apiStatus?.type === 'error'" class="troubleshooting">
+        <div *ngIf="dataStatus?.type === 'error'" class="troubleshooting">
           <h4>Troubleshooting Steps:</h4>
           <ol>
             <li>
-              <strong>CORS Error?</strong> Add CORS headers to your backend:
-              <br /><code
-                >Access-Control-Allow-Origin: http://localhost:4200</code
-              >
-              <br />See <code>CORS_SETUP.md</code> for framework-specific
-              examples
+              <strong>Check Browser Console:</strong> Open Developer Tools (F12)
+              and check the Console tab for detailed error messages.
             </li>
             <li>
-              Check if your ngrok tunnel is running:
-              <code>ngrok http 8080</code> (or your backend port)
+              <strong>Local Storage:</strong> Data is stored in browser's
+              localStorage. Clear it if you encounter issues.
             </li>
-            <li>Verify your backend API is running and accessible</li>
-            <li>
-              Update the ngrok URL in
-              <code>src/environments/environment.ts</code>
-            </li>
-            <li>Test the ngrok URL directly in your browser</li>
-            <li>Check browser console for detailed error messages</li>
             <li>Restart the Angular dev server: <code>ng serve</code></li>
           </ol>
         </div>
       </div>
 
       <div class="test-section" *ngIf="transfers.length > 0">
-        <h3>API Data ({{ transfers.length }} records)</h3>
+        <h3>Mock Data ({{ transfers.length }} records)</h3>
         <div class="transfers-list">
           <div
             *ngFor="let transfer of transfers.slice(0, 5)"
@@ -180,69 +164,36 @@ import { environment } from '../../../environments/environment';
 export class ApiTestComponent implements OnInit {
   transfers: AuthorizedFileTransfer[] = [];
   loading = false;
-  apiStatus: { type: 'success' | 'error'; message: string } | null = null;
-
-  // Configuration properties for display
-  apiBaseUrl = environment.apiBaseUrl;
-  fullApiUrl = `${environment.apiBaseUrl}/api/authorized-file-transfers`;
-  proxyEnabled = false; // No longer using proxy
+  dataStatus: { type: 'success' | 'error'; message: string } | null = null;
 
   constructor(private transferService: AuthorizedFileTransferService) {}
 
   ngOnInit() {
-    // Auto-test on component load
-    this.testApiConnection();
+    // Auto-load mock data on component load
+    this.testLocalData();
   }
 
-  testApiConnection() {
+  testLocalData() {
     this.loading = true;
-    this.apiStatus = null;
+    this.dataStatus = null;
 
     this.transferService.getAllTransfers().subscribe({
       next: (transfers) => {
         this.transfers = transfers;
         this.loading = false;
 
-        // Check if we got data from API or fallback
-        const isFromAPI =
-          transfers.length > 0 &&
-          !localStorage.getItem('abs_fms_authorized_transfers');
-
-        this.apiStatus = {
+        this.dataStatus = {
           type: 'success',
-          message: isFromAPI
-            ? `✅ API connection successful! Loaded ${transfers.length} transfers from API.`
-            : `⚠️ Using fallback data. Loaded ${transfers.length} transfers from localStorage. API may be offline.`,
+          message: `✅ Mock data loaded successfully! Loaded ${transfers.length} transfers from local storage.`,
         };
       },
       error: (error) => {
         this.loading = false;
+        console.error('Error loading mock data:', error);
 
-        // Provide more detailed error information
-        let errorMessage = '❌ API connection failed: ';
-
-        if (error.status === 0) {
-          if (error.message && error.message.includes('CORS')) {
-            errorMessage +=
-              'CORS error - your backend needs CORS headers for http://localhost:4200';
-          } else {
-            errorMessage +=
-              'Network error - ngrok tunnel may be offline or CORS issue';
-          }
-        } else if (error.status === 404) {
-          errorMessage +=
-            'API endpoint not found (404) - check if your backend implements the expected routes';
-        } else if (error.status >= 500) {
-          errorMessage += 'Server error - check your backend logs';
-        } else {
-          errorMessage += `${error.status} - ${
-            error.message || 'Unknown error'
-          }`;
-        }
-
-        this.apiStatus = {
+        this.dataStatus = {
           type: 'error',
-          message: errorMessage,
+          message: '❌ Error loading mock data. Check console for details.',
         };
 
         console.error('API Test Error Details:', {

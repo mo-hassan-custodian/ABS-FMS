@@ -1,26 +1,23 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import {
   AuthorizedFileTransfer,
   AuthorizedFileTransferCreateRequest,
   AuthorizedFileTransferStats,
   AuthorizedFileTransferFilter,
 } from '../models/authorized-file-transfer.model';
-import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthorizedFileTransferService {
   private readonly STORAGE_KEY = 'abs_fms_authorized_transfers';
-  private readonly API_BASE_URL = environment.apiBaseUrl;
   private transfersSubject = new BehaviorSubject<AuthorizedFileTransfer[]>([]);
   public transfers$ = this.transfersSubject.asObservable();
 
-  constructor(private http: HttpClient) {
-    // For now, keep localStorage as fallback, but we'll replace with API calls
+  constructor() {
+    // Using localStorage for data persistence
     this.loadTransfersFromStorage();
   }
 
@@ -785,133 +782,61 @@ export class AuthorizedFileTransferService {
   }
 
   getAllTransfers(): Observable<AuthorizedFileTransfer[]> {
-    // For now, let's add some debugging and better error handling
-    const apiUrl = `${this.API_BASE_URL}/api/authorized-file-transfers`;
-    console.log('Attempting to fetch from:', apiUrl);
-
-    return this.http.get<AuthorizedFileTransfer[]>(apiUrl).pipe(
-      map((transfers) => {
-        console.log(
-          'API call successful, received transfers:',
-          transfers.length
-        );
-        // Update local subject with API data
-        this.transfersSubject.next(transfers);
-        return transfers;
-      }),
-      catchError((error) => {
-        console.error('API call failed, using fallback data:', {
-          url: apiUrl,
-          status: error.status,
-          message: error.message,
-          error: error,
-        });
-
-        // Fallback to localStorage data
-        return this.transfers$.pipe(
-          map((localTransfers) => {
-            console.log(
-              'Fallback: Using localStorage data with',
-              localTransfers.length,
-              'transfers'
-            );
-            return localTransfers;
-          })
-        );
-      })
-    );
+    // Return local data from BehaviorSubject
+    return this.transfers$;
   }
 
   getTransferById(id: string): Observable<AuthorizedFileTransfer | undefined> {
-    return this.http
-      .get<AuthorizedFileTransfer>(
-        `${this.API_BASE_URL}/api/authorized-file-transfers/${id}`
-      )
-      .pipe(
-        catchError((error) => {
-          console.error('Error fetching transfer by ID from API:', error);
-          // Fallback to local data
-          return this.transfers$.pipe(
-            map((transfers) => transfers.find((t) => t.id === id))
-          );
-        })
-      );
+    return this.transfers$.pipe(
+      map((transfers) => transfers.find((t) => t.id === id))
+    );
   }
 
   searchTransfers(
     filter: AuthorizedFileTransferFilter
   ): Observable<AuthorizedFileTransfer[]> {
-    let params = new HttpParams();
+    return this.transfers$.pipe(
+      map((transfers) => {
+        let filtered = [...transfers];
 
-    if (filter.searchTerm && filter.searchTerm.trim()) {
-      params = params.set('search', filter.searchTerm.trim());
-    }
-
-    if (filter.type && filter.type !== 'ALL') {
-      params = params.set('type', filter.type);
-    }
-
-    if (filter.dateFrom) {
-      params = params.set('dateFrom', filter.dateFrom.toISOString());
-    }
-
-    if (filter.dateTo) {
-      params = params.set('dateTo', filter.dateTo.toISOString());
-    }
-
-    return this.http
-      .get<AuthorizedFileTransfer[]>(
-        `${this.API_BASE_URL}/api/authorized-file-transfers/search`,
-        { params }
-      )
-      .pipe(
-        catchError((error) => {
-          console.error('Error searching transfers from API:', error);
-          // Fallback to local filtering
-          return this.transfers$.pipe(
-            map((transfers) => {
-              let filtered = [...transfers];
-
-              // Apply search term filter
-              if (filter.searchTerm && filter.searchTerm.trim()) {
-                const searchTerm = filter.searchTerm.toLowerCase();
-                filtered = filtered.filter(
-                  (transfer) =>
-                    transfer.remarks.toLowerCase().includes(searchTerm) ||
-                    transfer.voucherNoRef.toLowerCase().includes(searchTerm) ||
-                    transfer.narrative.toLowerCase().includes(searchTerm) ||
-                    transfer.bankAccount.toLowerCase().includes(searchTerm) ||
-                    transfer.authorisedBy.toLowerCase().includes(searchTerm) ||
-                    transfer.preparedBy.toLowerCase().includes(searchTerm) ||
-                    transfer.document.toLowerCase().includes(searchTerm) ||
-                    transfer.payee.toLowerCase().includes(searchTerm)
-                );
-              }
-
-              // Apply type filter
-              if (filter.type && filter.type !== 'ALL') {
-                filtered = filtered.filter(
-                  (transfer) => transfer.type === filter.type
-                );
-              }
-
-              // Apply date range filter
-              if (filter.dateFrom) {
-                filtered = filtered.filter(
-                  (transfer) => transfer.date >= filter.dateFrom!
-                );
-              }
-              if (filter.dateTo) {
-                filtered = filtered.filter(
-                  (transfer) => transfer.date <= filter.dateTo!
-                );
-              }
-
-              return filtered;
-            })
+        // Apply search term filter
+        if (filter.searchTerm && filter.searchTerm.trim()) {
+          const searchTerm = filter.searchTerm.toLowerCase();
+          filtered = filtered.filter(
+            (transfer) =>
+              transfer.remarks.toLowerCase().includes(searchTerm) ||
+              transfer.voucherNoRef.toLowerCase().includes(searchTerm) ||
+              transfer.narrative.toLowerCase().includes(searchTerm) ||
+              transfer.bankAccount.toLowerCase().includes(searchTerm) ||
+              transfer.authorisedBy.toLowerCase().includes(searchTerm) ||
+              transfer.preparedBy.toLowerCase().includes(searchTerm) ||
+              transfer.document.toLowerCase().includes(searchTerm) ||
+              transfer.payee.toLowerCase().includes(searchTerm)
           );
-        })
-      );
+        }
+
+        // Apply type filter
+        if (filter.type && filter.type !== 'ALL') {
+          filtered = filtered.filter(
+            (transfer) => transfer.type === filter.type
+          );
+        }
+
+        // Apply date range filter
+        if (filter.dateFrom) {
+          filtered = filtered.filter(
+            (transfer) => transfer.date >= filter.dateFrom!
+          );
+        }
+        if (filter.dateTo) {
+          filtered = filtered.filter(
+            (transfer) => transfer.date <= filter.dateTo!
+          );
+        }
+
+        return filtered;
+      })
+    );
   }
 
   getTransferStats(): Observable<AuthorizedFileTransferStats> {
@@ -1059,37 +984,20 @@ export class AuthorizedFileTransferService {
   createTransfer(
     request: AuthorizedFileTransferCreateRequest
   ): Observable<AuthorizedFileTransfer> {
-    return this.http
-      .post<AuthorizedFileTransfer>(
-        `${this.API_BASE_URL}/api/authorized-file-transfers`,
-        request
-      )
-      .pipe(
-        map((transfer) => {
-          // Update local data
-          const currentTransfers = this.transfersSubject.value;
-          this.transfersSubject.next([transfer, ...currentTransfers]);
-          return transfer;
-        }),
-        catchError((error) => {
-          console.error('Error creating transfer via API:', error);
-          // Fallback to local creation
-          const newTransfer: AuthorizedFileTransfer = {
-            id: this.generateId(),
-            ...request,
-            date: new Date(),
-            authorizationDate: new Date(),
-            requestDate: new Date(),
-          };
+    const newTransfer: AuthorizedFileTransfer = {
+      id: this.generateId(),
+      ...request,
+      date: new Date(),
+      authorizationDate: new Date(),
+      requestDate: new Date(),
+    };
 
-          const currentTransfers = this.transfersSubject.value;
-          const updatedTransfers = [newTransfer, ...currentTransfers];
-          this.transfersSubject.next(updatedTransfers);
-          this.saveTransfersToStorage(updatedTransfers);
+    const currentTransfers = this.transfersSubject.value;
+    const updatedTransfers = [newTransfer, ...currentTransfers];
+    this.transfersSubject.next(updatedTransfers);
+    this.saveTransfersToStorage(updatedTransfers);
 
-          return of(newTransfer);
-        })
-      );
+    return of(newTransfer);
   }
 
   // Update existing transfer
@@ -1097,63 +1005,25 @@ export class AuthorizedFileTransferService {
     id: string,
     updates: Partial<AuthorizedFileTransfer>
   ): Observable<AuthorizedFileTransfer> {
-    return this.http
-      .put<AuthorizedFileTransfer>(
-        `${this.API_BASE_URL}/api/authorized-file-transfers/${id}`,
-        updates
-      )
-      .pipe(
-        map((updatedTransfer) => {
-          // Update local data
-          const currentTransfers = this.transfersSubject.value;
-          const index = currentTransfers.findIndex((t) => t.id === id);
-          if (index !== -1) {
-            currentTransfers[index] = updatedTransfer;
-            this.transfersSubject.next([...currentTransfers]);
-          }
-          return updatedTransfer;
-        }),
-        catchError((error) => {
-          console.error('Error updating transfer via API:', error);
-          // Fallback to local update
-          const currentTransfers = this.transfersSubject.value;
-          const index = currentTransfers.findIndex((t) => t.id === id);
-          if (index !== -1) {
-            const updatedTransfer = { ...currentTransfers[index], ...updates };
-            currentTransfers[index] = updatedTransfer;
-            this.transfersSubject.next([...currentTransfers]);
-            this.saveTransfersToStorage(currentTransfers);
-            return of(updatedTransfer);
-          }
-          throw error;
-        })
-      );
+    const currentTransfers = this.transfersSubject.value;
+    const index = currentTransfers.findIndex((t) => t.id === id);
+    if (index !== -1) {
+      const updatedTransfer = { ...currentTransfers[index], ...updates };
+      currentTransfers[index] = updatedTransfer;
+      this.transfersSubject.next([...currentTransfers]);
+      this.saveTransfersToStorage(currentTransfers);
+      return of(updatedTransfer);
+    }
+    throw new Error(`Transfer with id ${id} not found`);
   }
 
   // Delete transfer
   deleteTransfer(id: string): Observable<boolean> {
-    return this.http
-      .delete<boolean>(
-        `${this.API_BASE_URL}/api/authorized-file-transfers/${id}`
-      )
-      .pipe(
-        map(() => {
-          // Update local data
-          const currentTransfers = this.transfersSubject.value;
-          const filteredTransfers = currentTransfers.filter((t) => t.id !== id);
-          this.transfersSubject.next(filteredTransfers);
-          return true;
-        }),
-        catchError((error) => {
-          console.error('Error deleting transfer via API:', error);
-          // Fallback to local deletion
-          const currentTransfers = this.transfersSubject.value;
-          const filteredTransfers = currentTransfers.filter((t) => t.id !== id);
-          this.transfersSubject.next(filteredTransfers);
-          this.saveTransfersToStorage(filteredTransfers);
-          return of(true);
-        })
-      );
+    const currentTransfers = this.transfersSubject.value;
+    const filteredTransfers = currentTransfers.filter((t) => t.id !== id);
+    this.transfersSubject.next(filteredTransfers);
+    this.saveTransfersToStorage(filteredTransfers);
+    return of(true);
   }
 
   private generateId(): string {

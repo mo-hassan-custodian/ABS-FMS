@@ -1,7 +1,7 @@
 import { NgModule, isDevMode } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
 import { ToastrModule } from 'ngx-toastr';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { AppRoutingModule } from './app-routing.module';
@@ -13,7 +13,6 @@ import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { requisitionReducer } from './app-state/reducers/requisition.reducer';
-import { ApiInterceptor } from './interceptors/api.interceptor';
 import { ApiTestComponent } from './components/api-test/api-test.component';
 
 @NgModule({
@@ -41,11 +40,6 @@ import { ApiTestComponent } from './components/api-test/api-test.component';
   providers: [
     { provide: MAT_DIALOG_DATA, useValue: {} },
     { provide: MatDialogRef, useValue: {} },
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: ApiInterceptor,
-      multi: true,
-    },
   ],
   bootstrap: [AppComponent],
 })

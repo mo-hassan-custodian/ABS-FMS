@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  apiBaseUrl: 'https://5b08-102-88-112-3.ngrok-free.app', // Update this with your active ngrok URL
+  // Using local mock data - no API calls needed
 };
 
 /*
