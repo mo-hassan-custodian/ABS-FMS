@@ -4,7 +4,10 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ToastrService } from 'ngx-toastr';
 
-import { AuthorizedFileTransfer } from '../../../../../models/authorized-file-transfer.model';
+import {
+  AuthorizedFileTransfer,
+  AuthorizedPaymentRequest,
+} from '../../../../../models/authorized-file-transfer.model';
 import { AuthorizedFileTransferService } from '../../../../../services/authorized-file-transfer.service';
 import { BankAccount } from '../../../../../models/bank-account.model';
 
@@ -136,34 +139,44 @@ export class AuthorizedFileTransferViewComponent implements OnInit, OnDestroy {
 
   // Confirm authorization
   confirmAuthorization(): void {
-    if (this.authorizationData && this.transfer) {
+    if (this.authorizationData && this.transfer && this.selectedBankAccount) {
       // Show loading state
       this.isLoading = true;
 
+      // Create the authorization request according to the API specification
+      const authorizationRequest: AuthorizedPaymentRequest = {
+        voucherNoRef: this.transfer.voucherNoRef,
+        payee: this.transfer.payee,
+        amountPayee: this.transfer.amountPayee,
+        payeeBankAccount: this.transfer.bankAccount,
+        fromAccount: this.selectedBankAccount.accountNumber,
+        transferType: this.transfer.type,
+        narrative: this.transfer.narrative,
+      };
+
       // Call the service to authorize the payment
       this.transferService
-        .authorizePayment(this.transfer.id, this.authorizationData)
+        .authorizePayment(authorizationRequest)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: (result) => {
             this.isLoading = false;
-            if (result.success) {
-              this.toastr.success(result.message, 'Payment Authorized');
-              console.log(
-                'Payment authorized successfully:',
-                this.authorizationData
-              );
+            this.toastr.success(
+              'Payment authorized successfully',
+              'Payment Authorized'
+            );
+            console.log(
+              'Payment authorized successfully:',
+              authorizationRequest
+            );
 
-              // Close modal and navigate back to the list
-              this.closeAuthorizationModal();
+            // Close modal and navigate back to the list
+            this.closeAuthorizationModal();
 
-              // Navigate back to the authorized file transfer list
-              setTimeout(() => {
-                this.router.navigate(['/App/authorized-file-transfer']);
-              }, 1500);
-            } else {
-              this.toastr.error(result.message, 'Authorization Failed');
-            }
+            // Navigate back to the authorized file transfer list
+            setTimeout(() => {
+              this.router.navigate(['/App/authorized-file-transfer']);
+            }, 1500);
           },
           error: (error) => {
             this.isLoading = false;

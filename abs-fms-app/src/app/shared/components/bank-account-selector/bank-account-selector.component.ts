@@ -1,10 +1,27 @@
-import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, forwardRef } from '@angular/core';
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  OnInit,
+  OnDestroy,
+  forwardRef,
+} from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
-import { startWith, debounceTime, distinctUntilChanged, map, takeUntil } from 'rxjs/operators';
+import {
+  startWith,
+  debounceTime,
+  distinctUntilChanged,
+  map,
+  takeUntil,
+} from 'rxjs/operators';
 import { FormControl } from '@angular/forms';
 
-import { BankAccount, BankAccountFilter } from '../../../models/bank-account.model';
+import {
+  BankAccount,
+  BankAccountFilter,
+} from '../../../models/bank-account.model';
 import { BankAccountService } from '../../../services/bank-account.service';
 
 @Component({
@@ -15,11 +32,13 @@ import { BankAccountService } from '../../../services/bank-account.service';
     {
       provide: NG_VALUE_ACCESSOR,
       useExisting: forwardRef(() => BankAccountSelectorComponent),
-      multi: true
-    }
-  ]
+      multi: true,
+    },
+  ],
 })
-export class BankAccountSelectorComponent implements OnInit, OnDestroy, ControlValueAccessor {
+export class BankAccountSelectorComponent
+  implements OnInit, OnDestroy, ControlValueAccessor
+{
   @Input() placeholder: string = 'Select Bank Account';
   @Input() required: boolean = false;
   @Input() disabled: boolean = false;
@@ -40,7 +59,7 @@ export class BankAccountSelectorComponent implements OnInit, OnDestroy, ControlV
 
   // Form control for the autocomplete
   searchControl = new FormControl<string | BankAccount | null>('');
-  
+
   // Data properties
   allBankAccounts: BankAccount[] = [];
   filteredBankAccounts: Observable<BankAccount[]>;
@@ -48,7 +67,7 @@ export class BankAccountSelectorComponent implements OnInit, OnDestroy, ControlV
   isLoading = false;
 
   // ControlValueAccessor properties
-  private onChange = (value: any) => {};
+  private onChange = (_value: any) => {};
   private onTouched = () => {};
 
   // Destroy subject for cleanup
@@ -70,15 +89,16 @@ export class BankAccountSelectorComponent implements OnInit, OnDestroy, ControlV
 
   private loadBankAccounts(): void {
     this.isLoading = true;
-    
+
     // Apply initial filters
     const filter: BankAccountFilter = {
       status: this.filterByStatus || undefined,
       currency: this.filterByCurrency || undefined,
-      accountType: this.filterByAccountType || undefined
+      accountType: this.filterByAccountType || undefined,
     };
 
-    this.bankAccountService.searchBankAccounts(filter)
+    this.bankAccountService
+      .searchBankAccounts(filter)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (accounts) => {
@@ -88,7 +108,7 @@ export class BankAccountSelectorComponent implements OnInit, OnDestroy, ControlV
         error: (error) => {
           console.error('Error loading bank accounts:', error);
           this.isLoading = false;
-        }
+        },
       });
   }
 
@@ -109,9 +129,16 @@ export class BankAccountSelectorComponent implements OnInit, OnDestroy, ControlV
         this.searchChanged.emit(filterValue);
 
         // If user is typing and it doesn't match selected account, clear selection
-        if (typeof value === 'string' && this.selectedAccount && value.trim().length > 0) {
+        if (
+          typeof value === 'string' &&
+          this.selectedAccount &&
+          value.trim().length > 0
+        ) {
           const displayText = this.displayAccountName(this.selectedAccount);
-          if (value !== displayText && !displayText.toLowerCase().includes(value.toLowerCase())) {
+          if (
+            value !== displayText &&
+            !displayText.toLowerCase().includes(value.toLowerCase())
+          ) {
             this.clearSelection();
           }
         }
@@ -127,12 +154,14 @@ export class BankAccountSelectorComponent implements OnInit, OnDestroy, ControlV
     }
 
     const searchTerm = filterValue.toLowerCase();
-    return this.allBankAccounts.filter(account =>
-      account.name.toLowerCase().includes(searchTerm) ||
-      account.accountNumber.includes(searchTerm) ||
-      account.bankName.toLowerCase().includes(searchTerm) ||
-      account.bankBranch.toLowerCase().includes(searchTerm) ||
-      (account.description && account.description.toLowerCase().includes(searchTerm))
+    return this.allBankAccounts.filter(
+      (account) =>
+        account.name.toLowerCase().includes(searchTerm) ||
+        account.accountNumber.includes(searchTerm) ||
+        account.bankName.toLowerCase().includes(searchTerm) ||
+        account.bankBranch?.toLowerCase().includes(searchTerm) ||
+        (account.description &&
+          account.description.toLowerCase().includes(searchTerm))
     );
   }
 
@@ -159,32 +188,35 @@ export class BankAccountSelectorComponent implements OnInit, OnDestroy, ControlV
 
   getAccountDisplayText(account: BankAccount): string {
     let displayText = account.name;
-    
+
     if (this.showAccountNumber) {
       displayText += ` - ${account.accountNumber}`;
     }
-    
+
     if (this.showBankName) {
       displayText += ` (${account.bankName})`;
     }
-    
+
     return displayText;
   }
 
   getAccountSubText(account: BankAccount): string {
     let subText = '';
-    
+
     if (this.showDescription && account.description) {
       subText = account.description;
     } else {
       subText = `${account.accountType} • ${account.bankBranch}`;
     }
-    
-    if (this.showBalance && account.balance !== undefined) {
-      const formattedBalance = this.formatCurrency(account.balance, account.currency);
+
+    if (this.showBalance && account.balance !== undefined && account.currency) {
+      const formattedBalance = this.formatCurrency(
+        account.balance,
+        account.currency
+      );
       subText += ` • Balance: ${formattedBalance}`;
     }
-    
+
     return subText;
   }
 
@@ -192,12 +224,12 @@ export class BankAccountSelectorComponent implements OnInit, OnDestroy, ControlV
     return new Intl.NumberFormat('en-NG', {
       style: 'currency',
       currency: currency,
-      minimumFractionDigits: 2
+      minimumFractionDigits: 2,
     }).format(amount);
   }
 
   trackByAccountId(_index: number, account: BankAccount): string {
-    return account.id;
+    return account.id || account.accountNumber;
   }
 
   shouldShowNoResults(): boolean {

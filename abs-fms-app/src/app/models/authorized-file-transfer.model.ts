@@ -90,3 +90,23 @@ export interface AuthorizedFileTransferFilter {
   dateFrom?: Date;
   dateTo?: Date;
 }
+
+// New interface for POST /api/Authorization/AuthorizedPayment
+export interface AuthorizedPaymentRequest {
+  voucherNoRef: string;
+  payee: string;
+  amountPayee: number;
+  payeeBankAccount: string;
+  fromAccount: string;
+  transferType: string;
+  narrative: string;
+}
+
+// Paginated response interface for GET /api/Authorization
+export interface PaginatedAuthorizationResponse {
+  pageNumber: number;
+  pageSize: number;
+  totalRecords: number;
+  totalPages: number;
+  records: AuthorizedFileTransfer[];
+}

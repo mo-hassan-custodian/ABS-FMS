@@ -1,26 +1,19 @@
 export interface BankAccount {
-  id: string;
-  name: string;
   accountNumber: string;
-  accountType: 'Current' | 'Savings' | 'Investment' | 'Fixed Deposit';
+  accountName: string;
   bankName: string;
-  bankBranch: string;
-  currency: string;
-  balance?: number;
-  status: 'Active' | 'Inactive' | 'Suspended' | 'Closed';
-  description?: string;
-  createdDate: Date;
-  updatedDate?: Date;
-}
+  name: string; // Display name from API
 
-export interface BankAccountCreateRequest {
-  name: string;
-  accountNumber: string;
-  accountType: 'Current' | 'Savings' | 'Investment' | 'Fixed Deposit';
-  bankName: string;
-  bankBranch: string;
-  currency: string;
+  // Optional legacy fields for backward compatibility
+  id?: string;
+  accountType?: 'Current' | 'Savings' | 'Investment' | 'Fixed Deposit';
+  bankBranch?: string;
+  currency?: string;
+  balance?: number;
+  status?: 'Active' | 'Inactive' | 'Suspended' | 'Closed';
   description?: string;
+  createdDate?: Date;
+  updatedDate?: Date;
 }
 
 export interface BankAccountFilter {
@@ -29,4 +22,13 @@ export interface BankAccountFilter {
   currency?: string;
   status?: string;
   searchTerm?: string;
+}
+
+// API Response interface for GET /api/Memo/bank-accounts
+export interface BankAccountsResponse {
+  isSuccess: boolean;
+  message: string;
+  httpStatus: number;
+  data: BankAccount[];
+  errors: any;
 }

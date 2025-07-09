@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthorizedFileTransferService } from '../../services/authorized-file-transfer.service';
+import { BankAccountService } from '../../services/bank-account.service';
 import { AuthorizedFileTransfer } from '../../models/authorized-file-transfer.model';
+import { BankAccount } from '../../models/bank-account.model';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -62,6 +64,42 @@ import { environment } from '../../../environments/environment';
             <li>Check browser console for detailed error messages</li>
             <li>Restart the Angular dev server: <code>ng serve</code></li>
           </ol>
+        </div>
+      </div>
+
+      <div class="test-section">
+        <h3>Test Bank Accounts API</h3>
+        <button
+          (click)="testBankAccountsApi()"
+          [disabled]="bankAccountsLoading"
+        >
+          {{ bankAccountsLoading ? 'Testing...' : 'Test Bank Accounts API' }}
+        </button>
+
+        <div
+          *ngIf="bankAccountsStatus"
+          class="status-message"
+          [ngClass]="bankAccountsStatus.type"
+        >
+          {{ bankAccountsStatus.message }}
+        </div>
+      </div>
+
+      <div class="test-section" *ngIf="bankAccounts.length > 0">
+        <h3>Bank Accounts Data ({{ bankAccounts.length }} accounts)</h3>
+        <div class="transfers-list">
+          <div
+            *ngFor="let account of bankAccounts.slice(0, 5)"
+            class="transfer-item"
+          >
+            <strong>{{ account.accountNumber }}</strong> -
+            {{ account.accountName }} - {{ account.bankName }} <br /><small>{{
+              account.name
+            }}</small>
+          </div>
+          <div *ngIf="bankAccounts.length > 5" class="more-items">
+            ... and {{ bankAccounts.length - 5 }} more accounts
+          </div>
         </div>
       </div>
 
@@ -179,15 +217,22 @@ import { environment } from '../../../environments/environment';
 })
 export class ApiTestComponent implements OnInit {
   transfers: AuthorizedFileTransfer[] = [];
+  bankAccounts: BankAccount[] = [];
   loading = false;
+  bankAccountsLoading = false;
   apiStatus: { type: 'success' | 'error'; message: string } | null = null;
+  bankAccountsStatus: { type: 'success' | 'error'; message: string } | null =
+    null;
 
   // Configuration properties for display
   apiBaseUrl = environment.apiBaseUrl;
-  fullApiUrl = `${environment.apiBaseUrl}/api/authorized-file-transfers`;
+  fullApiUrl = `${environment.apiBaseUrl}/api/Authorization`;
   proxyEnabled = false; // No longer using proxy
 
-  constructor(private transferService: AuthorizedFileTransferService) {}
+  constructor(
+    private transferService: AuthorizedFileTransferService,
+    private bankAccountService: BankAccountService
+  ) {}
 
   ngOnInit() {
     // Auto-test on component load
@@ -199,20 +244,18 @@ export class ApiTestComponent implements OnInit {
     this.apiStatus = null;
 
     this.transferService.getAllTransfers().subscribe({
-      next: (transfers) => {
-        this.transfers = transfers;
+      next: (response) => {
+        this.transfers = response.records;
         this.loading = false;
 
-        // Check if we got data from API or fallback
-        const isFromAPI =
-          transfers.length > 0 &&
-          !localStorage.getItem('abs_fms_authorized_transfers');
+        // Check if we got data from API
+        const isFromAPI = response.totalRecords > 0;
 
         this.apiStatus = {
           type: 'success',
           message: isFromAPI
-            ? `✅ API connection successful! Loaded ${transfers.length} transfers from API.`
-            : `⚠️ Using fallback data. Loaded ${transfers.length} transfers from localStorage. API may be offline.`,
+            ? `✅ API connection successful! Loaded ${response.totalRecords} transfers from API (Page ${response.pageNumber} of ${response.totalPages}).`
+            : `⚠️ No data available. API returned empty result.`,
         };
       },
       error: (error) => {
@@ -246,6 +289,49 @@ export class ApiTestComponent implements OnInit {
         };
 
         console.error('API Test Error Details:', {
+          status: error.status,
+          message: error.message,
+          url: error.url,
+          error: error,
+        });
+      },
+    });
+  }
+
+  testBankAccountsApi() {
+    this.bankAccountsLoading = true;
+    this.bankAccountsStatus = null;
+
+    this.bankAccountService.getBankAccounts().subscribe({
+      next: (bankAccounts: BankAccount[]) => {
+        this.bankAccounts = bankAccounts;
+        this.bankAccountsLoading = false;
+
+        this.bankAccountsStatus = {
+          type: 'success',
+          message: `✅ Bank Accounts API successful! Loaded ${bankAccounts.length} bank accounts.`,
+        };
+      },
+      error: (error: any) => {
+        this.bankAccountsLoading = false;
+        console.error('Bank Accounts API call failed:', error);
+
+        let errorMessage = '❌ Bank Accounts API connection failed: ';
+        if (error.status === 0) {
+          errorMessage +=
+            'Network error - check if backend is running and CORS is configured';
+        } else {
+          errorMessage += `${error.status} - ${
+            error.message || 'Unknown error'
+          }`;
+        }
+
+        this.bankAccountsStatus = {
+          type: 'error',
+          message: errorMessage,
+        };
+
+        console.error('Bank Accounts API Error Details:', {
           status: error.status,
           message: error.message,
           url: error.url,

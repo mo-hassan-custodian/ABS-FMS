@@ -4,7 +4,8 @@
 
 export const environment = {
   production: false,
-  apiBaseUrl: 'https://5b08-102-88-112-3.ngrok-free.app', // Update this with your active ngrok URL
+  // apiBaseUrl: 'https://5b08-102-88-112-3.ngrok-free.app',
+  apiBaseUrl: 'https://3bd7a7975727.ngrok-free.app',
 };
 
 /*

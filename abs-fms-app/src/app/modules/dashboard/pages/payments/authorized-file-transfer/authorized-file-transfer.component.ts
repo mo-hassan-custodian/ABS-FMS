@@ -1,21 +1,14 @@
-import {
-  Component,
-  OnInit,
-  OnDestroy,
-  ViewChild,
-  AfterViewInit,
-} from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ToastrService } from 'ngx-toastr';
 import { MatTableDataSource } from '@angular/material/table';
-import { MatPaginator } from '@angular/material/paginator';
 
 import {
   AuthorizedFileTransfer,
-  AuthorizedFileTransferFilter,
+  PaginatedAuthorizationResponse,
 } from '../../../../../models/authorized-file-transfer.model';
 import { AuthorizedFileTransferService } from '../../../../../services/authorized-file-transfer.service';
 
@@ -24,16 +17,18 @@ import { AuthorizedFileTransferService } from '../../../../../services/authorize
   templateUrl: './authorized-file-transfer.component.html',
   styleUrl: './authorized-file-transfer.component.css',
 })
-export class AuthorizedFileTransferComponent
-  implements OnInit, OnDestroy, AfterViewInit
-{
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-
+export class AuthorizedFileTransferComponent implements OnInit, OnDestroy {
   // Form and data
   searchForm!: FormGroup;
   allTransfers: AuthorizedFileTransfer[] = [];
   searchResults = new MatTableDataSource<AuthorizedFileTransfer>([]);
   searchPerformed = false;
+
+  // Pagination properties
+  currentPage = 1;
+  pageSize = 10;
+  totalRecords = 0;
+  totalPages = 0;
 
   // Table configuration
   displayedColumns: string[] = [
@@ -78,19 +73,11 @@ export class AuthorizedFileTransferComponent
   ngOnInit(): void {
     this.initializeSearchForm();
     this.loadTransfers();
-
-    // Temporary: Clear and regenerate data to fix any issues
-    // Remove this after testing
-    this.transferService.clearAndRegenerate();
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-  }
-
-  ngAfterViewInit(): void {
-    this.searchResults.paginator = this.paginator;
   }
 
   initializeSearchForm(): void {
@@ -107,63 +94,107 @@ export class AuthorizedFileTransferComponent
     this.searchPerformed = true;
 
     const formValue = this.searchForm.value;
-    const searchTerm = formValue.searchTerm?.trim().toLowerCase() || '';
+    const searchTerm = formValue.searchTerm?.trim() || '';
+    const type =
+      formValue.type && formValue.type !== 'ALL' ? formValue.type : undefined;
+    const dateFrom = formValue.dateFrom
+      ? new Date(formValue.dateFrom)
+      : undefined;
+    const dateTo = formValue.dateTo ? new Date(formValue.dateTo) : undefined;
 
-    // Filter transfers based on search criteria
-    let filtered = [...this.allTransfers];
-
-    // Apply payee name filter
-    if (searchTerm) {
-      filtered = filtered.filter(
-        (transfer) =>
-          transfer.payee && transfer.payee.toLowerCase().includes(searchTerm)
-      );
+    // Determine which API method to use based on search criteria
+    if (type && !searchTerm && !dateFrom && !dateTo) {
+      // Use getAllTransfersByType if only type filter is applied
+      this.searchByTypeOnly(type);
+    } else {
+      // Use getAllTransfers with all search parameters
+      this.searchWithAllParameters(searchTerm, type, dateFrom, dateTo);
     }
-
-    // Apply type filter
-    if (formValue.type && formValue.type !== 'ALL') {
-      filtered = filtered.filter(
-        (transfer) => transfer.type === formValue.type
-      );
-    }
-
-    // Apply date range filter
-    if (formValue.dateFrom) {
-      const dateFrom = new Date(formValue.dateFrom);
-      filtered = filtered.filter((transfer) => transfer.date >= dateFrom);
-    }
-    if (formValue.dateTo) {
-      const dateTo = new Date(formValue.dateTo);
-      filtered = filtered.filter((transfer) => transfer.date <= dateTo);
-    }
-
-    // Simulate API call delay
-    setTimeout(() => {
-      this.searchResults.data = filtered;
-      this.isLoading = false;
-
-      if (filtered.length === 0 && searchTerm) {
-        this.toastr.info(
-          `No transfers found for payee "${formValue.searchTerm}"`,
-          'Search Results'
-        );
-      } else if (filtered.length > 0) {
-        this.toastr.success(
-          `Found ${filtered.length} payment(s)`,
-          'Search Results'
-        );
-      }
-    }, 500);
   }
 
-  loadTransfers(): void {
-    this.isLoading = true;
+  private searchByTypeOnly(type: string): void {
     this.transferService
-      .getAllTransfers()
+      .getAllTransfersByType(type)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (transfers) => {
-          this.allTransfers = transfers;
+          this.searchResults.data = transfers;
+          this.isLoading = false;
+
+          if (transfers.length === 0) {
+            this.toastr.info(
+              `No transfers found for type "${type}"`,
+              'Search Results'
+            );
+          } else {
+            this.toastr.success(
+              `Found ${transfers.length} payment(s) of type "${type}"`,
+              'Search Results'
+            );
+          }
+        },
+        error: (error) => {
+          console.error('Error searching transfers by type:', error);
+          this.toastr.error('Error searching payments', 'Error');
+          this.isLoading = false;
+        },
+      });
+  }
+
+  private searchWithAllParameters(
+    payee?: string,
+    type?: string,
+    dateFrom?: Date,
+    dateTo?: Date
+  ): void {
+    this.transferService
+      .getAllTransfers(1, 100, undefined, dateFrom, dateTo, payee) // Use larger page size for search
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response: PaginatedAuthorizationResponse) => {
+          let filtered = response.records;
+
+          // Apply type filter if specified (since API might not filter by type in getAllTransfers)
+          if (type) {
+            filtered = filtered.filter((transfer) => transfer.type === type);
+          }
+
+          this.searchResults.data = filtered;
+          this.isLoading = false;
+
+          if (filtered.length === 0) {
+            this.toastr.info(
+              'No transfers found matching your criteria',
+              'Search Results'
+            );
+          } else {
+            this.toastr.success(
+              `Found ${filtered.length} payment(s)`,
+              'Search Results'
+            );
+          }
+        },
+        error: (error) => {
+          console.error('Error searching transfers:', error);
+          this.toastr.error('Error searching payments', 'Error');
+          this.isLoading = false;
+        },
+      });
+  }
+
+  loadTransfers(page: number = 1): void {
+    this.isLoading = true;
+    this.currentPage = page;
+
+    this.transferService
+      .getAllTransfers(this.currentPage, this.pageSize)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response: PaginatedAuthorizationResponse) => {
+          this.allTransfers = response.records;
+          this.totalRecords = response.totalRecords;
+          this.totalPages = response.totalPages;
+          this.currentPage = response.pageNumber;
           this.isLoading = false;
         },
         error: (error) => {
@@ -174,55 +205,31 @@ export class AuthorizedFileTransferComponent
       });
   }
 
-  filterTransfers(searchValue: string): AuthorizedFileTransfer[] {
-    if (!searchValue.trim()) {
-      return [];
+  // Pagination methods
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.loadTransfers(page);
     }
+  }
 
-    const formValue = this.searchForm.value;
-    let filtered = [...this.allTransfers];
+  goToFirstPage(): void {
+    this.goToPage(1);
+  }
 
-    // Apply search term filter
-    const searchTerm = searchValue.toLowerCase();
-    console.log(
-      'Search term:',
-      searchTerm,
-      'Total transfers:',
-      this.allTransfers.length
-    );
+  goToLastPage(): void {
+    this.goToPage(this.totalPages);
+  }
 
-    filtered = filtered.filter(
-      (transfer) =>
-        transfer.remarks.toLowerCase().includes(searchTerm) ||
-        transfer.voucherNoRef.toLowerCase().includes(searchTerm) ||
-        transfer.narrative.toLowerCase().includes(searchTerm) ||
-        transfer.bankAccount.toLowerCase().includes(searchTerm) ||
-        transfer.authorisedBy.toLowerCase().includes(searchTerm) ||
-        transfer.preparedBy.toLowerCase().includes(searchTerm) ||
-        transfer.document.toLowerCase().includes(searchTerm) ||
-        (transfer.payee && transfer.payee.toLowerCase().includes(searchTerm))
-    );
-
-    console.log('Filtered results:', filtered.length);
-
-    // Apply type filter
-    if (formValue.type && formValue.type !== 'ALL') {
-      filtered = filtered.filter(
-        (transfer) => transfer.type === formValue.type
-      );
+  goToPreviousPage(): void {
+    if (this.currentPage > 1) {
+      this.goToPage(this.currentPage - 1);
     }
+  }
 
-    // Apply date range filter
-    if (formValue.dateFrom) {
-      const dateFrom = new Date(formValue.dateFrom);
-      filtered = filtered.filter((transfer) => transfer.date >= dateFrom);
+  goToNextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.goToPage(this.currentPage + 1);
     }
-    if (formValue.dateTo) {
-      const dateTo = new Date(formValue.dateTo);
-      filtered = filtered.filter((transfer) => transfer.date <= dateTo);
-    }
-
-    return filtered;
   }
 
   clearFilters(): void {
@@ -234,6 +241,8 @@ export class AuthorizedFileTransferComponent
     });
     this.searchResults.data = [];
     this.searchPerformed = false;
+    // Reload the first page of data
+    this.loadTransfers(1);
   }
 
   viewTransfer(transfer: AuthorizedFileTransfer): void {
