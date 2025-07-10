@@ -19,38 +19,32 @@
   </div>
 
   <!-- Action Buttons Section -->
-      <div class="action-buttons-section">
-        <div class="action-buttons-container">
-          <!-- Change Bank Account Button -->
-          <div class="bank-account-section">
-            <app-bank-account-selector
-              label="Select Bank Account"
-              placeholder="Choose bank account for payment"
-              [required]="true"
-              [showBalance]="false"
-              [showAccountNumber]="true"
-              [showBankName]="true"
-              filterByStatus="Active"
-              (accountSelected)="onBankAccountSelected($event)"
-              (accountCleared)="onBankAccountCleared()"
-              class="bank-account-field">
-            </app-bank-account-selector>
-          </div>
+  <div class="action-buttons-section">
+    <div class="action-buttons-container">
+      <!-- Change Bank Account Button -->
+      <div class="bank-account-section">
+        <app-bank-account-selector label="Select Bank Account" placeholder="Choose bank account for payment"
+          [required]="true" [showBalance]="false" [showAccountNumber]="true" [showBankName]="true"
+          filterByStatus="Active" (accountSelected)="onBankAccountSelected($event)"
+          (accountCleared)="onBankAccountCleared()" (validationStateChanged)="onBankAccountValidationChanged($event)"
+          class="bank-account-field">
+        </app-bank-account-selector>
+      </div>
 
-          <!-- Authorize Button -->
-          <button mat-raised-button color="accent" (click)="authorizePayment()"
-                  [disabled]="!selectedBankAccount" class="authorize-btn">
-            <mat-icon>verified</mat-icon>
-            Authorize Payment
-          </button>
+      <!-- Authorize Button -->
+      <button mat-raised-button color="accent" (click)="authorizePayment()"
+        [disabled]="!selectedBankAccount || !isBankAccountValid" class="authorize-btn">
+        <mat-icon>verified</mat-icon>
+        Authorize Payment
+      </button>
 
-          <!-- Go to Update EFTs Button -->
-          <!-- <button mat-raised-button color="warn" (click)="goToUpdateEFTs()" class="update-efts-btn">
+      <!-- Go to Update EFTs Button -->
+      <!-- <button mat-raised-button color="warn" (click)="goToUpdateEFTs()" class="update-efts-btn">
             <mat-icon>update</mat-icon>
             Go to Update EFTs
           </button> -->
-        </div>
-      </div>
+    </div>
+  </div>
 
 
   <!-- Transfer Details -->
@@ -69,7 +63,7 @@
         </mat-card-title>
       </mat-card-header>
 
-      
+
       <mat-card-content>
         <mat-tab-group class="details-tabs" animationDuration="300ms">
           <!-- Basic Information Tab -->
@@ -226,7 +220,8 @@
             </div>
             <div class="summary-row">
               <label>From Account:</label>
-              <span class="value">{{ authorizationData.selectedAccount.bankName }} - {{ authorizationData.selectedAccount.accountNumber }}</span>
+              <span class="value">{{ authorizationData.selectedAccount.bankName }} - {{
+                authorizationData.selectedAccount.accountNumber }}</span>
             </div>
             <div class="summary-row">
               <label>Transfer Type:</label>
@@ -245,7 +240,8 @@
 
         <div class="confirmation-section">
           <mat-icon class="check-icon">check_circle</mat-icon>
-          <p>By clicking "Authorize Payment", you confirm that you have reviewed all details and authorize this payment to be processed.</p>
+          <p>By clicking "Authorize Payment", you confirm that you have reviewed all details and authorize this payment
+            to be processed.</p>
         </div>
       </div>
     </div>
@@ -255,7 +251,8 @@
         <mat-icon>cancel</mat-icon>
         Cancel
       </button>
-      <button mat-raised-button color="primary" (click)="confirmAuthorization()" class="authorize-button" [disabled]="isLoading">
+      <button mat-raised-button color="primary" (click)="confirmAuthorization()" class="authorize-button"
+        [disabled]="isLoading">
         <mat-spinner *ngIf="isLoading" diameter="20" class="button-spinner"></mat-spinner>
         <mat-icon *ngIf="!isLoading">verified</mat-icon>
         {{ isLoading ? 'Authorizing...' : 'Authorize Payment' }}

@@ -68,6 +68,7 @@ Your backend should implement these endpoints:
 - `StartDate` (optional) - Filter by start date (ISO format)
 - `EndDate` (optional) - Filter by end date (ISO format)
 - `Payee` (optional) - Filter by payee name
+- `Type` (optional) - **NEW:** Filter by transfer type
 
 **Response:**
 
@@ -99,7 +100,9 @@ Your backend should implement these endpoints:
 }
 ```
 
-### GET /api/Authorization/GetAll
+### ~~GET /api/Authorization/GetAll~~ (DEPRECATED)
+
+**Note:** This endpoint is no longer needed. Use the main `/api/Authorization` endpoint with the `Type` parameter instead.
 
 **Query Parameters:**
 

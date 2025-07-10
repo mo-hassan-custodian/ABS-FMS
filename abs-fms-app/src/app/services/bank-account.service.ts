@@ -35,7 +35,10 @@ export class BankAccountService {
             response.data.length,
             'accounts'
           );
-          return response.data;
+          // Transform the API data to include missing fields
+          return response.data.map((account) =>
+            this.transformBankAccount(account)
+          );
         } else {
           console.error('API returned error:', response.message);
           throw new Error(response.message || 'Failed to fetch bank accounts');
@@ -117,5 +120,41 @@ export class BankAccountService {
         return filtered;
       })
     );
+  }
+
+  /**
+   * Transform API bank account data to include missing fields
+   * Extracts account type from the name field and adds default values
+   */
+  private transformBankAccount(account: BankAccount): BankAccount {
+    // Extract account type from the name field (e.g., "Account Name - 123456 (Current)")
+    const accountTypeMatch = account.name.match(/\(([^)]+)\)$/);
+    const accountType = accountTypeMatch ? accountTypeMatch[1] : 'Current';
+
+    return {
+      ...account,
+      id: account.accountNumber, // Use account number as ID
+      accountType: this.mapAccountType(accountType),
+      status: 'Active', // Default to Active since API doesn't provide status
+      currency: 'NGN', // Default currency
+      bankBranch: 'Main Branch', // Default branch
+      createdDate: new Date(),
+    };
+  }
+
+  /**
+   * Map account type string to the expected enum values
+   */
+  private mapAccountType(
+    type: string
+  ): 'Current' | 'Savings' | 'Investment' | 'Fixed Deposit' {
+    const normalizedType = type.toLowerCase();
+
+    if (normalizedType.includes('current')) return 'Current';
+    if (normalizedType.includes('savings')) return 'Savings';
+    if (normalizedType.includes('investment')) return 'Investment';
+    if (normalizedType.includes('fixed')) return 'Fixed Deposit';
+
+    return 'Current'; // Default fallback
   }
 }

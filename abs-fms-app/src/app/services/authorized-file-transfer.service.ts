@@ -27,14 +27,26 @@ export class AuthorizedFileTransferService {
 
   // All data now comes from API - no sample data needed
 
-  // GET /api/Authorization with pagination and search parameters
+  /**
+   * GET /api/Authorization with pagination and search parameters
+   *
+   * @param pageNumber Page number to retrieve (1-based)
+   * @param pageSize Number of records per page
+   * @param id Optional ID to filter by
+   * @param startDate Optional start date to filter by
+   * @param endDate Optional end date to filter by
+   * @param payee Optional payee name to filter by
+   * @param type Optional payment type to filter by (new parameter added to the API)
+   * @returns Observable of paginated authorization response
+   */
   getAllTransfers(
     pageNumber: number = 1,
     pageSize: number = 10,
     id?: string,
     startDate?: Date,
     endDate?: Date,
-    payee?: string
+    payee?: string,
+    type?: string
   ): Observable<PaginatedAuthorizationResponse> {
     let params = new HttpParams()
       .set('PageNumber', pageNumber.toString())
@@ -44,8 +56,9 @@ export class AuthorizedFileTransferService {
     if (startDate) params = params.set('StartDate', startDate.toISOString());
     if (endDate) params = params.set('EndDate', endDate.toISOString());
     if (payee) params = params.set('Payee', payee);
+    if (type) params = params.set('Type', type);
 
-    const apiUrl = `${this.API_BASE_URL}/api/Authorization`;
+    const apiUrl = `${this.API_BASE_URL}/api/Authorization/GetAll`;
     console.log('Fetching paginated transfers from:', apiUrl, {
       params: params.toString(),
     });
@@ -83,42 +96,42 @@ export class AuthorizedFileTransferService {
       );
   }
 
-  // GET /api/Authorization/GetAll - search by type only
+  // GET /api/Authorization - search by type only (uses unified endpoint with Type parameter)
+  // Note: This method now uses the main /api/Authorization endpoint instead of the deprecated /api/Authorization/GetAll
   getAllTransfersByType(type?: string): Observable<AuthorizedFileTransfer[]> {
-    let params = new HttpParams();
-    if (type) params = params.set('type', type);
+    let params = new HttpParams()
+      .set('PageNumber', '1')
+      .set('PageSize', '1000'); // Large page size to get all records
 
-    const apiUrl = `${this.API_BASE_URL}/api/Authorization/GetAll`;
-    console.log('Fetching transfers by type from:', apiUrl, { type });
+    if (type) params = params.set('Type', type);
 
-    return this.http.get<AuthorizedFileTransfer[]>(apiUrl, { params }).pipe(
-      map((transfers) => {
-        console.log(
-          'API call successful, received transfers:',
-          transfers.length
-        );
-        // Update local subject with API data
-        this.transfersSubject.next(transfers);
-        return transfers;
-      }),
-      catchError((error) => {
-        console.error('API call failed:', {
-          url: apiUrl,
-          status: error.status,
-          message: error.message,
-          error: error,
-        });
+    const apiUrl = `${this.API_BASE_URL}/api/Authorization`;
 
-        // Return empty array
-        return of([]);
-      })
-    );
+    return this.http
+      .get<PaginatedAuthorizationResponse>(apiUrl, { params })
+      .pipe(
+        map((response) => {
+          // Update local subject with API data
+          this.transfersSubject.next(response.records);
+          return response.records;
+        }),
+        catchError((error) => {
+          console.error('API call failed:', {
+            url: apiUrl,
+            status: error.status,
+            message: error.message,
+            error: error,
+          });
+
+          // Return empty array
+          return of([]);
+        })
+      );
   }
 
   // GET /api/Authorization/{id}
   getTransferById(id: string): Observable<AuthorizedFileTransfer | undefined> {
     const apiUrl = `${this.API_BASE_URL}/api/Authorization/${id}`;
-    console.log('Fetching transfer by ID from:', apiUrl);
 
     return this.http.get<AuthorizedFileTransfer>(apiUrl).pipe(
       catchError((error) => {
@@ -134,7 +147,6 @@ export class AuthorizedFileTransferService {
   ): Observable<AuthorizedFileTransfer | undefined> {
     let params = new HttpParams().set('id', id);
     const apiUrl = `${this.API_BASE_URL}/api/Authorization/GetAuthorizedByid`;
-    console.log('Fetching authorized payment by ID from:', apiUrl, { id });
 
     return this.http.get<AuthorizedFileTransfer>(apiUrl, { params }).pipe(
       catchError((error) => {
@@ -150,7 +162,6 @@ export class AuthorizedFileTransferService {
   // POST /api/Authorization/AuthorizedPayment - authorize payment from payment summary
   authorizePayment(request: AuthorizedPaymentRequest): Observable<any> {
     const apiUrl = `${this.API_BASE_URL}/api/Authorization/AuthorizedPayment`;
-    console.log('Authorizing payment:', apiUrl, request);
 
     return this.http.post<any>(apiUrl, request).pipe(
       catchError((error) => {
@@ -163,30 +174,37 @@ export class AuthorizedFileTransferService {
   searchTransfers(
     filter: AuthorizedFileTransferFilter
   ): Observable<AuthorizedFileTransfer[]> {
-    let params = new HttpParams();
+    // Use the main endpoint with pagination and search parameters
+    let params = new HttpParams()
+      .set('PageNumber', '1')
+      .set('PageSize', '1000'); // Large page size to get all matching records
 
+    // Map search term to Payee parameter for searching
     if (filter.searchTerm && filter.searchTerm.trim()) {
-      params = params.set('search', filter.searchTerm.trim());
+      params = params.set('Payee', filter.searchTerm.trim());
     }
 
+    // Map type to Type parameter
     if (filter.type && filter.type !== 'ALL') {
-      params = params.set('type', filter.type);
+      params = params.set('Type', filter.type);
     }
 
+    // Map date filters to StartDate and EndDate
     if (filter.dateFrom) {
-      params = params.set('dateFrom', filter.dateFrom.toISOString());
+      params = params.set('StartDate', filter.dateFrom.toISOString());
     }
 
     if (filter.dateTo) {
-      params = params.set('dateTo', filter.dateTo.toISOString());
+      params = params.set('EndDate', filter.dateTo.toISOString());
     }
 
     return this.http
-      .get<AuthorizedFileTransfer[]>(
-        `${this.API_BASE_URL}/api/Authorization/search`,
+      .get<PaginatedAuthorizationResponse>(
+        `${this.API_BASE_URL}/api/Authorization`,
         { params }
       )
       .pipe(
+        map((response) => response.records),
         catchError((error) => {
           console.error('Error searching transfers from API:', error);
           // Fallback to local filtering
@@ -274,8 +292,33 @@ export class AuthorizedFileTransferService {
 
   // Get all authorized payments using the API
   getAuthorizedPayments(): Observable<AuthorizedFileTransfer[]> {
-    // Use the existing getAllTransfersByType method or create a specific endpoint
-    return this.getAllTransfersByType();
+    // Use the main endpoint with a large page size to get all records
+    return this.getAllTransfers(1, 1000).pipe(
+      map((response) => response.records)
+    );
+  }
+
+  // Convenience method to search transfers with all available parameters
+  searchTransfersWithParams(
+    pageNumber: number = 1,
+    pageSize: number = 10,
+    searchParams: {
+      id?: string;
+      startDate?: Date;
+      endDate?: Date;
+      payee?: string;
+      type?: string;
+    } = {}
+  ): Observable<PaginatedAuthorizationResponse> {
+    return this.getAllTransfers(
+      pageNumber,
+      pageSize,
+      searchParams.id,
+      searchParams.startDate,
+      searchParams.endDate,
+      searchParams.payee,
+      searchParams.type
+    );
   }
 
   updateTransfer(

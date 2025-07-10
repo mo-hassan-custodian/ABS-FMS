@@ -23,6 +23,7 @@ export class AuthorizedFileTransferViewComponent implements OnInit, OnDestroy {
 
   // Bank account selection
   selectedBankAccount: BankAccount | null = null;
+  isBankAccountValid = false;
 
   // Modal states
   showAuthorizationModal = false;
@@ -95,7 +96,13 @@ export class AuthorizedFileTransferViewComponent implements OnInit, OnDestroy {
 
   onBankAccountCleared(): void {
     this.selectedBankAccount = null;
+    this.isBankAccountValid = false;
     console.log('Bank account selection cleared');
+  }
+
+  onBankAccountValidationChanged(isValid: boolean): void {
+    this.isBankAccountValid = isValid;
+    console.log('Bank account validation state changed:', isValid);
   }
 
   // Change bank account action
@@ -117,6 +124,14 @@ export class AuthorizedFileTransferViewComponent implements OnInit, OnDestroy {
   authorizePayment(): void {
     if (!this.selectedBankAccount) {
       this.toastr.warning('Please select a bank account first', 'Warning');
+      return;
+    }
+
+    if (!this.isBankAccountValid) {
+      this.toastr.warning(
+        'Please select a valid bank account with 10 digits',
+        'Warning'
+      );
       return;
     }
 

@@ -46,16 +46,19 @@
             <span class="bank-name">{{ account.bankName }}</span>
             <span class="separator">•</span>
             <span class="account-number">{{ account.accountNumber }}</span>
-            <span class="separator">•</span>
-            <span class="account-type">{{ account.accountType }}</span>
+            <span class="separator" *ngIf="account.accountType">•</span>
+            <span class="account-type" *ngIf="account.accountType">{{ account.accountType }}</span>
           </div>
         </div>
       </mat-option>
     </mat-autocomplete>
 
-    <!-- Error message -->
+    <!-- Error messages -->
     <mat-error *ngIf="required && !selectedAccount && searchControl.touched">
       {{ label }} is required
+    </mat-error>
+    <mat-error *ngIf="selectedAccount && !isValidAccount">
+      {{ validationErrorMessage }}
     </mat-error>
   </mat-form-field>
 </div>

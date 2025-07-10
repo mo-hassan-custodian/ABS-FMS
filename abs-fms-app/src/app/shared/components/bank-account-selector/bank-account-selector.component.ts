@@ -56,6 +56,7 @@ export class BankAccountSelectorComponent
   @Output() accountSelected = new EventEmitter<BankAccount>();
   @Output() accountCleared = new EventEmitter<void>();
   @Output() searchChanged = new EventEmitter<string>();
+  @Output() validationStateChanged = new EventEmitter<boolean>();
 
   // Form control for the autocomplete
   searchControl = new FormControl<string | BankAccount | null>('');
@@ -65,6 +66,10 @@ export class BankAccountSelectorComponent
   filteredBankAccounts: Observable<BankAccount[]>;
   selectedAccount: BankAccount | null = null;
   isLoading = false;
+
+  // Validation properties
+  isValidAccount = true;
+  validationErrorMessage = '';
 
   // ControlValueAccessor properties
   private onChange = (_value: any) => {};
@@ -128,6 +133,9 @@ export class BankAccountSelectorComponent
         // Emit search change event
         this.searchChanged.emit(filterValue);
 
+        // Validate the typed text for account number format
+        this.validateTypedText(filterValue);
+
         // If user is typing and it doesn't match selected account, clear selection
         if (
           typeof value === 'string' &&
@@ -135,11 +143,11 @@ export class BankAccountSelectorComponent
           value.trim().length > 0
         ) {
           const displayText = this.displayAccountName(this.selectedAccount);
-          if (
-            value !== displayText &&
-            !displayText.toLowerCase().includes(value.toLowerCase())
-          ) {
-            this.clearSelection();
+          if (value !== displayText) {
+            // User has modified the text, clear the selected account but keep the text
+            this.selectedAccount = null;
+            this.onChange(null);
+            this.accountCleared.emit();
           }
         }
 
@@ -159,6 +167,7 @@ export class BankAccountSelectorComponent
         account.name.toLowerCase().includes(searchTerm) ||
         account.accountNumber.includes(searchTerm) ||
         account.bankName.toLowerCase().includes(searchTerm) ||
+        account.accountName?.toLowerCase().includes(searchTerm) ||
         account.bankBranch?.toLowerCase().includes(searchTerm) ||
         (account.description &&
           account.description.toLowerCase().includes(searchTerm))
@@ -168,6 +177,10 @@ export class BankAccountSelectorComponent
   onAccountSelected(account: BankAccount): void {
     this.selectedAccount = account;
     this.searchControl.setValue(account, { emitEvent: false });
+
+    // Validate the selected account
+    this.validateAccount(account);
+
     this.onChange(account);
     this.onTouched();
     this.accountSelected.emit(account);
@@ -176,6 +189,10 @@ export class BankAccountSelectorComponent
   clearSelection(): void {
     this.selectedAccount = null;
     this.searchControl.setValue('', { emitEvent: false });
+
+    // Reset validation state
+    this.resetValidation();
+
     this.onChange(null);
     this.onTouched();
     this.accountCleared.emit();
@@ -206,7 +223,11 @@ export class BankAccountSelectorComponent
     if (this.showDescription && account.description) {
       subText = account.description;
     } else {
-      subText = `${account.accountType} • ${account.bankBranch}`;
+      // Build subtext from available fields
+      const parts = [];
+      if (account.accountType) parts.push(account.accountType);
+      if (account.bankBranch) parts.push(account.bankBranch);
+      subText = parts.join(' • ') || account.accountName || '';
     }
 
     if (this.showBalance && account.balance !== undefined && account.currency) {
@@ -262,5 +283,85 @@ export class BankAccountSelectorComponent
     } else {
       this.searchControl.enable();
     }
+  }
+
+  // Validation methods
+  private validateAccount(account: BankAccount): void {
+    if (!account || !account.accountNumber) {
+      this.setValidationState(false, 'Invalid account selected');
+      return;
+    }
+
+    // Check if account number has exactly 10 digits
+    const accountNumber = account.accountNumber.replace(/\D/g, ''); // Remove non-digits
+    if (accountNumber.length !== 10) {
+      this.setValidationState(
+        false,
+        `Account number must be exactly 10 digits. Current: ${accountNumber.length} digits`
+      );
+      return;
+    }
+
+    this.setValidationState(true, '');
+  }
+
+  private validateTypedText(text: string): void {
+    if (!text || text.trim().length === 0) {
+      // If field is empty, reset validation to neutral state
+      this.resetValidation();
+      return;
+    }
+
+    // Check if the text matches the expected format: "Bank Name - AccountNumber"
+    const accountNumberMatch = text.match(/.*-\s*(\d+)$/);
+
+    if (accountNumberMatch) {
+      const accountNumber = accountNumberMatch[1];
+
+      if (accountNumber.length !== 10) {
+        this.setValidationState(
+          false,
+          `Account number must be exactly 10 digits. Current: ${accountNumber.length} digits`
+        );
+        return;
+      }
+
+      // If we have exactly 10 digits, check if it matches a valid account
+      const matchingAccount = this.allBankAccounts.find(
+        (account) => account.accountNumber === accountNumber
+      );
+
+      if (matchingAccount) {
+        this.setValidationState(true, '');
+      } else {
+        this.setValidationState(false, 'Account number not found in system');
+      }
+    } else {
+      // If text doesn't match expected format, show validation error
+      if (text.includes('-')) {
+        this.setValidationState(
+          false,
+          'Invalid account format. Expected: Bank Name - Account Number'
+        );
+      } else {
+        // User is still typing, don't show error yet
+        this.resetValidation();
+      }
+    }
+  }
+
+  private resetValidation(): void {
+    this.setValidationState(true, '');
+  }
+
+  private setValidationState(isValid: boolean, errorMessage: string): void {
+    this.isValidAccount = isValid;
+    this.validationErrorMessage = errorMessage;
+    this.validationStateChanged.emit(isValid);
+  }
+
+  // Public getter for validation state
+  get isAccountValid(): boolean {
+    return this.isValidAccount && this.selectedAccount !== null;
   }
 }

@@ -102,43 +102,8 @@ export class AuthorizedFileTransferComponent implements OnInit, OnDestroy {
       : undefined;
     const dateTo = formValue.dateTo ? new Date(formValue.dateTo) : undefined;
 
-    // Determine which API method to use based on search criteria
-    if (type && !searchTerm && !dateFrom && !dateTo) {
-      // Use getAllTransfersByType if only type filter is applied
-      this.searchByTypeOnly(type);
-    } else {
-      // Use getAllTransfers with all search parameters
-      this.searchWithAllParameters(searchTerm, type, dateFrom, dateTo);
-    }
-  }
-
-  private searchByTypeOnly(type: string): void {
-    this.transferService
-      .getAllTransfersByType(type)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (transfers) => {
-          this.searchResults.data = transfers;
-          this.isLoading = false;
-
-          if (transfers.length === 0) {
-            this.toastr.info(
-              `No transfers found for type "${type}"`,
-              'Search Results'
-            );
-          } else {
-            this.toastr.success(
-              `Found ${transfers.length} payment(s) of type "${type}"`,
-              'Search Results'
-            );
-          }
-        },
-        error: (error) => {
-          console.error('Error searching transfers by type:', error);
-          this.toastr.error('Error searching payments', 'Error');
-          this.isLoading = false;
-        },
-      });
+    // Use the unified getAllTransfers method with all search parameters including Type
+    this.searchWithAllParameters(searchTerm, type, dateFrom, dateTo);
   }
 
   private searchWithAllParameters(
@@ -148,16 +113,12 @@ export class AuthorizedFileTransferComponent implements OnInit, OnDestroy {
     dateTo?: Date
   ): void {
     this.transferService
-      .getAllTransfers(1, 100, undefined, dateFrom, dateTo, payee) // Use larger page size for search
+      .getAllTransfers(1, 100, undefined, dateFrom, dateTo, payee, type) // Now includes type parameter
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: PaginatedAuthorizationResponse) => {
-          let filtered = response.records;
-
-          // Apply type filter if specified (since API might not filter by type in getAllTransfers)
-          if (type) {
-            filtered = filtered.filter((transfer) => transfer.type === type);
-          }
+          // No need to filter by type anymore since the API now handles it
+          const filtered = response.records;
 
           this.searchResults.data = filtered;
           this.isLoading = false;
