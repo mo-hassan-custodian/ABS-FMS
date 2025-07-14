@@ -11,9 +11,10 @@ import { Payee, PayeeCreateRequest } from '../../../../../models/payee.model';
 import { PayeeService } from '../../../../../services/payee.service';
 
 @Component({
-  selector: 'app-create-payee',
-  templateUrl: './create-payee.component.html',
-  styleUrls: ['./create-payee.component.css']
+    selector: 'app-create-payee',
+    templateUrl: './create-payee.component.html',
+    styleUrls: ['./create-payee.component.css'],
+    standalone: false
 })
 export class CreatePayeeComponent implements OnInit, OnDestroy {
   @ViewChild(MatPaginator) paginator!: MatPaginator;

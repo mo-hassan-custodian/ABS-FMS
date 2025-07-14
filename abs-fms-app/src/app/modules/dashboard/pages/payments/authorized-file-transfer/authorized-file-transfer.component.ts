@@ -13,9 +13,10 @@ import {
 import { AuthorizedFileTransferService } from '../../../../../services/authorized-file-transfer.service';
 
 @Component({
-  selector: 'app-authorized-file-transfer',
-  templateUrl: './authorized-file-transfer.component.html',
-  styleUrl: './authorized-file-transfer.component.css',
+    selector: 'app-authorized-file-transfer',
+    templateUrl: './authorized-file-transfer.component.html',
+    styleUrl: './authorized-file-transfer.component.css',
+    standalone: false
 })
 export class AuthorizedFileTransferComponent implements OnInit, OnDestroy {
   // Form and data

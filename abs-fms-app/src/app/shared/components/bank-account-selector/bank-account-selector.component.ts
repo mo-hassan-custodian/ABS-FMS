@@ -25,16 +25,17 @@ import {
 import { BankAccountService } from '../../../services/bank-account.service';
 
 @Component({
-  selector: 'app-bank-account-selector',
-  templateUrl: './bank-account-selector.component.html',
-  styleUrls: ['./bank-account-selector.component.css'],
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => BankAccountSelectorComponent),
-      multi: true,
-    },
-  ],
+    selector: 'app-bank-account-selector',
+    templateUrl: './bank-account-selector.component.html',
+    styleUrls: ['./bank-account-selector.component.css'],
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => BankAccountSelectorComponent),
+            multi: true,
+        },
+    ],
+    standalone: false
 })
 export class BankAccountSelectorComponent
   implements OnInit, OnDestroy, ControlValueAccessor

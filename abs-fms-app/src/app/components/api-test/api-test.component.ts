@@ -6,8 +6,8 @@ import { BankAccount } from '../../models/bank-account.model';
 import { environment } from '../../../environments/environment';
 
 @Component({
-  selector: 'app-api-test',
-  template: `
+    selector: 'app-api-test',
+    template: `
     <div class="api-test-container">
       <h2>API Connection Test</h2>
 
@@ -120,8 +120,8 @@ import { environment } from '../../../environments/environment';
       </div>
     </div>
   `,
-  styles: [
-    `
+    styles: [
+        `
       .api-test-container {
         padding: 20px;
         max-width: 800px;
@@ -213,7 +213,8 @@ import { environment } from '../../../environments/environment';
         font-family: monospace;
       }
     `,
-  ],
+    ],
+    standalone: false
 })
 export class ApiTestComponent implements OnInit {
   transfers: AuthorizedFileTransfer[] = [];

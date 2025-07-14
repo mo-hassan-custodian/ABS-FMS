@@ -12,9 +12,10 @@ import { AuthorizedFileTransferService } from '../../../../../services/authorize
 import { BankAccount } from '../../../../../models/bank-account.model';
 
 @Component({
-  selector: 'app-authorized-file-transfer-view',
-  templateUrl: './authorized-file-transfer-view.component.html',
-  styleUrl: './authorized-file-transfer-view.component.css',
+    selector: 'app-authorized-file-transfer-view',
+    templateUrl: './authorized-file-transfer-view.component.html',
+    styleUrl: './authorized-file-transfer-view.component.css',
+    standalone: false
 })
 export class AuthorizedFileTransferViewComponent implements OnInit, OnDestroy {
   transfer: AuthorizedFileTransfer | null = null;

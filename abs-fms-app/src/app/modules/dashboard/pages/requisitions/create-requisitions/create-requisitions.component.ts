@@ -11,9 +11,10 @@ import { Payee } from '../../../../../models/payee.model';
 import { BANK_ACCOUNTS, BANK_BRANCHES, CREATED_FROM_OPTIONS, CURRENCIES, PAYEE_TYPES, PAYMENT_OPTIONS } from '../../../../../constants/requisition.constants';
 
 @Component({
-  selector: 'app-create-requisitions',
-  templateUrl: './create-requisitions.component.html',
-  styleUrl: './create-requisitions.component.css'
+    selector: 'app-create-requisitions',
+    templateUrl: './create-requisitions.component.html',
+    styleUrl: './create-requisitions.component.css',
+    standalone: false
 })
 export class CreateRequisitionsComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();

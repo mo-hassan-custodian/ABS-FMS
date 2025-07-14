@@ -4,9 +4,10 @@ import MenuIcon from '../../models/menu-icon';
 import { MenuService } from '../../services/dashboard-service/menu/menu.service';
 
 @Component({
-  selector: 'app-layout',
-  templateUrl: './layout.component.html',
-  styleUrls: ['./layout.component.css']
+    selector: 'app-layout',
+    templateUrl: './layout.component.html',
+    styleUrls: ['./layout.component.css'],
+    standalone: false
 })
 export class LayoutComponent implements OnInit {
   @ViewChild('drawer') drawer!: MatDrawer;

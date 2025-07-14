@@ -9,9 +9,10 @@ import { RequisitionService } from '../../../../../services/requisition.service'
 import { CURRENCIES, PAYEE_TYPES, PAYMENT_OPTIONS } from '../../../../../constants/requisition.constants';
 
 @Component({
-  selector: 'app-manage-requisitions',
-  templateUrl: './manage-requisitions.component.html',
-  styleUrls: ['./manage-requisitions.component.css']
+    selector: 'app-manage-requisitions',
+    templateUrl: './manage-requisitions.component.html',
+    styleUrls: ['./manage-requisitions.component.css'],
+    standalone: false
 })
 export class ManageRequisitionsComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
