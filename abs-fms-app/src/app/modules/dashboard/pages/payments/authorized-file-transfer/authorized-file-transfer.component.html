@@ -12,40 +12,42 @@
     <form [formGroup]="searchForm" class="search-form">
       <div class="search-row">
 
-         <!-- Type Filter -->
+        <!-- Type Filter -->
         <mat-form-field appearance="outline" class="filter-field">
           <mat-label>Type</mat-label>
           <mat-select formControlName="type">
-            <mat-option *ngFor="let option of typeOptions" [value]="option.value">
-              {{ option.label }}
-            </mat-option>
+            @for (option of typeOptions; track option) {
+              <mat-option [value]="option.value">
+                {{ option.label }}
+              </mat-option>
+            }
           </mat-select>
         </mat-form-field>
 
         <!-- Date Range Row -->
-      <div class="date-row">
-        <mat-form-field appearance="outline" class="date-field">
-          <mat-label>Date From</mat-label>
-          <input matInput [matDatepicker]="dateFromPicker" formControlName="dateFrom">
-          <mat-datepicker-toggle matSuffix [for]="dateFromPicker"></mat-datepicker-toggle>
-          <mat-datepicker #dateFromPicker></mat-datepicker>
-        </mat-form-field>
+        <div class="date-row">
+          <mat-form-field appearance="outline" class="date-field">
+            <mat-label>Date From</mat-label>
+            <input matInput [matDatepicker]="dateFromPicker" formControlName="dateFrom">
+            <mat-datepicker-toggle matSuffix [for]="dateFromPicker"></mat-datepicker-toggle>
+            <mat-datepicker #dateFromPicker></mat-datepicker>
+          </mat-form-field>
 
-        <mat-form-field appearance="outline" class="date-field">
-          <mat-label>Date To</mat-label>
-          <input matInput [matDatepicker]="dateToPicker" formControlName="dateTo">
-          <mat-datepicker-toggle matSuffix [for]="dateToPicker"></mat-datepicker-toggle>
-          <mat-datepicker #dateToPicker></mat-datepicker>
-        </mat-form-field>
-      </div>
+          <mat-form-field appearance="outline" class="date-field">
+            <mat-label>Date To</mat-label>
+            <input matInput [matDatepicker]="dateToPicker" formControlName="dateTo">
+            <mat-datepicker-toggle matSuffix [for]="dateToPicker"></mat-datepicker-toggle>
+            <mat-datepicker #dateToPicker></mat-datepicker>
+          </mat-form-field>
+        </div>
 
 
         <!-- Search Input -->
         <mat-form-field appearance="outline" class="search-field">
           <mat-label>Payee Name</mat-label>
           <input matInput formControlName="searchTerm"
-                 placeholder="Enter payee name to search"
-                 (keyup.enter)="performSearch()">
+            placeholder="Enter payee name to search"
+            (keyup.enter)="performSearch()">
         </mat-form-field>
 
         <!-- Search Button -->
@@ -61,91 +63,88 @@
   </div>
 
   <!-- Loading Spinner -->
-  <div *ngIf="isLoading" class="loading-container">
-    <mat-spinner diameter="50"></mat-spinner>
-    <p>Searching payments...</p>
-  </div>
+  @if (isLoading) {
+    <div class="loading-container">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Searching payments...</p>
+    </div>
+  }
 
   <!-- Search Results Section -->
-  <div *ngIf="searchResults.data.length > 0 && !isLoading" class="search-results-section">
-    <!-- <h3>Search Results</h3> -->
-    <div class="table-container">
-      <table mat-table [dataSource]="searchResults" class="search-results-table">
-
-        <!-- Voucher Reference Column -->
-        <ng-container matColumnDef="voucherNoRef">
-          <th mat-header-cell *matHeaderCellDef>Voucher No/Ref</th>
-          <td mat-cell *matCellDef="let transfer">{{ transfer.voucherNoRef }}</td>
-        </ng-container>
-
-        <!-- Type Column -->
-        <ng-container matColumnDef="type">
-          <th mat-header-cell *matHeaderCellDef>Type</th>
-          <td mat-cell *matCellDef="let transfer">
-            <span class="type-badge type-{{ transfer.type.toLowerCase() }}">
-              {{ getTypeLabel(transfer.type) }}
-            </span>
-          </td>
-        </ng-container>
-
-        <!-- Payee Column -->
-        <ng-container matColumnDef="payee">
-          <th mat-header-cell *matHeaderCellDef>Payee</th>
-          <td mat-cell *matCellDef="let transfer">{{ transfer.payee || 'N/A' }}</td>
-        </ng-container>
-
-        <!-- Narrative Column -->
-        <ng-container matColumnDef="narrative">
-          <th mat-header-cell *matHeaderCellDef>Narrative</th>
-          <td mat-cell *matCellDef="let transfer" class="narrative-cell">
-            {{ transfer.narrative.length > 40 ? (transfer.narrative | slice:0:40) + '...' : transfer.narrative }}
-          </td>
-        </ng-container>
-
-        <!-- Amount Column -->
-        <ng-container matColumnDef="amount">
-          <th mat-header-cell *matHeaderCellDef class="amount-header">Amount</th>
-          <td mat-cell *matCellDef="let transfer" class="amount-cell">
-            {{ formatCurrency(transfer.amountPayee, transfer.currencyCode) }}
-          </td>
-        </ng-container>
-
-        <!-- Date Column -->
-        <ng-container matColumnDef="date">
-          <th mat-header-cell *matHeaderCellDef>Date</th>
-          <td mat-cell *matCellDef="let transfer">{{ transfer.date | date:'dd/MM/yyyy' }}</td>
-        </ng-container>
-
-        <!-- Actions Column -->
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef>Actions</th>
-          <td mat-cell *matCellDef="let transfer">
-            <button mat-icon-button color="primary" (click)="viewTransfer(transfer)" matTooltip="View Details">
-              <mat-icon>visibility</mat-icon>
-            </button>
-          </td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="viewTransfer(row)" class="clickable-row"></tr>
-      </table>
-
-      <!-- Pagination -->
-      <mat-paginator #paginator
-                     [length]="searchResults.data.length"
-                     [pageSize]="10"
-                     [pageSizeOptions]="[5, 10, 25, 50]"
-                     [showFirstLastButtons]="true"
-                     aria-label="Select page">
-      </mat-paginator>
+  @if (searchResults.data.length > 0 && !isLoading) {
+    <div class="search-results-section">
+      <!-- <h3>Search Results</h3> -->
+      <div class="table-container">
+        <table mat-table [dataSource]="searchResults" class="search-results-table">
+          <!-- Voucher Reference Column -->
+          <ng-container matColumnDef="voucherNoRef">
+            <th mat-header-cell *matHeaderCellDef>Voucher No/Ref</th>
+            <td mat-cell *matCellDef="let transfer">{{ transfer.voucherNoRef }}</td>
+          </ng-container>
+          <!-- Type Column -->
+          <ng-container matColumnDef="type">
+            <th mat-header-cell *matHeaderCellDef>Type</th>
+            <td mat-cell *matCellDef="let transfer">
+              <span class="type-badge type-{{ transfer.type.toLowerCase() }}">
+                {{ getTypeLabel(transfer.type) }}
+              </span>
+            </td>
+          </ng-container>
+          <!-- Payee Column -->
+          <ng-container matColumnDef="payee">
+            <th mat-header-cell *matHeaderCellDef>Payee</th>
+            <td mat-cell *matCellDef="let transfer">{{ transfer.payee || 'N/A' }}</td>
+          </ng-container>
+          <!-- Narrative Column -->
+          <ng-container matColumnDef="narrative">
+            <th mat-header-cell *matHeaderCellDef>Narrative</th>
+            <td mat-cell *matCellDef="let transfer" class="narrative-cell">
+              {{ transfer.narrative.length > 40 ? (transfer.narrative | slice:0:40) + '...' : transfer.narrative }}
+            </td>
+          </ng-container>
+          <!-- Amount Column -->
+          <ng-container matColumnDef="amount">
+            <th mat-header-cell *matHeaderCellDef class="amount-header">Amount</th>
+            <td mat-cell *matCellDef="let transfer" class="amount-cell">
+              {{ formatCurrency(transfer.amountPayee, transfer.currencyCode) }}
+            </td>
+          </ng-container>
+          <!-- Date Column -->
+          <ng-container matColumnDef="date">
+            <th mat-header-cell *matHeaderCellDef>Date</th>
+            <td mat-cell *matCellDef="let transfer">{{ transfer.date | date:'dd/MM/yyyy' }}</td>
+          </ng-container>
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let transfer">
+              <button mat-icon-button color="primary" (click)="viewTransfer(transfer)" matTooltip="View Details">
+                <mat-icon>visibility</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="viewTransfer(row)" class="clickable-row"></tr>
+        </table>
+        <!-- Pagination -->
+        <mat-paginator #paginator
+          [length]="searchResults.data.length"
+          [pageSize]="10"
+          [pageSizeOptions]="[5, 10, 25, 50]"
+          [showFirstLastButtons]="true"
+          aria-label="Select page">
+        </mat-paginator>
+      </div>
     </div>
-  </div>
+  }
 
   <!-- No Results Message -->
-  <div *ngIf="searchPerformed && searchResults.data.length === 0 && !isLoading" class="no-results-message">
-    <mat-icon>search_off</mat-icon>
-    <h3>No Results Found</h3>
-    <p>No payments found matching your search criteria. Please try different filters or search terms.</p>
-  </div>
+  @if (searchPerformed && searchResults.data.length === 0 && !isLoading) {
+    <div class="no-results-message">
+      <mat-icon>search_off</mat-icon>
+      <h3>No Results Found</h3>
+      <p>No payments found matching your search criteria. Please try different filters or search terms.</p>
+    </div>
+  }
 
 </div>

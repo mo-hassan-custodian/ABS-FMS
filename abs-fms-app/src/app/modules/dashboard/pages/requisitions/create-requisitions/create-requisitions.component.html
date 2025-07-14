@@ -1,5 +1,5 @@
 <div class="create-requisitions-container ">
-   <!-- Header with Action Buttons -->
+  <!-- Header with Action Buttons -->
   <div class="header-section">
     <div class="title-section">
       <h2>Create Requisitions</h2>
@@ -13,49 +13,65 @@
         <mat-label>Payee *</mat-label>
         <input matInput formControlName="payee" placeholder="Search or select payee"
           [matAutocomplete]="payeeAutocomplete" (blur)="onPayeeChange(); onRequisitionPayeeNameChange()">
-        <button matSuffix mat-icon-button type="button" class="payee-clear-button" *ngIf="selectedPayee"
-          (click)="clearPayeeInformation()" matTooltip="Clear selected payee">
-          <mat-icon>clear</mat-icon>
-        </button>
+        @if (selectedPayee) {
+          <button matSuffix mat-icon-button type="button" class="payee-clear-button"
+            (click)="clearPayeeInformation()" matTooltip="Clear selected payee">
+            <mat-icon>clear</mat-icon>
+          </button>
+        }
         <mat-autocomplete #payeeAutocomplete="matAutocomplete" [displayWith]="displayPayeeName"
           (optionSelected)="onPayeeSelected($event.option.value)">
-          <mat-option *ngFor="let payee of filteredPayees | async" [value]="payee">
-            <div class="payee-option">
-              <div class="payee-name">{{payee.name}}</div>
-              <div class="payee-details">{{payee.pinNo}} | {{payee.bankName}}</div>
-            </div>
-          </mat-option>
+          @for (payee of filteredPayees | async; track payee) {
+            <mat-option [value]="payee">
+              <div class="payee-option">
+                <div class="payee-name">{{payee.name}}</div>
+                <div class="payee-details">{{payee.pinNo}} | {{payee.bankName}}</div>
+              </div>
+            </mat-option>
+          }
         </mat-autocomplete>
-        <mat-hint *ngIf="!selectedPayee">Search by name, PIN, or bank name</mat-hint>
-        <mat-hint *ngIf="selectedPayee" class="auto-populated-hint">
-          <mat-icon>check_circle</mat-icon>
-          Payee selected - information auto-populated
-        </mat-hint>
-        <mat-error *ngIf="hasError('payee')">
-          {{ getErrorMessage('payee') }}
-        </mat-error>
+        @if (!selectedPayee) {
+          <mat-hint>Search by name, PIN, or bank name</mat-hint>
+        }
+        @if (selectedPayee) {
+          <mat-hint class="auto-populated-hint">
+            <mat-icon>check_circle</mat-icon>
+            Payee selected - information auto-populated
+          </mat-hint>
+        }
+        @if (hasError('payee')) {
+          <mat-error>
+            {{ getErrorMessage('payee') }}
+          </mat-error>
+        }
       </mat-form-field>
     </div>
     <div class="form-row">
       <mat-form-field appearance="outline" class="half-width">
         <mat-label>Code</mat-label>
         <input matInput formControlName="code" placeholder="Enter requisition code">
-        <mat-error *ngIf="hasError('code')">
-          {{ getErrorMessage('code') }}
-        </mat-error>
+        @if (hasError('code')) {
+          <mat-error>
+            {{ getErrorMessage('code') }}
+          </mat-error>
+        }
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="half-width"
         [class.auto-populated]="requisitionForm.get('chequePayee')?.disabled">
         <mat-label>Input Cheque Payee</mat-label>
         <input matInput formControlName="chequePayee" placeholder="Enter payee name">
-        <mat-hint *ngIf="requisitionForm.get('chequePayee')?.disabled" class="auto-populated-hint">
-          <mat-icon>info</mat-icon>
-          Auto-populated from selected payee
-        </mat-hint>
-        <mat-error *ngIf="hasError('chequePayee')">
-          {{ getErrorMessage('chequePayee') }}
-        </mat-error>
+        @if (requisitionForm.get('chequePayee')?.disabled) {
+          <mat-hint class="auto-populated-hint">
+            <mat-icon>info</mat-icon>
+            Auto-populated from selected payee
+          </mat-hint>
+        }
+        @if (hasError('chequePayee')) {
+          <mat-error>
+            {{ getErrorMessage('chequePayee') }}
+          </mat-error>
+        }
       </mat-form-field>
     </div>
 
@@ -65,26 +81,36 @@
         <mat-label>Payee Bank Branch</mat-label>
         <mat-select formControlName="payeeBankBranch">
           <mat-option value="">-- Select Bank Branch --</mat-option>
-          <mat-option *ngFor="let branch of bankBranches;" [value]="branch.value">
-            {{branch.name}}
-          </mat-option>
+          @for (branch of bankBranches; track branch) {
+            <mat-option [value]="branch.value">
+              {{branch.name}}
+            </mat-option>
+          }
         </mat-select>
-        <mat-hint *ngIf="!requisitionForm.get('payeeBankBranch')?.disabled">Select the bank branch</mat-hint>
-        <mat-hint *ngIf="requisitionForm.get('payeeBankBranch')?.disabled" class="auto-populated-hint">
-          <mat-icon>info</mat-icon>
-          Auto-populated from selected payee
-        </mat-hint>
+        @if (!requisitionForm.get('payeeBankBranch')?.disabled) {
+          <mat-hint>Select the bank branch</mat-hint>
+        }
+        @if (requisitionForm.get('payeeBankBranch')?.disabled) {
+          <mat-hint class="auto-populated-hint">
+            <mat-icon>info</mat-icon>
+            Auto-populated from selected payee
+          </mat-hint>
+        }
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="half-width"
         [class.auto-populated]="requisitionForm.get('payeeAccountNo')?.disabled">
         <mat-label>Payee Account No</mat-label>
         <input matInput formControlName="payeeAccountNo" placeholder="Enter account number">
-        <mat-hint *ngIf="!requisitionForm.get('payeeAccountNo')?.disabled">Enter the account number</mat-hint>
-        <mat-hint *ngIf="requisitionForm.get('payeeAccountNo')?.disabled" class="auto-populated-hint">
-          <mat-icon>info</mat-icon>
-          Auto-populated from selected payee
-        </mat-hint>
+        @if (!requisitionForm.get('payeeAccountNo')?.disabled) {
+          <mat-hint>Enter the account number</mat-hint>
+        }
+        @if (requisitionForm.get('payeeAccountNo')?.disabled) {
+          <mat-hint class="auto-populated-hint">
+            <mat-icon>info</mat-icon>
+            Auto-populated from selected payee
+          </mat-hint>
+        }
       </mat-form-field>
     </div>
 
@@ -99,9 +125,11 @@
       <mat-form-field appearance="outline" class="half-width">
         <mat-label>Invoice No</mat-label>
         <input matInput formControlName="invoiceNo" placeholder="Enter invoice number">
-        <mat-error *ngIf="hasError('invoiceNo')">
-          {{ getErrorMessage('invoiceNo') }}
-        </mat-error>
+        @if (hasError('invoiceNo')) {
+          <mat-error>
+            {{ getErrorMessage('invoiceNo') }}
+          </mat-error>
+        }
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="half-width">
@@ -111,9 +139,11 @@
         <mat-datepicker-toggle matSuffix [for]="invoicePicker"></mat-datepicker-toggle>
         <mat-datepicker #invoicePicker [startAt]="getTodayDate()"></mat-datepicker>
         <mat-hint>Invoice date can't be a future date</mat-hint>
-        <mat-error *ngIf="hasError('invoiceDate')">
-          {{ getErrorMessage('invoiceDate') }}
-        </mat-error>
+        @if (hasError('invoiceDate')) {
+          <mat-error>
+            {{ getErrorMessage('invoiceDate') }}
+          </mat-error>
+        }
       </mat-form-field>
     </div>
 
@@ -121,22 +151,28 @@
       <mat-form-field appearance="outline" class="half-width">
         <mat-label>Amount</mat-label>
         <input matInput type="number" formControlName="amount" placeholder="0.00" min="0" step="0.01">
-        <mat-error *ngIf="hasError('amount')">
-          {{ getErrorMessage('amount') }}
-        </mat-error>
+        @if (hasError('amount')) {
+          <mat-error>
+            {{ getErrorMessage('amount') }}
+          </mat-error>
+        }
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="half-width">
         <mat-label>Currency </mat-label>
         <mat-select formControlName="currency">
-          <mat-option *ngFor="let currency of currencies" [value]="currency.value">
-            {{ currency.symbol }} - {{ currency.name }}
-          </mat-option>
+          @for (currency of currencies; track currency) {
+            <mat-option [value]="currency.value">
+              {{ currency.symbol }} - {{ currency.name }}
+            </mat-option>
+          }
         </mat-select>
         <mat-hint>Default: Nigerian Naira (₦)</mat-hint>
-        <mat-error *ngIf="hasError('currency')">
-          {{ getErrorMessage('currency') }}
-        </mat-error>
+        @if (hasError('currency')) {
+          <mat-error>
+            {{ getErrorMessage('currency') }}
+          </mat-error>
+        }
       </mat-form-field>
     </div>
 
@@ -145,14 +181,18 @@
         <mat-label>Bank Account *</mat-label>
         <mat-select formControlName="bankAccount">
           <mat-option value="">-- Select Bank Account --</mat-option>
-          <mat-option *ngFor="let account of bankAccounts" [value]="account.value">
-            {{ account.name }}
-          </mat-option>
+          @for (account of bankAccounts; track account) {
+            <mat-option [value]="account.value">
+              {{ account.name }}
+            </mat-option>
+          }
         </mat-select>
         <mat-hint>Choose the account to debit</mat-hint>
-        <mat-error *ngIf="hasError('bankAccount')">
-          {{ getErrorMessage('bankAccount') }}
-        </mat-error>
+        @if (hasError('bankAccount')) {
+          <mat-error>
+            {{ getErrorMessage('bankAccount') }}
+          </mat-error>
+        }
       </mat-form-field>
     </div>
 
@@ -161,14 +201,18 @@
         <mat-label>Type *</mat-label>
         <mat-select formControlName="type">
           <mat-option value="">-- Select Payee Type --</mat-option>
-          <mat-option *ngFor="let type of payeeTypes" [value]="type.value">
-            {{ type.name }}
-          </mat-option>
+          @for (type of payeeTypes; track type) {
+            <mat-option [value]="type.value">
+              {{ type.name }}
+            </mat-option>
+          }
         </mat-select>
         <mat-hint>Select the category of payee</mat-hint>
-        <mat-error *ngIf="hasError('type')">
-          {{ getErrorMessage('type') }}
-        </mat-error>
+        @if (hasError('type')) {
+          <mat-error>
+            {{ getErrorMessage('type') }}
+          </mat-error>
+        }
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="half-width">
@@ -176,25 +220,33 @@
         <mat-select formControlName="paymentOption">
           <mat-option value="">-- Select Payment Method --</mat-option>
           <mat-optgroup label="Electronic Transfers">
-            <mat-option *ngFor="let option of paymentOptions.slice(0, 3)" [value]="option.value">
-              {{ option.name }}
-            </mat-option>
+            @for (option of paymentOptions.slice(0, 3); track option) {
+              <mat-option [value]="option.value">
+                {{ option.name }}
+              </mat-option>
+            }
           </mat-optgroup>
           <mat-optgroup label="Traditional Methods">
-            <mat-option *ngFor="let option of paymentOptions.slice(3, 7)" [value]="option.value">
-              {{ option.name }}
-            </mat-option>
+            @for (option of paymentOptions.slice(3, 7); track option) {
+              <mat-option [value]="option.value">
+                {{ option.name }}
+              </mat-option>
+            }
           </mat-optgroup>
           <mat-optgroup label="Digital & Mobile">
-            <mat-option *ngFor="let option of paymentOptions.slice(7)" [value]="option.value">
-              {{ option.name }}
-            </mat-option>
+            @for (option of paymentOptions.slice(7); track option) {
+              <mat-option [value]="option.value">
+                {{ option.name }}
+              </mat-option>
+            }
           </mat-optgroup>
         </mat-select>
         <mat-hint>Choose the payment method</mat-hint>
-        <mat-error *ngIf="hasError('paymentOption')">
-          {{ getErrorMessage('paymentOption') }}
-        </mat-error>
+        @if (hasError('paymentOption')) {
+          <mat-error>
+            {{ getErrorMessage('paymentOption') }}
+          </mat-error>
+        }
       </mat-form-field>
     </div>
   </form>

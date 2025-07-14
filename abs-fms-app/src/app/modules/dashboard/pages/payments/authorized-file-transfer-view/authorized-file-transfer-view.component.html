@@ -7,16 +7,20 @@
       </button>
       <div class="title-content">
         <h2>Payment Details</h2>
-        <p *ngIf="transfer">{{ transfer.voucherNoRef }} - {{ getTypeLabel(transfer.type) }}</p>
+        @if (transfer) {
+          <p>{{ transfer.voucherNoRef }} - {{ getTypeLabel(transfer.type) }}</p>
+        }
       </div>
     </div>
   </div>
 
   <!-- Loading Spinner -->
-  <div *ngIf="isLoading" class="loading-container">
-    <mat-spinner diameter="50"></mat-spinner>
-    <p>Loading payment details...</p>
-  </div>
+  @if (isLoading) {
+    <div class="loading-container">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Loading payment details...</p>
+    </div>
+  }
 
   <!-- Action Buttons Section -->
   <div class="action-buttons-section">
@@ -40,15 +44,16 @@
 
       <!-- Go to Update EFTs Button -->
       <!-- <button mat-raised-button color="warn" (click)="goToUpdateEFTs()" class="update-efts-btn">
-            <mat-icon>update</mat-icon>
-            Go to Update EFTs
-          </button> -->
-    </div>
+      <mat-icon>update</mat-icon>
+      Go to Update EFTs
+    </button> -->
   </div>
+</div>
 
 
-  <!-- Transfer Details -->
-  <div *ngIf="!isLoading && transfer" class="details-section">
+<!-- Transfer Details -->
+@if (!isLoading && transfer) {
+  <div class="details-section">
     <mat-card class="details-card">
       <mat-card-header>
         <mat-card-title>
@@ -62,8 +67,6 @@
           </div>
         </mat-card-title>
       </mat-card-header>
-
-
       <mat-card-content>
         <mat-tab-group class="details-tabs" animationDuration="300ms">
           <!-- Basic Information Tab -->
@@ -85,7 +88,6 @@
               </div>
             </div>
           </mat-tab>
-
           <!-- Financial Information Tab -->
           <mat-tab label="Financial Information">
             <div class="tab-content">
@@ -109,7 +111,6 @@
               </div>
             </div>
           </mat-tab>
-
           <!-- Authorization Information Tab -->
           <mat-tab label="Authorization Information">
             <div class="tab-content">
@@ -131,7 +132,6 @@
               </div>
             </div>
           </mat-tab>
-
           <!-- Document Information Tab -->
           <mat-tab label="Document Information">
             <div class="tab-content">
@@ -151,18 +151,19 @@
           </mat-tab>
         </mat-tab-group>
       </mat-card-content>
-
       <!-- <mat-card-actions class="card-actions">
-        <button mat-raised-button (click)="goBack()">
-          <mat-icon>arrow_back</mat-icon>
-          Back to Search
-        </button>
-      </mat-card-actions> -->
-    </mat-card>
-  </div>
+      <button mat-raised-button (click)="goBack()">
+        <mat-icon>arrow_back</mat-icon>
+        Back to Search
+      </button>
+    </mat-card-actions> -->
+  </mat-card>
+</div>
+}
 
-  <!-- Error State -->
-  <div *ngIf="!isLoading && !transfer" class="error-section">
+<!-- Error State -->
+@if (!isLoading && !transfer) {
+  <div class="error-section">
     <mat-card class="error-card">
       <mat-card-content>
         <div class="error-content">
@@ -177,75 +178,75 @@
       </mat-card-content>
     </mat-card>
   </div>
+}
 </div>
 
 <!-- Authorization Confirmation Modal -->
-<div class="modal-overlay" *ngIf="showAuthorizationModal" (click)="closeAuthorizationModal()">
-  <div class="modal-content authorization-modal" (click)="$event.stopPropagation()">
-    <div class="modal-header">
-      <h3>
-        <mat-icon class="modal-icon">verified</mat-icon>
-        Authorize Payment
-      </h3>
-      <button mat-icon-button (click)="closeAuthorizationModal()" class="close-button">
-        <mat-icon>close</mat-icon>
-      </button>
-    </div>
-
-    <div class="modal-body" *ngIf="authorizationData">
-      <div class="authorization-details">
-        <!-- <div class="warning-section">
-          <mat-icon class="warning-icon">warning</mat-icon>
-          <p>You are about to authorize a payment. Please review the details carefully before proceeding.</p>
-        </div> -->
-
-        <div class="payment-summary">
-          <h4>Payment Summary</h4>
-          <div class="summary-grid">
-            <div class="summary-row">
-              <label>Voucher Reference:</label>
-              <span class="value">{{ authorizationData.transfer.voucherNoRef }}</span>
-            </div>
-            <div class="summary-row">
-              <label>Payee:</label>
-              <span class="value payee-highlight">{{ authorizationData.transfer.payee }}</span>
-            </div>
-            <div class="summary-row">
-              <label>Amount:</label>
-              <span class="value amount-highlight">{{ authorizationData.amount }}</span>
-            </div>
-            <div class="summary-row">
-              <label>Payee Bank Account:</label>
-              <span class="value">{{ authorizationData.transfer.bankAccount }}</span>
-            </div>
-            <div class="summary-row">
-              <label>From Account:</label>
-              <span class="value">{{ authorizationData.selectedAccount.bankName }} - {{
+@if (showAuthorizationModal) {
+  <div class="modal-overlay" (click)="closeAuthorizationModal()">
+    <div class="modal-content authorization-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>
+          <mat-icon class="modal-icon">verified</mat-icon>
+          Authorize Payment
+        </h3>
+        <button mat-icon-button (click)="closeAuthorizationModal()" class="close-button">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      @if (authorizationData) {
+        <div class="modal-body">
+          <div class="authorization-details">
+            <!-- <div class="warning-section">
+            <mat-icon class="warning-icon">warning</mat-icon>
+            <p>You are about to authorize a payment. Please review the details carefully before proceeding.</p>
+          </div> -->
+          <div class="payment-summary">
+            <h4>Payment Summary</h4>
+            <div class="summary-grid">
+              <div class="summary-row">
+                <label>Voucher Reference:</label>
+                <span class="value">{{ authorizationData.transfer.voucherNoRef }}</span>
+              </div>
+              <div class="summary-row">
+                <label>Payee:</label>
+                <span class="value payee-highlight">{{ authorizationData.transfer.payee }}</span>
+              </div>
+              <div class="summary-row">
+                <label>Amount:</label>
+                <span class="value amount-highlight">{{ authorizationData.amount }}</span>
+              </div>
+              <div class="summary-row">
+                <label>Payee Bank Account:</label>
+                <span class="value">{{ authorizationData.transfer.bankAccount }}</span>
+              </div>
+              <div class="summary-row">
+                <label>From Account:</label>
+                <span class="value">{{ authorizationData.selectedAccount.bankName }} - {{
                 authorizationData.selectedAccount.accountNumber }}</span>
-            </div>
-            <div class="summary-row">
-              <label>Transfer Type:</label>
-              <span class="value">
-                <span class="type-badge type-{{ authorizationData.transfer.type.toLowerCase() }}">
-                  {{ getTypeLabel(authorizationData.transfer.type) }}
+              </div>
+              <div class="summary-row">
+                <label>Transfer Type:</label>
+                <span class="value">
+                  <span class="type-badge type-{{ authorizationData.transfer.type.toLowerCase() }}">
+                    {{ getTypeLabel(authorizationData.transfer.type) }}
+                  </span>
                 </span>
-              </span>
-            </div>
-            <div class="summary-row">
-              <label>Narrative:</label>
-              <span class="value">{{ authorizationData.transfer.narrative }}</span>
+              </div>
+              <div class="summary-row">
+                <label>Narrative:</label>
+                <span class="value">{{ authorizationData.transfer.narrative }}</span>
+              </div>
             </div>
           </div>
-        </div>
-
-        <div class="confirmation-section">
-          <mat-icon class="check-icon">check_circle</mat-icon>
-          <p>By clicking "Authorize Payment", you confirm that you have reviewed all details and authorize this payment
+          <div class="confirmation-section">
+            <mat-icon class="check-icon">check_circle</mat-icon>
+            <p>By clicking "Authorize Payment", you confirm that you have reviewed all details and authorize this payment
             to be processed.</p>
+          </div>
         </div>
       </div>
-    </div>
-
+    }
     <div class="modal-footer">
       <button mat-button (click)="closeAuthorizationModal()" class="cancel-button" [disabled]="isLoading">
         <mat-icon>cancel</mat-icon>
@@ -253,10 +254,15 @@
       </button>
       <button mat-raised-button color="primary" (click)="confirmAuthorization()" class="authorize-button"
         [disabled]="isLoading">
-        <mat-spinner *ngIf="isLoading" diameter="20" class="button-spinner"></mat-spinner>
-        <mat-icon *ngIf="!isLoading">verified</mat-icon>
+        @if (isLoading) {
+          <mat-spinner diameter="20" class="button-spinner"></mat-spinner>
+        }
+        @if (!isLoading) {
+          <mat-icon>verified</mat-icon>
+        }
         {{ isLoading ? 'Authorizing...' : 'Authorize Payment' }}
       </button>
     </div>
   </div>
 </div>
+}

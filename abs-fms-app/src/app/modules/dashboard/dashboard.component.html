@@ -202,40 +202,41 @@
       </mat-card>
 
       <!-- <mat-card class="module-card warn">
-        <mat-card-header>
-          <mat-card-title>
-            <mat-icon color="warn">trending_down</mat-icon>
-            Creditors
-          </mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <p>Handle supplier accounts, purchase orders, and payments</p>
-          <div class="module-stats">
-            <div class="stat">
-              <span class="stat-label">Payables:</span>
-              <span class="stat-value">₦890K</span>
-            </div>
-            <div class="stat">
-              <span class="stat-label">Orders:</span>
-              <span class="stat-value">34</span>
-            </div>
-          </div>
-          <button mat-raised-button color="warn" class="module-btn">Access Module</button>
-        </mat-card-content>
-      </mat-card> -->
-    </div>
-  </div>
-
-  <!-- Recent Activities -->
-  <div class="activities-section">
-    <h2 class="section-title">
-      <mat-icon>history</mat-icon>
-      Recent Activities
-    </h2>
-    <mat-card class="activities-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon color="warn">trending_down</mat-icon>
+          Creditors
+        </mat-card-title>
+      </mat-card-header>
       <mat-card-content>
-        <div class="activity-list">
-          <div class="activity-item" *ngFor="let activity of recentActivities">
+        <p>Handle supplier accounts, purchase orders, and payments</p>
+        <div class="module-stats">
+          <div class="stat">
+            <span class="stat-label">Payables:</span>
+            <span class="stat-value">₦890K</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Orders:</span>
+            <span class="stat-value">34</span>
+          </div>
+        </div>
+        <button mat-raised-button color="warn" class="module-btn">Access Module</button>
+      </mat-card-content>
+    </mat-card> -->
+  </div>
+</div>
+
+<!-- Recent Activities -->
+<div class="activities-section">
+  <h2 class="section-title">
+    <mat-icon>history</mat-icon>
+    Recent Activities
+  </h2>
+  <mat-card class="activities-card">
+    <mat-card-content>
+      <div class="activity-list">
+        @for (activity of recentActivities; track activity) {
+          <div class="activity-item">
             <div class="activity-icon">
               <mat-icon [style.color]="activity.color">{{ activity.icon }}</mat-icon>
             </div>
@@ -245,50 +246,51 @@
               <span class="activity-time">{{ activity.time }}</span>
             </div>
           </div>
+        }
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
+
+<!-- System Status -->
+<div class="status-section">
+  <h2 class="section-title">
+    <mat-icon>settings</mat-icon>
+    System Status
+  </h2>
+  <div class="status-grid">
+    <mat-card class="status-card">
+      <mat-card-content>
+        <div class="status-header">
+          <mat-icon style="color: #4caf50;">check_circle</mat-icon>
+          <h3>System Health</h3>
         </div>
+        <p class="status-value">All Systems Operational</p>
+        <div class="status-indicator green"></div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="status-card">
+      <mat-card-content>
+        <div class="status-header">
+          <mat-icon style="color: #2196f3;">backup</mat-icon>
+          <h3>Last Backup</h3>
+        </div>
+        <p class="status-value">{{ getLastBackupTime() }}</p>
+        <div class="status-indicator blue"></div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="status-card">
+      <mat-card-content>
+        <div class="status-header">
+          <mat-icon style="color: #ff9800;">security</mat-icon>
+          <h3>Security Status</h3>
+        </div>
+        <p class="status-value">Secure & Protected</p>
+        <div class="status-indicator orange"></div>
       </mat-card-content>
     </mat-card>
   </div>
-
-  <!-- System Status -->
-  <div class="status-section">
-    <h2 class="section-title">
-      <mat-icon>settings</mat-icon>
-      System Status
-    </h2>
-    <div class="status-grid">
-      <mat-card class="status-card">
-        <mat-card-content>
-          <div class="status-header">
-            <mat-icon style="color: #4caf50;">check_circle</mat-icon>
-            <h3>System Health</h3>
-          </div>
-          <p class="status-value">All Systems Operational</p>
-          <div class="status-indicator green"></div>
-        </mat-card-content>
-      </mat-card>
-
-      <mat-card class="status-card">
-        <mat-card-content>
-          <div class="status-header">
-            <mat-icon style="color: #2196f3;">backup</mat-icon>
-            <h3>Last Backup</h3>
-          </div>
-          <p class="status-value">{{ getLastBackupTime() }}</p>
-          <div class="status-indicator blue"></div>
-        </mat-card-content>
-      </mat-card>
-
-      <mat-card class="status-card">
-        <mat-card-content>
-          <div class="status-header">
-            <mat-icon style="color: #ff9800;">security</mat-icon>
-            <h3>Security Status</h3>
-          </div>
-          <p class="status-value">Secure & Protected</p>
-          <div class="status-indicator orange"></div>
-        </mat-card-content>
-      </mat-card>
-    </div>
-  </div>
+</div>
 </div>

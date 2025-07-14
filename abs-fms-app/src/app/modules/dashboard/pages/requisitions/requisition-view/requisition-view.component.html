@@ -1,143 +1,145 @@
 <!-- Requisition View Page -->
 <div class="requisition-view-container">
   <!-- Loading State -->
-  <div *ngIf="isLoading" class="loading-section">
-    <mat-card class="loading-card">
-      <mat-card-content>
-        <div class="loading-content">
-          <mat-spinner diameter="40"></mat-spinner>
-          <p>Loading requisition details...</p>
-        </div>
-      </mat-card-content>
-    </mat-card>
-  </div>
+  @if (isLoading) {
+    <div class="loading-section">
+      <mat-card class="loading-card">
+        <mat-card-content>
+          <div class="loading-content">
+            <mat-spinner diameter="40"></mat-spinner>
+            <p>Loading requisition details...</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  }
 
   <!-- Requisition Details -->
-  <div *ngIf="!isLoading && requisition" class="details-section">
-    <!-- Header -->
-    <div class="header-section">
-      <div class="title-section">
-        <h2>Requisition Details</h2>
-        <p>{{ requisition.code }}</p>
-      </div>
-      <div class="action-buttons">
-        <button mat-raised-button color="primary" (click)="goBack()">
-          <mat-icon>arrow_back</mat-icon>
-          Back to Search
-        </button>
-      </div>
-    </div>
-
-    <!-- Details Card -->
-    <mat-card class="details-card">
-      <mat-card-content>
-        <div class="details-grid">
-          <!-- Basic Information -->
-          <div class="detail-section">
-            <h3 class="section-title">Basic Information</h3>
-            <div class="detail-row">
-              <label>Code:</label>
-              <span class="code-highlight">{{ requisition.code }}</span>
-            </div>
-            <div class="detail-row">
-              <label>Status:</label>
-              <span class="status-badge status-{{ requisition.status.toLowerCase() }}">
-                {{ requisition.status }}
-              </span>
-            </div>
-            <div class="detail-row">
-              <label>Type:</label>
-              <span>{{ getTypeLabel(requisition.type) }}</span>
-            </div>
-            <div class="detail-row">
-              <label>Created Date:</label>
-              <span>{{ requisition.createdDate | date:'medium' }}</span>
-            </div>
-            <div class="detail-row">
-              <label>Created By:</label>
-              <span>{{ requisition.createdBy }}</span>
-            </div>
-          </div>
-
-          <!-- Payee Information -->
-          <div class="detail-section">
-            <h3 class="section-title">Payee Information</h3>
-            <div class="detail-row">
-              <label>Payee:</label>
-              <span class="payee-highlight">{{ requisition.payee }}</span>
-            </div>
-            <div class="detail-row">
-              <label>Cheque Payee:</label>
-              <span>{{ requisition.chequePayee }}</span>
-            </div>
-            <div class="detail-row">
-              <label>Bank Branch:</label>
-              <span>{{ requisition.payeeBankBranch }}</span>
-            </div>
-            <div class="detail-row">
-              <label>Account Number:</label>
-              <span>{{ requisition.payeeAccountNo }}</span>
-            </div>
-          </div>
-
-          <!-- Financial Information -->
-          <div class="detail-section">
-            <h3 class="section-title">Financial Information</h3>
-            <div class="detail-row">
-              <label>Amount:</label>
-              <span class="amount-highlight">
-                {{ formatCurrency(requisition.amount, requisition.currency) }}
-              </span>
-            </div>
-            <div class="detail-row">
-              <label>Currency:</label>
-              <span>{{ requisition.currency }}</span>
-            </div>
-            <div class="detail-row">
-              <label>Bank Account:</label>
-              <span>{{ requisition.bankAccount }}</span>
-            </div>
-            <div class="detail-row">
-              <label>Payment Option:</label>
-              <span>{{ getPaymentOptionLabel(requisition.paymentOption) }}</span>
-            </div>
-          </div>
-
-          <!-- Invoice Information -->
-          <div class="detail-section">
-            <h3 class="section-title">Invoice Information</h3>
-            <div class="detail-row">
-              <label>Invoice Number:</label>
-              <span>{{ requisition.invoiceNo }}</span>
-            </div>
-            <div class="detail-row">
-              <label>Invoice Date:</label>
-              <span>{{ requisition.invoiceDate | date:'mediumDate' }}</span>
-            </div>
-            <div class="detail-row full-width">
-              <label>Narrative:</label>
-              <span class="narrative-text">{{ requisition.narrative }}</span>
-            </div>
-          </div>
+  @if (!isLoading && requisition) {
+    <div class="details-section">
+      <!-- Header -->
+      <div class="header-section">
+        <div class="title-section">
+          <h2>Requisition Details</h2>
+          <p>{{ requisition.code }}</p>
         </div>
-      </mat-card-content>
-    </mat-card>
-  </div>
-
-  <!-- Error State -->
-  <div *ngIf="!isLoading && !requisition" class="error-section">
-    <mat-card class="error-card">
-      <mat-card-content>
-        <div class="error-content">
-          <mat-icon class="error-icon">error_outline</mat-icon>
-          <h3>Requisition Not Found</h3>
-          <p>The requested requisition could not be found or may have been removed.</p>
+        <div class="action-buttons">
           <button mat-raised-button color="primary" (click)="goBack()">
             <mat-icon>arrow_back</mat-icon>
             Back to Search
           </button>
         </div>
-      </mat-card-content>
-    </mat-card>
-  </div>
+      </div>
+      <!-- Details Card -->
+      <mat-card class="details-card">
+        <mat-card-content>
+          <div class="details-grid">
+            <!-- Basic Information -->
+            <div class="detail-section">
+              <h3 class="section-title">Basic Information</h3>
+              <div class="detail-row">
+                <label>Code:</label>
+                <span class="code-highlight">{{ requisition.code }}</span>
+              </div>
+              <div class="detail-row">
+                <label>Status:</label>
+                <span class="status-badge status-{{ requisition.status.toLowerCase() }}">
+                  {{ requisition.status }}
+                </span>
+              </div>
+              <div class="detail-row">
+                <label>Type:</label>
+                <span>{{ getTypeLabel(requisition.type) }}</span>
+              </div>
+              <div class="detail-row">
+                <label>Created Date:</label>
+                <span>{{ requisition.createdDate | date:'medium' }}</span>
+              </div>
+              <div class="detail-row">
+                <label>Created By:</label>
+                <span>{{ requisition.createdBy }}</span>
+              </div>
+            </div>
+            <!-- Payee Information -->
+            <div class="detail-section">
+              <h3 class="section-title">Payee Information</h3>
+              <div class="detail-row">
+                <label>Payee:</label>
+                <span class="payee-highlight">{{ requisition.payee }}</span>
+              </div>
+              <div class="detail-row">
+                <label>Cheque Payee:</label>
+                <span>{{ requisition.chequePayee }}</span>
+              </div>
+              <div class="detail-row">
+                <label>Bank Branch:</label>
+                <span>{{ requisition.payeeBankBranch }}</span>
+              </div>
+              <div class="detail-row">
+                <label>Account Number:</label>
+                <span>{{ requisition.payeeAccountNo }}</span>
+              </div>
+            </div>
+            <!-- Financial Information -->
+            <div class="detail-section">
+              <h3 class="section-title">Financial Information</h3>
+              <div class="detail-row">
+                <label>Amount:</label>
+                <span class="amount-highlight">
+                  {{ formatCurrency(requisition.amount, requisition.currency) }}
+                </span>
+              </div>
+              <div class="detail-row">
+                <label>Currency:</label>
+                <span>{{ requisition.currency }}</span>
+              </div>
+              <div class="detail-row">
+                <label>Bank Account:</label>
+                <span>{{ requisition.bankAccount }}</span>
+              </div>
+              <div class="detail-row">
+                <label>Payment Option:</label>
+                <span>{{ getPaymentOptionLabel(requisition.paymentOption) }}</span>
+              </div>
+            </div>
+            <!-- Invoice Information -->
+            <div class="detail-section">
+              <h3 class="section-title">Invoice Information</h3>
+              <div class="detail-row">
+                <label>Invoice Number:</label>
+                <span>{{ requisition.invoiceNo }}</span>
+              </div>
+              <div class="detail-row">
+                <label>Invoice Date:</label>
+                <span>{{ requisition.invoiceDate | date:'mediumDate' }}</span>
+              </div>
+              <div class="detail-row full-width">
+                <label>Narrative:</label>
+                <span class="narrative-text">{{ requisition.narrative }}</span>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (!isLoading && !requisition) {
+    <div class="error-section">
+      <mat-card class="error-card">
+        <mat-card-content>
+          <div class="error-content">
+            <mat-icon class="error-icon">error_outline</mat-icon>
+            <h3>Requisition Not Found</h3>
+            <p>The requested requisition could not be found or may have been removed.</p>
+            <button mat-raised-button color="primary" (click)="goBack()">
+              <mat-icon>arrow_back</mat-icon>
+              Back to Search
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  }
 </div>

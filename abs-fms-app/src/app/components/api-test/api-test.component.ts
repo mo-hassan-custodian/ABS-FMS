@@ -10,7 +10,7 @@ import { environment } from '../../../environments/environment';
     template: `
     <div class="api-test-container">
       <h2>API Connection Test</h2>
-
+    
       <div class="test-section">
         <h3>Configuration Info</h3>
         <div class="config-info">
@@ -25,101 +25,115 @@ import { environment } from '../../../environments/environment';
           </p>
         </div>
       </div>
-
+    
       <div class="test-section">
         <h3>Test API Connection</h3>
         <button (click)="testApiConnection()" [disabled]="loading">
           {{ loading ? 'Testing...' : 'Test API' }}
         </button>
-
-        <div
-          *ngIf="apiStatus"
-          class="status-message"
-          [ngClass]="apiStatus.type"
-        >
-          {{ apiStatus.message }}
-        </div>
-
-        <div *ngIf="apiStatus?.type === 'error'" class="troubleshooting">
-          <h4>Troubleshooting Steps:</h4>
-          <ol>
-            <li>
-              <strong>CORS Error?</strong> Add CORS headers to your backend:
-              <br /><code
+    
+        @if (apiStatus) {
+          <div
+            class="status-message"
+            [ngClass]="apiStatus.type"
+            >
+            {{ apiStatus.message }}
+          </div>
+        }
+    
+        @if (apiStatus?.type === 'error') {
+          <div class="troubleshooting">
+            <h4>Troubleshooting Steps:</h4>
+            <ol>
+              <li>
+                <strong>CORS Error?</strong> Add CORS headers to your backend:
+                <br /><code
                 >Access-Control-Allow-Origin: http://localhost:4200</code
-              >
-              <br />See <code>CORS_SETUP.md</code> for framework-specific
-              examples
-            </li>
-            <li>
-              Check if your ngrok tunnel is running:
-              <code>ngrok http 8080</code> (or your backend port)
-            </li>
-            <li>Verify your backend API is running and accessible</li>
-            <li>
-              Update the ngrok URL in
-              <code>src/environments/environment.ts</code>
-            </li>
-            <li>Test the ngrok URL directly in your browser</li>
-            <li>Check browser console for detailed error messages</li>
-            <li>Restart the Angular dev server: <code>ng serve</code></li>
-          </ol>
-        </div>
+                >
+                <br />See <code>CORS_SETUP.md</code> for framework-specific
+                examples
+              </li>
+              <li>
+                Check if your ngrok tunnel is running:
+                <code>ngrok http 8080</code> (or your backend port)
+              </li>
+              <li>Verify your backend API is running and accessible</li>
+              <li>
+                Update the ngrok URL in
+                <code>src/environments/environment.ts</code>
+              </li>
+              <li>Test the ngrok URL directly in your browser</li>
+              <li>Check browser console for detailed error messages</li>
+              <li>Restart the Angular dev server: <code>ng serve</code></li>
+            </ol>
+          </div>
+        }
       </div>
-
+    
       <div class="test-section">
         <h3>Test Bank Accounts API</h3>
         <button
           (click)="testBankAccountsApi()"
           [disabled]="bankAccountsLoading"
-        >
+          >
           {{ bankAccountsLoading ? 'Testing...' : 'Test Bank Accounts API' }}
         </button>
-
-        <div
-          *ngIf="bankAccountsStatus"
-          class="status-message"
-          [ngClass]="bankAccountsStatus.type"
-        >
-          {{ bankAccountsStatus.message }}
-        </div>
-      </div>
-
-      <div class="test-section" *ngIf="bankAccounts.length > 0">
-        <h3>Bank Accounts Data ({{ bankAccounts.length }} accounts)</h3>
-        <div class="transfers-list">
+    
+        @if (bankAccountsStatus) {
           <div
-            *ngFor="let account of bankAccounts.slice(0, 5)"
-            class="transfer-item"
-          >
-            <strong>{{ account.accountNumber }}</strong> -
-            {{ account.accountName }} - {{ account.bankName }} <br /><small>{{
-              account.name
-            }}</small>
+            class="status-message"
+            [ngClass]="bankAccountsStatus.type"
+            >
+            {{ bankAccountsStatus.message }}
           </div>
-          <div *ngIf="bankAccounts.length > 5" class="more-items">
-            ... and {{ bankAccounts.length - 5 }} more accounts
-          </div>
+        }
+      </div>
+    
+      @if (bankAccounts.length > 0) {
+        <div class="test-section">
+          <h3>Bank Accounts Data ({{ bankAccounts.length }} accounts)</h3>
+          <div class="transfers-list">
+            @for (account of bankAccounts.slice(0, 5); track account) {
+              <div
+                class="transfer-item"
+                >
+                <strong>{{ account.accountNumber }}</strong> -
+                {{ account.accountName }} - {{ account.bankName }} <br /><small>{{
+                account.name
+              }}</small>
+            </div>
+          }
+          @if (bankAccounts.length > 5) {
+            <div class="more-items">
+              ... and {{ bankAccounts.length - 5 }} more accounts
+            </div>
+          }
         </div>
       </div>
-
-      <div class="test-section" *ngIf="transfers.length > 0">
+    }
+    
+    @if (transfers.length > 0) {
+      <div class="test-section">
         <h3>API Data ({{ transfers.length }} records)</h3>
         <div class="transfers-list">
-          <div
-            *ngFor="let transfer of transfers.slice(0, 5)"
-            class="transfer-item"
-          >
-            <strong>{{ transfer.id }}</strong> - {{ transfer.payee }} -
-            {{ transfer.amountPayee | currency : 'NGN' }}
-          </div>
-          <div *ngIf="transfers.length > 5" class="more-items">
-            ... and {{ transfers.length - 5 }} more items
-          </div>
+          @for (transfer of transfers.slice(0, 5); track transfer) {
+            <div
+              class="transfer-item"
+              >
+              <strong>{{ transfer.id }}</strong> - {{ transfer.payee }} -
+              {{ transfer.amountPayee | currency : 'NGN' }}
+            </div>
+          }
+          @if (transfers.length > 5) {
+            <div class="more-items">
+              ... and {{ transfers.length - 5 }} more items
+            </div>
+          }
         </div>
       </div>
+    }
     </div>
-  `,
+    `,
     styles: [
         `
       .api-test-container {

@@ -6,59 +6,76 @@
       [disabled]="disabled" [matAutocomplete]="bankAccountAutocomplete" autocomplete="off">
 
     <!-- Loading spinner -->
-    <mat-spinner matSuffix *ngIf="isLoading" diameter="20"></mat-spinner>
+    @if (isLoading) {
+      <mat-spinner matSuffix diameter="20"></mat-spinner>
+    }
 
     <!-- Search icon -->
-    <mat-icon matSuffix *ngIf="!isLoading && !selectedAccount">search</mat-icon>
+    @if (!isLoading && !selectedAccount) {
+      <mat-icon matSuffix>search</mat-icon>
+    }
 
     <!-- Clear button -->
-    <button matSuffix mat-icon-button *ngIf="!isLoading && selectedAccount && !disabled" (click)="clearSelection()"
-      type="button" tabindex="-1">
-      <mat-icon>clear</mat-icon>
-    </button>
+    @if (!isLoading && selectedAccount && !disabled) {
+      <button matSuffix mat-icon-button (click)="clearSelection()"
+        type="button" tabindex="-1">
+        <mat-icon>clear</mat-icon>
+      </button>
+    }
 
     <!-- Autocomplete panel -->
     <mat-autocomplete #bankAccountAutocomplete="matAutocomplete" [displayWith]="displayAccountName.bind(this)"
       (optionSelected)="onAccountSelected($event.option.value)" class="bank-account-autocomplete">
 
       <!-- No results message -->
-      <mat-option *ngIf="(filteredBankAccounts | async)?.length === 0 && shouldShowNoResults()" disabled>
-        <div class="no-results">
-          <mat-icon>search_off</mat-icon>
-          <span>No bank accounts found</span>
-        </div>
-      </mat-option>
+      @if ((filteredBankAccounts | async)?.length === 0 && shouldShowNoResults()) {
+        <mat-option disabled>
+          <div class="no-results">
+            <mat-icon>search_off</mat-icon>
+            <span>No bank accounts found</span>
+          </div>
+        </mat-option>
+      }
 
       <!-- Bank account options -->
-      <mat-option *ngFor="let account of filteredBankAccounts | async; trackBy: trackByAccountId" [value]="account"
-        class="bank-account-option">
-        <div class="account-option-content">
-          <!-- First line: Account name and status -->
-          <div class="account-header">
-            <span class="account-name">{{ account.name }}</span>
-            <span class="account-status" [class]="'status-' + (account.status || 'unknown').toLowerCase()">
-              {{ account.status || 'Unknown' }}
-            </span>
+      @for (account of filteredBankAccounts | async; track trackByAccountId($index, account)) {
+        <mat-option [value]="account"
+          class="bank-account-option">
+          <div class="account-option-content">
+            <!-- First line: Account name and status -->
+            <div class="account-header">
+              <span class="account-name">{{ account.name }}</span>
+              <span class="account-status" [class]="'status-' + (account.status || 'unknown').toLowerCase()">
+                {{ account.status || 'Unknown' }}
+              </span>
+            </div>
+            <!-- Second line: Bank name, account number, and type -->
+            <div class="account-details">
+              <span class="bank-name">{{ account.bankName }}</span>
+              <span class="separator">•</span>
+              <span class="account-number">{{ account.accountNumber }}</span>
+              @if (account.accountType) {
+                <span class="separator">•</span>
+              }
+              @if (account.accountType) {
+                <span class="account-type">{{ account.accountType }}</span>
+              }
+            </div>
           </div>
-
-          <!-- Second line: Bank name, account number, and type -->
-          <div class="account-details">
-            <span class="bank-name">{{ account.bankName }}</span>
-            <span class="separator">•</span>
-            <span class="account-number">{{ account.accountNumber }}</span>
-            <span class="separator" *ngIf="account.accountType">•</span>
-            <span class="account-type" *ngIf="account.accountType">{{ account.accountType }}</span>
-          </div>
-        </div>
-      </mat-option>
+        </mat-option>
+      }
     </mat-autocomplete>
 
     <!-- Error messages -->
-    <mat-error *ngIf="required && !selectedAccount && searchControl.touched">
-      {{ label }} is required
-    </mat-error>
-    <mat-error *ngIf="selectedAccount && !isValidAccount">
-      {{ validationErrorMessage }}
-    </mat-error>
+    @if (required && !selectedAccount && searchControl.touched) {
+      <mat-error>
+        {{ label }} is required
+      </mat-error>
+    }
+    @if (selectedAccount && !isValidAccount) {
+      <mat-error>
+        {{ validationErrorMessage }}
+      </mat-error>
+    }
   </mat-form-field>
 </div>
