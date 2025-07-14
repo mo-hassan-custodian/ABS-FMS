@@ -177,10 +177,10 @@
 }
 
 .details-tabs .mat-mdc-tab-group {
-  --mdc-tab-indicator-active-indicator-color: #1976d2;
-  --mdc-secondary-navigation-tab-container-height: 60px;
-  --mat-tab-header-label-text-size: 20px;
-  --mat-tab-header-label-text-weight: 800;
+  --mat-tab-active-indicator-color: #1976d2;
+  --mat-tab-container-height: 60px;
+  --mat-tab-label-text-size: 20px;
+  --mat-tab-label-text-weight: 800;
 }
 
 .details-tabs .mat-mdc-tab {
@@ -518,9 +518,9 @@
   }
 
   .details-tabs .mat-mdc-tab-group {
-    --mdc-secondary-navigation-tab-container-height: 56px;
-    --mat-tab-header-label-text-size: 16px;
-    --mat-tab-header-label-text-weight: 800;
+    --mat-tab-container-height: 56px;
+    --mat-tab-label-text-size: 16px;
+    --mat-tab-label-text-weight: 800;
   }
 
   ::ng-deep .details-tabs .mat-mdc-tab .mdc-tab__text-label {
@@ -638,9 +638,9 @@
   }
 
   .details-tabs .mat-mdc-tab-group {
-    --mdc-secondary-navigation-tab-container-height: 52px;
-    --mat-tab-header-label-text-size: 14px;
-    --mat-tab-header-label-text-weight: 800;
+    --mat-tab-container-height: 52px;
+    --mat-tab-label-text-size: 14px;
+    --mat-tab-label-text-weight: 800;
   }
 
   ::ng-deep .details-tabs .mat-mdc-tab .mdc-tab__text-label {
